@@ -1,4 +1,4 @@
-# Elevator-Control-System
+# Elevator Control System And Simulator
 ```
 SYSC 3303 at Carleton University 
 ```
