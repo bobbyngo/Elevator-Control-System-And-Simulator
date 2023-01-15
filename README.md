@@ -3,7 +3,7 @@
 SYSC 3303 at Carleton University 
 ```
 
-# Group 7 - Project Members:
+# Group 7 Members:
 * Ismail Zakaria
 * Liu Patrick
 * Nguyen Trong
