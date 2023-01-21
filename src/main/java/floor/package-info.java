@@ -8,4 +8,4 @@
  * @author Zakaria Ismail, 101143497
  *
  */
-package main.java.Floor;
+package main.java.floor;
