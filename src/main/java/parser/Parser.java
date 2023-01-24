@@ -4,14 +4,17 @@
 package main.java.parser;
 
 import java.io.BufferedReader;
+
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.sql.Timestamp;
 
-import main.java.parser.ElevatorRequest.Direction;
+import main.java.dto.ElevatorRequest;
+import main.java.dto.ElevatorRequest.Direction;
 
 /**
  * The Parser class reads through a standard text file 
@@ -46,15 +49,15 @@ public class Parser {
 	 * @return an ArrayList of ElevatorRequest object
 	 * @throws IOException when input/output error is encountered
 	 */
-	public ArrayList<ElevatorRequest> RequestParser() throws IOException {
+	public ArrayList<ElevatorRequest> requestParser() throws IOException {
 		while ( (lineEntry = reader.readLine()) != null){
 		    String[] line = lineEntry.split(" ");		    
-		    java.sql.Timestamp timestamp = null;
+		    Timestamp timestamp = null;
 		    
 		    try {
 		        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
 		        Date parsedDate = dateFormat.parse(line[0] + " " + line[1]);
-		        timestamp = new  java.sql.Timestamp(parsedDate.getTime());
+		        timestamp = new Timestamp(parsedDate.getTime());
 		    } catch(Exception e) {
 		    	System.out.println(e);
 		    }

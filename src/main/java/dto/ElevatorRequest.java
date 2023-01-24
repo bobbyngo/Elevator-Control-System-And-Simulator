@@ -1,7 +1,9 @@
 /**
  * 
  */
-package main.java.parser;
+package main.java.dto;
+
+import java.sql.Timestamp;
 
 /**
  * The ElevatorRequest class is responsible for storing all the
@@ -12,12 +14,12 @@ package main.java.parser;
  */
 public class ElevatorRequest {
 	
-	enum Direction {
+	public enum Direction {
 		  UP,
 		  DOWN,
 	}
 	
-	private java.sql.Timestamp timestamp;
+	private Timestamp timestamp;
 	private Integer floorRequest;
 	private Direction direction;
 	private Integer floorDestination;
@@ -30,7 +32,7 @@ public class ElevatorRequest {
 	 * @param direction is passenger's declared traveling direction
 	 * @param floorDestination is the destination floor which the passenger entered inside the elevator cart
 	 */
-	public ElevatorRequest(java.sql.Timestamp timestamp, Integer floorRequest, Direction direction, Integer floorDestination) {
+	public ElevatorRequest(Timestamp timestamp, Integer floorRequest, Direction direction, Integer floorDestination) {
 		this.timestamp = timestamp;
 		this.floorRequest = floorRequest;
 		this.direction = direction;
@@ -41,15 +43,15 @@ public class ElevatorRequest {
 	 * getTimestamp returns a point in time which the passenger pressed the floor button
 	 * @return java.sql.Timestamp
 	 */
-	public java.sql.Timestamp getTimestamp() {
+	public Timestamp getTimestamp() {
 		return timestamp;
 	}
 	
 	/**
-	 * getfloorRequest returns the floor which the passenger declared his/her traveling intention
+	 * getFloorRequest returns the floor which the passenger declared his/her traveling intention
 	 * @return Integer
 	 */
-	public Integer getfloorRequest() {
+	public Integer getFloorRequest() {
 		return floorRequest;
 	}
 	
@@ -62,10 +64,10 @@ public class ElevatorRequest {
 	}
 	
 	/**
-	 * getfloorDestination returns the destination floor which the passenger entered inside the elevator cart
+	 * getFloorDestination returns the destination floor which the passenger entered inside the elevator cart
 	 * @return Integer
 	 */
-	public Integer getfloorDestination() {
+	public Integer getFloorDestination() {
 		return floorDestination;
 	}
 	

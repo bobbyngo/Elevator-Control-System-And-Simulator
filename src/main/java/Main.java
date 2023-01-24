@@ -6,7 +6,7 @@ package main.java;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import main.java.parser.ElevatorRequest;
+import main.java.dto.ElevatorRequest;
 import main.java.parser.Parser;
 
 /**
@@ -26,13 +26,14 @@ public class Main {
 		
 		ArrayList<ElevatorRequest> elevatorRequestList = new ArrayList<>();
 		
-		Parser parser = new Parser("<Full_File_Path>");
+		//Parser parser = new Parser("<Full_File_Path>");
+		Parser parser = new Parser("/Users/liuyu/eclipse-workspace/Elevator_Project/src/main/resources/input.txt");
 		
-		elevatorRequestList = parser.RequestParser();
+		elevatorRequestList = parser.requestParser();
 		
 		for(ElevatorRequest request: elevatorRequestList) {
-			System.out.println(request.getTimestamp().toString() + " " + request.getfloorRequest() + " " +
-					request.getDirection() + " " + request.getfloorDestination());
+			System.out.println(request.getTimestamp().toString() + " " + request.getFloorRequest() + " " +
+					request.getDirection() + " " + request.getFloorDestination());
 		}
 		
 		return;
