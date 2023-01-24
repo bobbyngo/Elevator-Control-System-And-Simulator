@@ -4,7 +4,6 @@
 package main.java.parser;
 
 import java.io.BufferedReader;
-
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -14,7 +13,7 @@ import java.util.Date;
 import java.sql.Timestamp;
 
 import main.java.dto.ElevatorRequest;
-import main.java.dto.ElevatorRequest.Direction;
+import main.java.dto.Direction;
 
 /**
  * The Parser class reads through a standard text file 

@@ -14,11 +14,6 @@ import java.sql.Timestamp;
  */
 public class ElevatorRequest {
 	
-	public enum Direction {
-		  UP,
-		  DOWN,
-	}
-	
 	private Timestamp timestamp;
 	private Integer floorRequest;
 	private Direction direction;

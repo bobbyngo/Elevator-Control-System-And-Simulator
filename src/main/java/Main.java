@@ -26,8 +26,7 @@ public class Main {
 		
 		ArrayList<ElevatorRequest> elevatorRequestList = new ArrayList<>();
 		
-		//Parser parser = new Parser("<Full_File_Path>");
-		Parser parser = new Parser("/Users/liuyu/eclipse-workspace/Elevator_Project/src/main/resources/input.txt");
+		Parser parser = new Parser("<Full_File_Path>");
 		
 		elevatorRequestList = parser.requestParser();
 		
