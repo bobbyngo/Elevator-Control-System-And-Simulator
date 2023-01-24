@@ -6,4 +6,5 @@
  *
  */
 module elevatorControlSystemAndSimulator {
+	requires java.sql;
 }
