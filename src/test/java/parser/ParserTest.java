@@ -39,7 +39,7 @@ public class ParserTest {
 	@Before
     public void setUp() throws Exception {
 		elevatorRequestList = new ArrayList<>();
-		parser = new Parser("input.txt_Absolute_File_Path");
+		parser = new Parser("./src/main/resources/input.txt");
 		elevatorRequestList = parser.requestParser();
     }
 	
@@ -69,7 +69,7 @@ public class ParserTest {
 	 */
 	@Test
 	public void testTimestampException() throws IOException, ParseException {
-		Parser parser = new Parser("incorrectInput.txt_Absolute_File_Path");
+		Parser parser = new Parser("./src/test/resources/incorrectInput.txt");
 		assertTrue(parser.requestParser().isEmpty());
 	}
 	
