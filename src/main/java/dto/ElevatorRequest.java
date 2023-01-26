@@ -66,6 +66,9 @@ public class ElevatorRequest {
 		return floorDestination;
 	}
 	
+	/**
+	 * An override method for comparing Elevator Object
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
