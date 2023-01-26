@@ -39,7 +39,7 @@ public class ParserTest {
 	@Before
     public void setUp() throws Exception {
 		elevatorRequestList = new ArrayList<>();
-		parser = new Parser("./src/main/resources/input.txt");
+		parser = new Parser("./src/test/resources/input.txt");
 		elevatorRequestList = parser.requestParser();
     }
 	
