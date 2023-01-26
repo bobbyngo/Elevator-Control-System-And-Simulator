@@ -74,14 +74,14 @@ public class ParserTest {
 	}
 	
 	/**
-	 * testFloorRequest validates that the floor request number (Integer)
+	 * testSourceFloor validates that the floor source number (Integer)
 	 * from the input file is properly parsed
 	 * 
 	 * @author Patrick Liu
 	 */
 	@Test
-	public void testFloorRequest() {
-		assertEquals(Integer.valueOf(2), elevatorRequestList.get(0).getFloorRequest());
+	public void testSourceFloor() {
+		assertEquals(Integer.valueOf(2), elevatorRequestList.get(0).getSourceFloor());
 	}
 	
 	/**
@@ -108,14 +108,14 @@ public class ParserTest {
 	}
 	
 	/**
-	 * testFloorDestination validates that the floor destination number (Integer)
+	 * testDestinationFloor validates that the floor destination number (Integer)
 	 * from the input file is properly parsed
 	 * 
 	 * @author Patrick Liu
 	 */
 	@Test
-	public void testFloorDestination() {
-		assertEquals(Integer.valueOf(6), elevatorRequestList.get(0).getFloorDestination());
+	public void testDestinationFloor() {
+		assertEquals(Integer.valueOf(6), elevatorRequestList.get(0).getDestinationFloor());
 	}
 
 }

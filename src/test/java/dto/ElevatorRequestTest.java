@@ -49,13 +49,13 @@ public class ElevatorRequestTest {
 	}
 	
 	/**
-	 * testGetFloorRequest validates that the returned floorRequest value is correct
+	 * testGetSourceFloor validates that the returned floorRequest value is correct
 	 * 
 	 * @author Patrick Liu
 	 */
 	@Test
-	public void testGetFloorRequest() {
-		assertEquals(Integer.valueOf(1), elevatorRequest.getFloorRequest());
+	public void testGetSourceFloor() {
+		assertEquals(Integer.valueOf(1), elevatorRequest.getSourceFloor());
 	}
 	
 	/**
@@ -69,13 +69,13 @@ public class ElevatorRequestTest {
 	}
 	
 	/**
-	 * testGetFloorDestination validates that the returned floorDestination value is correct
+	 * testGetDestinationFloor validates that the returned floorDestination value is correct
 	 * 
 	 * @author Patrick Liu
 	 */
 	@Test
-	public void testGetFloorDestination() {
-		assertEquals(Integer.valueOf(5), elevatorRequest.getFloorDestination());
+	public void testGetDestinationFloor() {
+		assertEquals(Integer.valueOf(5), elevatorRequest.getDestinationFloor());
 	}
 	
 	/**
