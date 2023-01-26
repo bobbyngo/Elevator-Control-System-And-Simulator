@@ -66,4 +66,14 @@ public class ElevatorRequest {
 		return floorDestination;
 	}
 	
+	/**
+	 * toString combines the object attributes into a readable format
+	 * @return String
+	 */
+	@Override
+	public String toString(){ 
+		  return timestamp.toString().split(" ")[1] + " " + + floorRequest + " " +
+				  direction + " " + floorDestination;
+	} 
+	
 }

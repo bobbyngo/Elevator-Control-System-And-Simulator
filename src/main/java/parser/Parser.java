@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -54,18 +55,21 @@ public class Parser {
 		    Timestamp timestamp = null;
 		    
 		    try {
-		        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
-		        Date parsedDate = dateFormat.parse(line[0] + " " + line[1]);
+		        SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm:ss.SSS");
+		        Date parsedDate = dateFormat.parse(line[0]);
 		        timestamp = new Timestamp(parsedDate.getTime());
-		    } catch(Exception e) {
-		    	System.out.println(e);
+		    } catch(ParseException e) {
+		    	System.out.println("Timestamp format is incorrect");
+		    	elevatorRequestList.clear();
+		    	break;
 		    }
 		    
-		    elevatorRequestList.add(new ElevatorRequest(timestamp, Integer.valueOf(line[2]), 
-		    		Direction.valueOf(line[3]), Integer.valueOf(line[4])));
+		    elevatorRequestList.add(new ElevatorRequest(timestamp, Integer.valueOf(line[1]), 
+		    		Direction.valueOf(line[2]), Integer.valueOf(line[3])));
 
 		}
 		return elevatorRequestList;
 		
 	}
+
 }
