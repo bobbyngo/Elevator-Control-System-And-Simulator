@@ -67,7 +67,7 @@ public class ElevatorRequest {
 	}
 	
 	/**
-	 * Author: Bobby Ngo
+	 * @author Bobby Ngo
 	 * An override method for comparing Elevator Object
 	 * @return boolean
 	 */

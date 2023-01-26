@@ -45,7 +45,7 @@ public class Scheduler {
 	
 	/**
 	 * This method will be called by Elevator class. After the floor finished a request it should dispatch an item from the list
-	 * @return
+	 * @return ElevatorRequest
 	 */
 	public synchronized ElevatorRequest dispatchRequest() {
 		while(requestsQueue.size() == 0) {
