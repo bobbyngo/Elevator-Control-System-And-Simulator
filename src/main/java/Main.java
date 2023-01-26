@@ -3,9 +3,6 @@
  */
 package main.java;
 
-import java.io.IOException;
-import java.text.ParseException;
-
 /**
  * Hosts the starting point of execution for the
  * application.
@@ -20,7 +17,7 @@ public class Main {
 	 * @throws IOException 
 	 * @throws ParseException 
 	 */
-	public static void main(String[] args) throws IOException, ParseException {
+	public static void main(String[] args) {
 		
 		return;
 	}
