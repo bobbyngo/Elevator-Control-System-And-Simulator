@@ -67,7 +67,9 @@ public class ElevatorRequest {
 	}
 	
 	/**
+	 * Author: Bobby Ngo
 	 * An override method for comparing Elevator Object
+	 * @return boolean
 	 */
 	@Override
 	public boolean equals(Object obj) {
