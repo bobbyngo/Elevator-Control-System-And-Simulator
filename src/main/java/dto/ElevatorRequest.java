@@ -66,4 +66,16 @@ public class ElevatorRequest {
 		return floorDestination;
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+	    if (obj == null || getClass() != obj.getClass()) return false;
+	    
+	    ElevatorRequest that = (ElevatorRequest) obj;
+	    
+	    return 	timestamp.equals(that.timestamp)
+	    		&& floorRequest.equals(that.floorRequest) 
+	    		&& direction.equals(that.direction) 
+	    		&& floorDestination.equals(that.floorDestination);
+	}
 }
