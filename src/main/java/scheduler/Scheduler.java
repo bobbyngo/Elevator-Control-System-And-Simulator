@@ -3,6 +3,8 @@
  */
 package main.java.scheduler;
 
+import java.util.ArrayList;
+import java.util.logging.*;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,15 +21,8 @@ import main.java.dto.ElevatorRequest;
  */
 public class Scheduler {
 	
-	private List<ElevatorRequest> requestsQueue;
-	
-	/**
-	 * Constructor take in a List which is a shared resource between Producer and Consumer
-	 * @param requestsQueue
-	 */
-	public Scheduler(List<ElevatorRequest> requestsQueue) {
-		this.requestsQueue = Collections.synchronizedList(requestsQueue);
-	}
+	private List<ElevatorRequest> requestsQueue = Collections.synchronizedList(new ArrayList<>());
+	private Logger logger = Logger.getLogger(Scheduler.class.getName());
 
 	/**
 	 * This method is called by the Floor class. The new request will be added to the list of floors to visit
@@ -37,8 +32,8 @@ public class Scheduler {
 		// No duplicate values
 		if (!requestsQueue.contains(elevatorRequest)) {
 			requestsQueue.add(elevatorRequest);
-			System.out.println("Added " + elevatorRequest.toString() + " to the queue");
-			System.out.println("The queue size is " + requestsQueue.size());
+			logger.info("Added " + elevatorRequest.toString() + " to the queue");
+			logger.info("The queue size is " + requestsQueue.size());
 		}
 		notifyAll();
 	}
@@ -50,18 +45,19 @@ public class Scheduler {
 	public synchronized ElevatorRequest dispatchRequest() {
 		while(requestsQueue.size() == 0) {
 			try {
-				System.out.println("Waiting for the request");
+				logger.info("Waiting for the request");
 				wait();
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
+				logger.severe(e.getMessage());
 				e.printStackTrace();
 			}
 		}
 		
 		// Iteration 1 we will first come first serve: remove the former index
 		ElevatorRequest removedElevatorRequest = requestsQueue.remove(0);
-		System.out.println("Dispatched request " + removedElevatorRequest.toString());
-		System.out.println("The queue size is " + requestsQueue.size());
+		logger.info("Dispatched request " + removedElevatorRequest.toString());
+		logger.info("The queue size is " + requestsQueue.size());
 		
 		notifyAll();
 		
