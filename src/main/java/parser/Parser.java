@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.logging.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ public class Parser {
 	private BufferedReader reader;
 	private String lineEntry;
 	private ArrayList<ElevatorRequest> elevatorRequestList;
+	private Logger logger = Logger.getLogger(Parser.class.getName());
 	
 	/**
 	 * Constructor of the Parser class
@@ -68,24 +70,24 @@ public class Parser {
 		        timestamp = new Timestamp(parsedDate.getTime());
 		    	
 		    	if(line.length != 4) {
-		    		throw new IncorrectElevatorRequestParameterNumberException(
-		    				"Line " + lineNumber + " contains incorrect numbers of elevator request parameter");
+		    		throw new ElevatorReqParamException(
+		    				"Line " + lineNumber);
 		    	}
 		    	
 		    	elevatorRequestList.add(new ElevatorRequest(timestamp, Integer.valueOf(line[1]), 
 			    		Direction.valueOf(line[2]), Integer.valueOf(line[3])));
 		    	
 		    }catch(ParseException e){
-		    	System.out.println(e + " on line " + lineNumber);
+		    	logger.severe(e.getMessage()+ " on line " + lineNumber);
 		    	parsingSuccess = false;
-		    }catch(IncorrectElevatorRequestParameterNumberException e) {
-		    	System.out.println(e);
+		    }catch(ElevatorReqParamException e) {
+		    	logger.severe(e.getMessage());
 		    	parsingSuccess = false;
 		    }catch(NumberFormatException e) {
-		    	System.out.println(e + " on line " + lineNumber);
+		    	logger.severe(e.getMessage() + " on line " + lineNumber);
 		    	parsingSuccess = false;
 		    }catch(IllegalArgumentException e) {
-		    	System.out.println(e + " on line " + lineNumber);
+		    	logger.severe(e.getMessage() + " on line " + lineNumber);
 		    	parsingSuccess = false;
 		    }finally {
 		    	if (!parsingSuccess) {

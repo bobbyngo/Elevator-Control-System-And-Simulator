@@ -10,10 +10,10 @@ package main.java.exception;
  * @author Patrick Liu, 101142730
  */
 @SuppressWarnings("serial")
-public class IncorrectElevatorRequestParameterNumberException extends Exception {
-
-	public IncorrectElevatorRequestParameterNumberException (String errorMessage) {
-		super(errorMessage);
+public class ElevatorReqParamException extends Exception {
+	
+	public ElevatorReqParamException (String errorMessage) {
+		super("Invalid number of elevator request parameters. " +  errorMessage);
 		
 	}
 }
