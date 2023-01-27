@@ -92,6 +92,11 @@ public class Parser {
 		    }finally {
 		    	if (!parsingSuccess) {
 		    		elevatorRequestList.clear();
+		    	} else {
+		    		for (ElevatorRequest request: elevatorRequestList) {
+		    			logger.info("Request \"" + request.getTimestamp() + " " + request.getSourceFloor() + " "
+		    					+ request.getDirection() + " " + request.getDestinationFloor() + "\" added to the list");
+		    		}
 		    	}
 		    }
 

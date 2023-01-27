@@ -76,7 +76,7 @@ public class ElevatorRequest {
 				  direction + " " + destinationFloor;
 	} 
   
-  /**
+    /**
 	 * @author Bobby Ngo
 	 * An override method for comparing Elevator Object
 	 * @return boolean
@@ -89,9 +89,9 @@ public class ElevatorRequest {
 	    ElevatorRequest that = (ElevatorRequest) obj;
 	    
 	    return 	timestamp.equals(that.timestamp)
-	    		&& floorRequest.equals(that.floorRequest) 
+	    		&& sourceFloor.equals(that.sourceFloor) 
 	    		&& direction.equals(that.direction) 
-	    		&& floorDestination.equals(that.floorDestination);
+	    		&& destinationFloor.equals(that.destinationFloor);
 	}
 
 }
