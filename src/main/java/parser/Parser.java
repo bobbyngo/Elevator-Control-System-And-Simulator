@@ -61,8 +61,10 @@ public class Parser {
 		    lineNumber ++;
 		    
 		    try {
-		    	SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm:ss.SSS");
-		        Date parsedDate = dateFormat.parse(line[0]);
+		    	Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+		    	
+		    	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+		        Date parsedDate = dateFormat.parse(currentTime.toString().split(" ")[0] + " " + line[0]);
 		        timestamp = new Timestamp(parsedDate.getTime());
 		    	
 		    	if(line.length != 4) {

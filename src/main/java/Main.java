@@ -3,8 +3,6 @@
  */
 package main.java;
 
-import java.io.IOException;
-
 /**
  * Hosts the starting point of execution for the
  * application.
@@ -15,9 +13,7 @@ public class Main {
 
 	/**
 	 * Starting point of execution for the application.
-	 * @param args	String[], command line arguments
-	 * @throws IOException 
-	 * @throws ParseException 
+	 * @param args	String[], command line arguments 
 	 */
 	public static void main(String[] args) {
 		
