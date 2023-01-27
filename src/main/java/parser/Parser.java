@@ -14,6 +14,7 @@ import java.util.Date;
 import java.sql.Timestamp;
 
 import main.java.dto.ElevatorRequest;
+import main.java.exception.*;
 import main.java.dto.Direction;
 
 /**
@@ -50,22 +51,45 @@ public class Parser {
 	 * @throws IOException when input/output error is encountered
 	 */
 	public ArrayList<ElevatorRequest> requestParser() throws IOException {
+		
+		int lineNumber = 0;
+		boolean parsingSuccess = true;
+		
 		while ( (lineEntry = reader.readLine()) != null){
 		    String[] line = lineEntry.split(" ");		    
 		    Timestamp timestamp = null;
+		    lineNumber ++;
 		    
 		    try {
-		        SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm:ss.SSS");
+		    	SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm:ss.SSS");
 		        Date parsedDate = dateFormat.parse(line[0]);
 		        timestamp = new Timestamp(parsedDate.getTime());
-		    } catch(ParseException e) {
-		    	System.out.println("Timestamp format is incorrect");
-		    	elevatorRequestList.clear();
-		    	break;
+		    	
+		    	if(line.length != 4) {
+		    		throw new IncorrectElevatorRequestParameterNumberException(
+		    				"Line " + lineNumber + " contains incorrect numbers of elevator request parameter");
+		    	}
+		    	
+		    	elevatorRequestList.add(new ElevatorRequest(timestamp, Integer.valueOf(line[1]), 
+			    		Direction.valueOf(line[2]), Integer.valueOf(line[3])));
+		    	
+		    }catch(ParseException e){
+		    	System.out.println(e + " on line " + lineNumber);
+		    	parsingSuccess = false;
+		    }catch(IncorrectElevatorRequestParameterNumberException e) {
+		    	System.out.println(e);
+		    	parsingSuccess = false;
+		    }catch(NumberFormatException e) {
+		    	System.out.println(e + " on line " + lineNumber);
+		    	parsingSuccess = false;
+		    }catch(IllegalArgumentException e) {
+		    	System.out.println(e + " on line " + lineNumber);
+		    	parsingSuccess = false;
+		    }finally {
+		    	if (!parsingSuccess) {
+		    		elevatorRequestList.clear();
+		    	}
 		    }
-		    
-		    elevatorRequestList.add(new ElevatorRequest(timestamp, Integer.valueOf(line[1]), 
-		    		Direction.valueOf(line[2]), Integer.valueOf(line[3])));
 
 		}
 		return elevatorRequestList;

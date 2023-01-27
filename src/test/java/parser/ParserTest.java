@@ -58,9 +58,9 @@ public class ParserTest {
 	}
 	
 	/**
-	 * testTimestampException tests the situation when the provided input file contains
-	 * invalid Timestamp, the list containing the elevator requests will be cleared and
-	 * "Timestamp format is incorrect" will be displayed in the terminal
+	 * testParsingException tests the situation when the provided input file contains
+	 * incorrect/illegal argument numbers/types, the list containing the elevator requests 
+	 * will be cleared and Exception will be displayed in the terminal
 	 * 
 	 * @throws IOException
 	 * @throws ParseException
@@ -68,7 +68,7 @@ public class ParserTest {
 	 * @author Patrick Liu
 	 */
 	@Test
-	public void testTimestampException() throws IOException, ParseException {
+	public void testParsingException() throws IOException, ParseException {
 		Parser parser = new Parser("./src/test/resources/incorrectInput.txt");
 		assertTrue(parser.requestParser().isEmpty());
 	}

@@ -3,6 +3,8 @@
  */
 package main.java;
 
+import java.io.IOException;
+
 /**
  * Hosts the starting point of execution for the
  * application.
