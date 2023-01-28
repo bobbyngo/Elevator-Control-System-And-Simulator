@@ -13,7 +13,7 @@ import java.util.Date;
 import java.sql.Timestamp;
 
 import main.java.dto.ElevatorRequest;
-import main.java.dto.Direction;
+import main.java.dto.ElevatorState;
 
 /**
  * The Parser class reads through a standard text file 
@@ -62,7 +62,7 @@ public class Parser {
 		    }
 		    
 		    elevatorRequestList.add(new ElevatorRequest(timestamp, Integer.valueOf(line[2]), 
-		    		Direction.valueOf(line[3]), Integer.valueOf(line[4])));
+		    		ElevatorState.valueOf(line[3]), Integer.valueOf(line[4])));
 
 		}
 		return elevatorRequestList;

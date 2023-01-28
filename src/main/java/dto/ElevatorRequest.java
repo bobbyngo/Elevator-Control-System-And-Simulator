@@ -16,7 +16,7 @@ public class ElevatorRequest {
 	
 	private Timestamp timestamp;
 	private Integer floorRequest;
-	private Direction direction;
+	private ElevatorState direction;
 	private Integer floorDestination;
 	
 	/**
@@ -27,7 +27,7 @@ public class ElevatorRequest {
 	 * @param direction is passenger's declared traveling direction
 	 * @param floorDestination is the destination floor which the passenger entered inside the elevator cart
 	 */
-	public ElevatorRequest(Timestamp timestamp, Integer floorRequest, Direction direction, Integer floorDestination) {
+	public ElevatorRequest(Timestamp timestamp, Integer floorRequest, ElevatorState direction, Integer floorDestination) {
 		this.timestamp = timestamp;
 		this.floorRequest = floorRequest;
 		this.direction = direction;
@@ -54,7 +54,7 @@ public class ElevatorRequest {
 	 * getDirection returns passenger's declared traveling direction
 	 * @return enum Direction
 	 */
-	public Direction getDirection() {
+	public ElevatorState getDirection() {
 		return direction;
 	}
 	
