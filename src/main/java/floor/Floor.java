@@ -3,7 +3,6 @@
  */
 package main.java.floor;
 
-import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import main.java.dto.ElevatorRequest;
