@@ -22,10 +22,10 @@ public class ElevatorRequest {
 	/**
 	 * Constructor of the ElevatorRequest class
 	 * 
-	 * @param timestamp is a point in time which the passenger pressed the floor button
-	 * @param sourceFloor is the floor which the passenger declared his/her traveling intention
-	 * @param direction is passenger's declared traveling direction
-	 * @param destinationFloor is the destination floor which the passenger entered inside the elevator cart
+	 * @param timestamp is a point in time which the passenger pressed the floor button of type Timestamp
+	 * @param sourceFloor is the floor which the passenger declared his/her traveling intention of type Integer
+	 * @param direction is passenger's declared traveling direction of type Direction
+	 * @param destinationFloor is the destination floor which the passenger entered inside the elevator cart of type Integer
 	 */
 	public ElevatorRequest(Timestamp timestamp, Integer sourceFloor, Direction direction, Integer destinationFloor) {
 		this.timestamp = timestamp;
@@ -36,7 +36,7 @@ public class ElevatorRequest {
 	
 	/**
 	 * getTimestamp returns a point in time which the passenger pressed the floor button
-	 * @return java.sql.Timestamp
+	 * @return the timestamp of type TimeStamp
 	 */
 	public Timestamp getTimestamp() {
 		return timestamp;
@@ -44,7 +44,7 @@ public class ElevatorRequest {
 	
 	/**
 	 * getSourceFloor returns the floor which the passenger declared his/her traveling intention
-	 * @return Integer
+	 * @return the source floor of type Integer
 	 */
 	public Integer getSourceFloor() {
 		return sourceFloor;
@@ -52,7 +52,7 @@ public class ElevatorRequest {
 	
 	/**
 	 * getDirection returns passenger's declared traveling direction
-	 * @return enum Direction
+	 * @return the direction of type Direction (enum)
 	 */
 	public Direction getDirection() {
 		return direction;
@@ -60,7 +60,7 @@ public class ElevatorRequest {
 	
 	/**
 	 * getDestinationFloor returns the destination floor which the passenger entered inside the elevator cart
-	 * @return Integer
+	 * @return the destination of type Integer
 	 */
 	public Integer getDestinationFloor() {
 		return destinationFloor;
@@ -68,7 +68,7 @@ public class ElevatorRequest {
 	
 	/**
 	 * toString combines the object attributes into a readable format
-	 * @return String
+	 * @return the String of the object info
 	 */
 	@Override
 	public String toString(){ 
@@ -79,7 +79,7 @@ public class ElevatorRequest {
     /**
 	 * @author Bobby Ngo
 	 * An override method for comparing Elevator Object
-	 * @return boolean
+	 * @return the boolean of whether they're equal or not
 	 */
 	@Override
 	public boolean equals(Object obj) {
@@ -88,10 +88,10 @@ public class ElevatorRequest {
 	    
 	    ElevatorRequest that = (ElevatorRequest) obj;
 	    
-	    return 	timestamp.equals(that.timestamp)
-	    		&& sourceFloor.equals(that.sourceFloor) 
-	    		&& direction.equals(that.direction) 
-	    		&& destinationFloor.equals(that.destinationFloor);
+	    return 	timestamp.equals(that.getTimestamp())
+	    		&& sourceFloor.equals(that.getSourceFloor()) 
+	    		&& direction.equals(that.getDirection()) 
+	    		&& destinationFloor.equals(that.getDestinationFloor());
 	}
 
 }
