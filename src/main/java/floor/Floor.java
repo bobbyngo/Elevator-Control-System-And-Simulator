@@ -5,6 +5,7 @@ package main.java.floor;
 
 import java.util.ArrayList;
 import main.java.dto.ElevatorRequest;
+import main.java.scheduler.Scheduler;
 
 /**
  * The class that holds information about a floor
