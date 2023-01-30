@@ -64,6 +64,11 @@ public class Scheduler implements Runnable {
 		return removedElevatorRequest;
 	}
 
+	/**
+	 * Scheduler run() method. Sleeps until the process is
+	 * killed.
+	 * @author Zakaria Ismail, 101143497
+	 */
 	@Override
 	public void run() {
 		try {

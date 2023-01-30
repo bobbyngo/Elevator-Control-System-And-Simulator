@@ -57,6 +57,11 @@ public class Floor implements Runnable {
 		scheduler.putRequest(request);
 	}
 
+	/**
+	 * Floor run() method. Parses all elevator requests from the input
+	 * file and sends ElevatorRequest objects to the Scheduler.
+	 * @author Zakaria Ismail, 101143497
+	 */
 	@Override
 	public void run() {
 		ArrayList<ElevatorRequest> elevatorRequests = null;
