@@ -14,24 +14,24 @@ import java.sql.Timestamp;
  */
 public class ElevatorRequest {
 	
-	private Timestamp timestamp;
-	private Integer floorRequest;
+	private Timestamp times
+	private Integer sourceFloor;
 	private ElevatorState direction;
-	private Integer floorDestination;
+	private Integer destinationFloor;
 	
 	/**
 	 * Constructor of the ElevatorRequest class
 	 * 
 	 * @param timestamp is a point in time which the passenger pressed the floor button
-	 * @param floorRequest is the floor which the passenger declared his/her traveling intention
+	 * @param sourceFloor is the floor which the passenger declared his/her traveling intention
 	 * @param direction is passenger's declared traveling direction
-	 * @param floorDestination is the destination floor which the passenger entered inside the elevator cart
+	 * @param destinationFloor is the destination floor which the passenger entered inside the elevator cart
 	 */
-	public ElevatorRequest(Timestamp timestamp, Integer floorRequest, ElevatorState direction, Integer floorDestination) {
+	public ElevatorRequest(Timestamp timestamp, Integer sourceFloor, ElevatorState direction, Integer destinationFloor) {
 		this.timestamp = timestamp;
-		this.floorRequest = floorRequest;
+		this.sourceFloor = sourceFloor;
 		this.direction = direction;
-		this.floorDestination = floorDestination;
+		this.destinationFloor = destinationFloor;
 	}
 	
 	/**
@@ -43,11 +43,11 @@ public class ElevatorRequest {
 	}
 	
 	/**
-	 * getFloorRequest returns the floor which the passenger declared his/her traveling intention
+	 * getSourceFloor returns the floor which the passenger declared his/her traveling intention
 	 * @return Integer
 	 */
-	public Integer getFloorRequest() {
-		return floorRequest;
+	public Integer getSourceFloor() {
+		return sourceFloor;
 	}
 	
 	/**
@@ -59,14 +59,24 @@ public class ElevatorRequest {
 	}
 	
 	/**
-	 * getFloorDestination returns the destination floor which the passenger entered inside the elevator cart
+	 * getDestinationFloor returns the destination floor which the passenger entered inside the elevator cart
 	 * @return Integer
 	 */
-	public Integer getFloorDestination() {
-		return floorDestination;
+	public Integer getDestinationFloor() {
+		return destinationFloor;
 	}
 	
 	/**
+	 * toString combines the object attributes into a readable format
+	 * @return String
+	 */
+	@Override
+	public String toString(){ 
+		  return timestamp.toString().split(" ")[1] + " " + + sourceFloor + " " +
+				  direction + " " + destinationFloor;
+	} 
+  
+    /**
 	 * @author Bobby Ngo
 	 * An override method for comparing Elevator Object
 	 * @return boolean
@@ -79,8 +89,9 @@ public class ElevatorRequest {
 	    ElevatorRequest that = (ElevatorRequest) obj;
 	    
 	    return 	timestamp.equals(that.timestamp)
-	    		&& floorRequest.equals(that.floorRequest) 
+	    		&& sourceFloor.equals(that.sourceFloor) 
 	    		&& direction.equals(that.direction) 
-	    		&& floorDestination.equals(that.floorDestination);
+	    		&& destinationFloor.equals(that.destinationFloor);
 	}
+
 }

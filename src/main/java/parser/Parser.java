@@ -7,6 +7,8 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.logging.*;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,6 +16,7 @@ import java.sql.Timestamp;
 
 import main.java.dto.ElevatorRequest;
 import main.java.dto.ElevatorState;
+import main.java.exception.*;
 
 /**
  * The Parser class reads through a standard text file 
@@ -27,6 +30,7 @@ public class Parser {
 	private BufferedReader reader;
 	private String lineEntry;
 	private ArrayList<ElevatorRequest> elevatorRequestList;
+	private Logger logger = Logger.getLogger(Parser.class.getName());
 	
 	/**
 	 * Constructor of the Parser class
@@ -49,23 +53,57 @@ public class Parser {
 	 * @throws IOException when input/output error is encountered
 	 */
 	public ArrayList<ElevatorRequest> requestParser() throws IOException {
+		
+		int lineNumber = 0;
+		boolean parsingSuccess = true;
+		
 		while ( (lineEntry = reader.readLine()) != null){
 		    String[] line = lineEntry.split(" ");		    
 		    Timestamp timestamp = null;
+		    lineNumber ++;
 		    
 		    try {
-		        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
-		        Date parsedDate = dateFormat.parse(line[0] + " " + line[1]);
+		    	Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+		    	
+		    	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+		        Date parsedDate = dateFormat.parse(currentTime.toString().split(" ")[0] + " " + line[0]);
 		        timestamp = new Timestamp(parsedDate.getTime());
-		    } catch(Exception e) {
-		    	System.out.println(e);
+		    	
+		    	if(line.length != 4) {
+		    		throw new ElevatorReqParamException(
+		    				"Line " + lineNumber);
+		    	}
+		    	
+		    	elevatorRequestList.add(new ElevatorRequest(timestamp, Integer.valueOf(line[1]), 
+			    		Direction.valueOf(line[2]), Integer.valueOf(line[3])));
+		    	
+		    }catch(ParseException e){
+		    	logger.severe(e.getMessage()+ " on line " + lineNumber);
+		    	parsingSuccess = false;
+		    }catch(ElevatorReqParamException e) {
+		    	logger.severe(e.getMessage());
+		    	parsingSuccess = false;
+		    }catch(NumberFormatException e) {
+		    	logger.severe(e.getMessage() + " on line " + lineNumber);
+		    	parsingSuccess = false;
+		    }catch(IllegalArgumentException e) {
+		    	logger.severe(e.getMessage() + " on line " + lineNumber);
+		    	parsingSuccess = false;
+		    }finally {
+		    	if (!parsingSuccess) {
+		    		elevatorRequestList.clear();
+		    	} else {
+		    		for (ElevatorRequest request: elevatorRequestList) {
+		    			logger.info("Request \"" + request.getTimestamp() + " " + request.getSourceFloor() + " "
+		    					+ request.getDirection() + " " + request.getDestinationFloor() + "\" added to the list");
+		    		}
+		    	}
 		    }
-		    
 		    elevatorRequestList.add(new ElevatorRequest(timestamp, Integer.valueOf(line[2]), 
 		    		ElevatorState.valueOf(line[3]), Integer.valueOf(line[4])));
-
 		}
 		return elevatorRequestList;
 		
 	}
+
 }
