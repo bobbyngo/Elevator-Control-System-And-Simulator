@@ -8,4 +8,4 @@ package main.java.dto;
  * 
  * @author Patrick Liu, 101142730
  */
-public enum ElevatorState {UP, DOWN, STATIONARY, OUT_OF_SERVICE};
+public enum ElevatorState {UP, DOWN, IDLE, STATIONARY, OUT_OF_SERVICE};

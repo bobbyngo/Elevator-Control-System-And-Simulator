@@ -63,6 +63,7 @@ public class ElevatorController implements Runnable {
 	 * @return nearestElevator
 	 */
 	private static Elevator findElevator(ElevatorState elevatorState, int requestFloor, int desinationFloor) {
+		// For iteration 1: Finds the closes elevator no matter the direction.
 		Elevator nearestElevator = null;
 		int nearestDistance = desinationFloor;
 		for (Elevator elevator : elevatorList) {

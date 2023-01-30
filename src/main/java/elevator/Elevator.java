@@ -1,6 +1,12 @@
 package main.java.elevator;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import main.java.dto.ElevatorRequest;
 import main.java.dto.ElevatorState;
+import main.java.scheduler.Scheduler;
 
 /**
  * This class represents an Elevator.
@@ -13,6 +19,8 @@ public class Elevator implements Runnable {
 	private int currentFloor;
 	private ElevatorState elevatorState;
 	private boolean inOperation;
+	private List<ElevatorRequest> requestsQueue;
+	private Scheduler scheduler;
 		
 	/**
 	 * Constructor for Elevator class.
@@ -21,6 +29,7 @@ public class Elevator implements Runnable {
 	public Elevator(int id) {
 		this.id = id;
 		setInOperation(true);
+		requestsQueue = Collections.synchronizedList(new ArrayList<>());
 	}
 	
 	/**
@@ -87,7 +96,10 @@ public class Elevator implements Runnable {
 	 * Move the elevator UP or DOWN.
 	 */
 	public synchronized void move() {
-		// TODO: Logic to move the elevator up or down depending on rules.
+		while (requestsQueue.size() != 0) {
+			scheduler.dispatchRequest();
+		}
+		this.setElevatorState(ElevatorState.IDLE);
 		return;
 	}
 	
