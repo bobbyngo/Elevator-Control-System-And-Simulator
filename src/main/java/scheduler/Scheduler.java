@@ -19,7 +19,7 @@ import main.java.dto.ElevatorRequest;
  * @author Bobby Ngo
  *
  */
-public class Scheduler {
+public class Scheduler implements Runnable {
 	
 	private List<ElevatorRequest> requestsQueue = Collections.synchronizedList(new ArrayList<>());
 	private Logger logger = Logger.getLogger(Scheduler.class.getName());
@@ -62,5 +62,15 @@ public class Scheduler {
 		notifyAll();
 		
 		return removedElevatorRequest;
+	}
+
+	@Override
+	public void run() {
+		try {
+			// Scheduler class is only used for its resource put/get methods
+			// Q: How will the Scheduler thread be used when we distribute our application?
+			Thread.sleep(0);
+		} catch (InterruptedException e) {}
+		return;
 	}
 }
