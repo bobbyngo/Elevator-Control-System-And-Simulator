@@ -6,6 +6,7 @@ package main.java;
 import java.io.FileNotFoundException;
 import java.util.logging.Logger;
 
+import main.java.elevator.Elevator;
 import main.java.floor.Floor;
 import main.java.parser.Parser;
 import main.java.scheduler.Scheduler;
@@ -29,8 +30,9 @@ public class Main {
 		String filename = "./src/main/resources/input.txt";
 		Scheduler scheduler;
 		Floor floor;
+		Elevator elevator;
 		Parser parser = null;
-		Thread schedulerThread, floorThread;	
+		Thread schedulerThread, floorThread, elevatorThread;	
 		
 		try {
 			parser = new Parser(filename);
@@ -42,14 +44,17 @@ public class Main {
 		// Define objects
 		scheduler = new Scheduler();
 		floor = new Floor(1, scheduler, parser);
+		elevator = new Elevator(1, scheduler);
 		
 		// Define threads
 		schedulerThread = new Thread(scheduler, "Scheduler");
 		floorThread = new Thread(floor, "Floor");
+		elevatorThread = new Thread(elevator, "Elevator");
 		
 		// Start threads
 		schedulerThread.start();
 		floorThread.start();
+		elevatorThread.start();
 		
 		return;
 	}
