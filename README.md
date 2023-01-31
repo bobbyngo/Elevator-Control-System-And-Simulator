@@ -20,7 +20,7 @@ ZAK PLS ADD THE UML DIAGRAM HERE PLS BRO PLS
 
 # Iteration 1
 ## Project structure:
-The project is separated into different packages, each module has a specific functionality <br/>
+The project is separated into ```main``` and ```test``` packages. Whereas, each packages has a specific functionality <br/>
 ### Packages:
 * ```dto```: Location for enums, shared resource buffer classes
 * ```scheduler```: Package for classes related to scheduler subsystem
@@ -35,6 +35,10 @@ The project is separated into different packages, each module has a specific fun
 * ```Elevator.java```: A consumer class dispatches requests of the scheduler after finishing the request
 * ```Parser.java```: The Parser that reads through a standard text file and exports the information in a specified format
 * ```Main.java```: A class for running the application
+* ```ElevatorRequest.java```: A class storing all the relevant information regarding passenger's elevator requests
+* ```Direction.java```: A class that storing the moving direction of the elevator in enum 
+* ```ElevatorRequestTest.java```: Test class for ElevatorRequest class
+* ```ParserTest.java```: Test class for Parser class
 
 ## Work distribution
 The work distribution is divided into tasks and displayed in this JIRA link:
