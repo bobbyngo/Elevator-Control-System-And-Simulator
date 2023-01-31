@@ -47,9 +47,9 @@ public class Main {
 		elevator = new Elevator(1, scheduler);
 		
 		// Define threads
-		schedulerThread = new Thread(scheduler, "Scheduler");
-		floorThread = new Thread(floor, "Floor");
-		elevatorThread = new Thread(elevator, "Elevator");
+		schedulerThread = new Thread(scheduler, "Thread-Scheduler");
+		floorThread = new Thread(floor, "Thread-Floor");
+		elevatorThread = new Thread(elevator, "Thread-Elevator");
 		
 		// Start threads
 		schedulerThread.start();
