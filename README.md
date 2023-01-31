@@ -16,6 +16,7 @@ SYSC 3303 at Carleton University
 * Navigate to ```src/main/Main.java``` class and run the ```main``` method
 
 ## UML Diagrams
+ZAK PLS ADD THE UML DIAGRAM HERE PLS BRO PLS 
 
 # Iteration 1
 ## Project structure:
