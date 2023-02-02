@@ -22,7 +22,7 @@ import main.java.dto.ElevatorRequest;
 public class Scheduler implements Runnable {
 	
 	private List<ElevatorRequest> requestsQueue = Collections.synchronizedList(new ArrayList<>());
-	private List<ElevatorRequest> replyQueue = Collections.synchronizedList(new ArrayList<>());
+	private List<ElevatorRequest> completedQueue = Collections.synchronizedList(new ArrayList<>());
 	
 	private Logger logger = Logger.getLogger(Scheduler.class.getName());
 
@@ -70,10 +70,10 @@ public class Scheduler implements Runnable {
 	 * @param reply		ElevatorRequest, replied elevator request data
 	 * @author Zakaria Ismail, 101143497
 	 */
-	public synchronized void putReply(ElevatorRequest reply) {
-		if (!replyQueue.contains(reply)) {
-			replyQueue.add(reply);
-			logger.info(String.format("Added %s to the reply queue. Queue size is %d", reply, replyQueue.size()));
+	public synchronized void putCompleteRequest(ElevatorRequest reply) {
+		if (!completedQueue.contains(reply)) {
+			completedQueue.add(reply);
+			logger.info(String.format("Added %s to the completed queue. Queue size is %d", reply, completedQueue.size()));
 		}
 		notifyAll();
 	}
@@ -82,15 +82,15 @@ public class Scheduler implements Runnable {
 	 * Gets reply message from the reply queue
 	 * @return		ElevatorRequest, message from the reply queue
 	 */
-	public synchronized ElevatorRequest getReply() {
-		while (replyQueue.size() == 0) {
+	public synchronized ElevatorRequest getCompletedRequest() {
+		while (completedQueue.size() == 0) {
 			try {
 				wait();
 			} catch (InterruptedException e) {}
 		}
 		
 		ElevatorRequest reply;
-		reply = replyQueue.remove(0);
+		reply = completedQueue.remove(0);
 		notifyAll();
 		return reply;
 	}

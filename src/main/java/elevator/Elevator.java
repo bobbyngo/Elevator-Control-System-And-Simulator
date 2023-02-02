@@ -21,7 +21,6 @@ public class Elevator implements Runnable {
 	private static final Logger logger = Logger.getLogger(Elevator.class.getName());
 	
 	private int id;
-	private List<ElevatorRequest> requestsQueue;
 	private Scheduler scheduler;
 	
 	/**
@@ -32,7 +31,6 @@ public class Elevator implements Runnable {
 	public Elevator(int id, Scheduler scheduler) {
 		this.id = id;
 		this.scheduler = scheduler;
-		this.requestsQueue = new ArrayList<>();
 	}
 	
 	/**
@@ -41,10 +39,13 @@ public class Elevator implements Runnable {
 	 */
 	public void serveRequest() {
 		ElevatorRequest request;
-		
+		// dispatch request, finished the request
 		request = scheduler.dispatchRequest();
-		requestsQueue.add(request);
 		logger.info(String.format("Elevator request queued: %s", request));
+		
+		// add the completed request to the queue
+		scheduler.putCompleteRequest(request);
+		
 		return;
 	}
 
