@@ -22,6 +22,8 @@ import main.java.dto.ElevatorRequest;
 public class Scheduler implements Runnable {
 	
 	private List<ElevatorRequest> requestsQueue = Collections.synchronizedList(new ArrayList<>());
+	private List<ElevatorRequest> replyQueue = Collections.synchronizedList(new ArrayList<>());
+	
 	private Logger logger = Logger.getLogger(Scheduler.class.getName());
 
 	/**
@@ -32,8 +34,7 @@ public class Scheduler implements Runnable {
 		// No duplicate values
 		if (!requestsQueue.contains(elevatorRequest)) {
 			requestsQueue.add(elevatorRequest);
-			logger.info("Added " + elevatorRequest.toString() + " to the queue");
-			logger.info("The queue size is " + requestsQueue.size());
+			logger.info("Added " + elevatorRequest.toString() + " to the request queue. Queue size is: " + requestsQueue.size());
 		}
 		notifyAll();
 	}
@@ -62,6 +63,36 @@ public class Scheduler implements Runnable {
 		notifyAll();
 		
 		return removedElevatorRequest;
+	}
+	
+	/**
+	 * Puts elevator request data into the Scheduler's reply queue.
+	 * @param reply		ElevatorRequest, replied elevator request data
+	 * @author Zakaria Ismail, 101143497
+	 */
+	public synchronized void putReply(ElevatorRequest reply) {
+		if (!replyQueue.contains(reply)) {
+			replyQueue.add(reply);
+			logger.info(String.format("Added %s to the reply queue. Queue size is %d", reply, replyQueue.size()));
+		}
+		notifyAll();
+	}
+	
+	/**
+	 * Gets reply message from the reply queue
+	 * @return		ElevatorRequest, message from the reply queue
+	 */
+	public synchronized ElevatorRequest getReply() {
+		while (replyQueue.size() == 0) {
+			try {
+				wait();
+			} catch (InterruptedException e) {}
+		}
+		
+		ElevatorRequest reply;
+		reply = replyQueue.remove(0);
+		notifyAll();
+		return reply;
 	}
 
 	/**
