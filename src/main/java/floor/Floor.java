@@ -73,8 +73,10 @@ public class Floor implements Runnable {
 			System.exit(1);
 		}
 		
-		for (ElevatorRequest req : elevatorRequests) {
-			requestElevator(req);
+		if (elevatorRequests != null) {
+			for (ElevatorRequest req : elevatorRequests) {
+				requestElevator(req);
+			}
 		}
 		
 		// End process when all requests have been served?
