@@ -88,5 +88,16 @@ public class ElevatorRequestTest {
 	public void testToString() {
 		assertEquals("07:01:15.0 1 UP 5", elevatorRequest.toString());
 	}
-
+	
+	/**
+	 * testEqual validates that two elevatorRequest object are the
+	 * same or have the equal values of their attributes
+	 * 
+	 * @author Patrick Liu
+	 */
+	@Test
+	public void testEquals() {
+		ElevatorRequest elevatorRequest2 = new ElevatorRequest(timestamp, 1, Direction.UP, 5);
+		assertEquals(true, elevatorRequest2.equals(elevatorRequest));
+	}
 }
