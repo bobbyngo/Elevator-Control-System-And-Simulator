@@ -44,7 +44,7 @@ public class Elevator implements Runnable {
 		logger.info(String.format("Elevator request queued: %s", request));
 		
 		// add the completed request to the queue
-		scheduler.putCompleteRequest(request);
+		scheduler.putCompletedRequest(request);
 		
 		return;
 	}

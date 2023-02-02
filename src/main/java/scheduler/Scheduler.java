@@ -70,7 +70,7 @@ public class Scheduler implements Runnable {
 	 * @param reply		ElevatorRequest, replied elevator request data
 	 * @author Zakaria Ismail, 101143497
 	 */
-	public synchronized void putCompleteRequest(ElevatorRequest reply) {
+	public synchronized void putCompletedRequest(ElevatorRequest reply) {
 		if (!completedQueue.contains(reply)) {
 			completedQueue.add(reply);
 			logger.info(String.format("Added %s to the completed queue. Queue size is %d", reply, completedQueue.size()));
@@ -83,13 +83,14 @@ public class Scheduler implements Runnable {
 	 * @return		ElevatorRequest, message from the reply queue
 	 */
 	public synchronized ElevatorRequest getCompletedRequest() {
+		ElevatorRequest reply;
+		
 		while (completedQueue.size() == 0) {
 			try {
 				wait();
 			} catch (InterruptedException e) {}
 		}
 		
-		ElevatorRequest reply;
 		reply = completedQueue.remove(0);
 		notifyAll();
 		return reply;
