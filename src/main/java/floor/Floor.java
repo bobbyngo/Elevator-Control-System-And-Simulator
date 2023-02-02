@@ -73,7 +73,7 @@ public class Floor implements Runnable {
 			System.exit(1);
 		}
 		
-		if (elevatorRequests != null) {
+		if (!elevatorRequests.isEmpty()) {
 			for (ElevatorRequest req : elevatorRequests) {
 				requestElevator(req);
 			}
