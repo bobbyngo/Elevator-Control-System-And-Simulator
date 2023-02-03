@@ -1,6 +1,3 @@
-/**
- * 
- */
 package main.java.elevator;
 
 import java.util.ArrayList;
@@ -11,10 +8,9 @@ import main.java.dto.ElevatorRequest;
 import main.java.scheduler.Scheduler;
 
 /**
- * Elevator class. Serves elevator requests from the
- * Scheduler and stores in internal queue
+ * Elevator class serves elevator requests from the Scheduler and stores in internal queue.
  * @author Trong Nguyen
- *
+ * @version 1.0, 02/04/23
  */
 public class Elevator implements Runnable {
 	
@@ -25,9 +21,9 @@ public class Elevator implements Runnable {
 	private Scheduler scheduler;
 	
 	/**
-	 * Constructor for Elevator class
-	 * @param id			int, elevator id
-	 * @param scheduler		Scheduler, scheduler object referenced by Elevator
+	 * Constructor for Elevator class.
+	 * @param id int, elevator id
+	 * @param scheduler	Scheduler, scheduler object referenced by Elevator
 	 */
 	public Elevator(int id, Scheduler scheduler) {
 		this.id = id;
@@ -36,12 +32,10 @@ public class Elevator implements Runnable {
 	}
 	
 	/**
-	 * Fetch a request from the Scheduler and add to
-	 * requests queue
+	 * Fetch a request from the Scheduler and add to requests queue.
 	 */
 	public void serveRequest() {
 		ElevatorRequest request;
-		
 		request = scheduler.dispatchRequest();
 		requestsQueue.add(request);
 		logger.info(String.format("Elevator request queued: %s", request));
@@ -49,9 +43,9 @@ public class Elevator implements Runnable {
 	}
 
 	/**
-	 * Elevator class' run() implementation.
-	 * Serves requests from the Scheduler until all
-	 * requests have been served.
+	 * Elevator class run() implementation.
+	 * Serves requests from the Scheduler until all requests have been served.
+	 * java.lang.Runnable#run()
 	 */
 	@Override
 	public void run() {
@@ -59,9 +53,6 @@ public class Elevator implements Runnable {
 			// TODO: add functionality to end when there are no more requests to serve
 			serveRequest();
 		}
-		
 	}
-	
-	
 
 }
