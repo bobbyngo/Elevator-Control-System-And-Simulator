@@ -32,6 +32,14 @@ public class Elevator implements Runnable {
 	}
 	
 	/**
+	 * Get the elevator id.
+	 * @return int, elevator id
+	 */
+	public int getElevatorId() {
+		return this.id;
+	}
+	
+	/**
 	 * Fetch a request from the Scheduler and add to requests queue.
 	 */
 	public void serveRequest() {
