@@ -13,6 +13,7 @@ import java.sql.Timestamp;
 
 import main.java.dto.ElevatorRequest;
 import main.java.exception.*;
+import main.java.floor.Floor;
 import main.java.dto.Direction;
 
 /**
@@ -23,11 +24,14 @@ import main.java.dto.Direction;
  * @since 1.0, 02/04/23
  */
 public class Parser {
+	
+	private static final Logger logger = Logger.getLogger(Parser.class.getName());
+	
 	private FileReader input;
 	private BufferedReader reader;
 	private String lineEntry;
 	private ArrayList<ElevatorRequest> elevatorRequestList;
-	private Logger logger = Logger.getLogger(Parser.class.getName());
+
 	
 	/**
 	 * Constructor of the Parser class.
