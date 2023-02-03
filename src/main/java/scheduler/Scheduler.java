@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.List;
 
 import main.java.dto.ElevatorRequest;
-import main.java.floor.Floor;
 
 /**
  * Responsible for accepting input from all of the sensors, and

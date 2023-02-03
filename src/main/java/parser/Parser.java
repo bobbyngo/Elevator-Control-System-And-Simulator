@@ -13,7 +13,6 @@ import java.sql.Timestamp;
 
 import main.java.dto.ElevatorRequest;
 import main.java.exception.*;
-import main.java.floor.Floor;
 import main.java.dto.Direction;
 
 /**
