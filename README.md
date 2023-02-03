@@ -11,7 +11,8 @@ SYSC 3303 at Carleton University
 * Ngo Huu Gia Bao
 
 ## Set up Instructions
-* Make sure you use Java 17 or later
+* Make sure you use Java 17 or later version
+* JUnit 4 is required for runing unit tests
 * Eclipse as IDE
 * Navigate to ```src/main/Main.java``` class and run the ```main``` method
 
