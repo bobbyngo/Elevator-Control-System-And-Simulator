@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import main.java.dto.ElevatorRequest;
+import main.java.floor.Floor;
 
 /**
  * Responsible for accepting input from all of the sensors, and
@@ -17,8 +18,8 @@ import main.java.dto.ElevatorRequest;
  */
 public class Scheduler implements Runnable {
 	
+	private static final Logger logger = Logger.getLogger(Scheduler.class.getName());
 	private List<ElevatorRequest> requestsQueue = Collections.synchronizedList(new ArrayList<>());
-	private Logger logger = Logger.getLogger(Scheduler.class.getName());
 
 	/**
 	 * This method is called by the Floor class. The new request will be added to the list of floors to visit.
@@ -44,7 +45,6 @@ public class Scheduler implements Runnable {
 				logger.info("Waiting for the request");
 				wait();
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				logger.severe(e.getMessage());
 				e.printStackTrace();
 			}
