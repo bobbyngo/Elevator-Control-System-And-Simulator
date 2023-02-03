@@ -21,24 +21,33 @@ ZAK PLS ADD THE UML DIAGRAM HERE PLS BRO PLS
 # Iteration 1
 ## Project structure:
 The project is separated into ```main``` and ```test``` packages. Whereas, each packages has a specific functionality <br/>
-### Packages:
-* ```dto```: Location for enums, shared resource buffer classes
-* ```scheduler```: Package for classes related to scheduler subsystem
-* ```exception```: Packge for customize exception classes
-* ```elevator```: Package for classes related to elevator subsystem
-* ```floor```: Package for classes related to floor subsystem
-* ```parser```: Package for classes related to parser 
+### main package:<br/>
+```dto:``` Location for enums, shared resource buffer classes:
+* ElevatorRequest.java: A class storing all the relevant information regarding passenger's elevator requests
+* Direction.java: A class that storing the moving direction of the elevator in enum 
 
-## File names:
-* ```Scheduler.java```: The server which responsible for handling the input from threads and route each elevator to requested floors and coordinating elevators
-* ```Floor.java```: A producer class initiates requests to the scheduler for users wanting to travel up or down
-* ```Elevator.java```: A consumer class dispatches requests of the scheduler after finishing the request
-* ```Parser.java```: The Parser that reads through a standard text file and exports the information in a specified format
-* ```Main.java```: A class for running the application
-* ```ElevatorRequest.java```: A class storing all the relevant information regarding passenger's elevator requests
-* ```Direction.java```: A class that storing the moving direction of the elevator in enum 
-* ```ElevatorRequestTest.java```: Test class for ElevatorRequest class
-* ```ParserTest.java```: Test class for Parser class
+```scheduler:``` Package for classes related to scheduler subsystem
+* Scheduler.java: The server which responsible for handling the input from threads and route each elevator to requested floors and coordinating elevators
+
+```exception:``` Packge for customize exception classes
+* ElevatorReqParamException.java: Custom exception for elevator request error
+
+```elevator:``` Package for classes related to elevator subsystem
+* Elevator.java: A consumer class dispatches requests of the scheduler after finishing the request
+
+```floor:``` Package for classes related to floor subsystem
+* Floor.java: A producer class initiates requests to the scheduler for users wanting to travel up or down
+
+```parser:``` Package for classes related to parser 
+* Parser.java: The Parser that reads through a standard text file and exports the information in a specified format
+
+### test package:
+```test:``` Unit test package
+* ParserTest.java: Test class for Parser class
+* ElevatorRequestTest.java: Test class for ElevatorRequest class
+
+### main class
+* Main.java: A class for running the application
 
 ## Work distribution
 The work distribution is divided into tasks and displayed in this JIRA link:
