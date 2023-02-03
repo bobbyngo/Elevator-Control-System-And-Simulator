@@ -35,8 +35,9 @@ public class Scheduler implements Runnable {
 	}
 	
 	/**
-	 * This method will be called by Elevator class. After the floor finished a request it should dispatch an item from the list.
-	 * @return ElevatorRequest
+	 * This method will be called by Elevator class. 
+	 * After the floor finished a request it should dispatch an item from the list.
+	 * @return ElevatorRequest, the requested elevator object
 	 */
 	public synchronized ElevatorRequest dispatchRequest() {
 		while(requestsQueue.size() == 0) {
