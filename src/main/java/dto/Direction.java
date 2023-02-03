@@ -1,11 +1,8 @@
-/**
- * 
- */
 package main.java.dto;
 
 /**
- * Direction is an enum which contains directions of the elevator cart
- * 
- * @author Patrick Liu, 101142730
+ * This Direction enum contains directions of the elevator cart.
+ * @author Patrick Liu
+ * @version 1.0, 02/04/23
  */
 public enum Direction {UP, DOWN};
