@@ -9,7 +9,7 @@ import main.java.parser.Parser;
 import main.java.scheduler.Scheduler;
 
 /**
- * Main class for the orchestrating application execution.
+ * Main class for application execution.
  * @author Zakaria Ismail
  * @version 1.0, 02/04/23
  */
