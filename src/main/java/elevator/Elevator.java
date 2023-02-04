@@ -40,15 +40,20 @@ public class Elevator implements Runnable {
 	/**
 	 * Fetch a request from the Scheduler and add to requests queue.
 	 */
-	public void serveRequest() {
+	public ElevatorRequest serveRequest() {
 		ElevatorRequest request;
-		// dispatch request, finished the request
+		// dispatch request
 		request = scheduler.dispatchRequest();
 		logger.info(String.format("Elevator request queued: %s", request));
-		
-		// add the completed request to the queue
+		return request;
+	}
+	
+	/**
+	 * Replies a completed request back to the Scheduler
+	 * @param request ElevatorRequest, completed request to be replied back
+	 */
+	public void sendCompletedRequest(ElevatorRequest request) {
 		scheduler.putCompletedRequest(request);
-		
 		return;
 	}
 
@@ -59,9 +64,13 @@ public class Elevator implements Runnable {
 	 */
 	@Override
 	public void run() {
+		ElevatorRequest request;
 		while (true) {
 			// TODO: add functionality to end when there are no more requests to serve
-			serveRequest();
+			request = serveRequest();
+			// do something in between... work in progress for future iterations
+			sendCompletedRequest(request);
+			
 		}
 	}
 
