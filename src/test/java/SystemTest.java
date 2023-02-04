@@ -12,6 +12,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
 import org.junit.Before;
@@ -64,9 +65,10 @@ public class SystemTest {
 	@Test
 	public void testPassDataBackAndForth() throws ParseException, IOException, InterruptedException {
 		ElevatorRequest actualRequest;
-		final ElevatorRequest expectedRequest, threadsafeActualRequest;
+		final ElevatorRequest expectedRequest;
 		ArrayList<ElevatorRequest> expectedParsedList, actualParsedList = null;
 		Thread floorThread, elevatorThread;
+		AtomicBoolean failed = new AtomicBoolean(false);
 		
 		// Read file from input and get request
 		// Q: would it work w/ .0 instead of .000?
@@ -83,23 +85,17 @@ public class SystemTest {
 		// - directly call the Scheduler's put/get methods --> This would still get blocked regardless...
 		// - Test the existing run() function --> this seems like the intuitive path... although it would require
 		// 	that the Elevator & Floor classes maintain a state (store a list of requests each)
-
-		// Define final copy of actual request obj to prevent mutation
-		threadsafeActualRequest = new ElevatorRequest(
-				actualRequest.getTimestamp(), 
-				actualRequest.getSourceFloor(),
-				actualRequest.getDirection(),
-				actualRequest.getDestinationFloor());
-
 		floorThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
 				ElevatorRequest localActualRequest;
 				
 				// Send mess
-				floor.requestElevator(threadsafeActualRequest);
+				floor.requestElevator(actualRequest);
 				localActualRequest = floor.receiveCompletedRequest();
-				assertEquals(expectedRequest, localActualRequest);
+				try {
+					assertEquals(expectedRequest, localActualRequest);
+				} catch (AssertionError e) {failed.set(true);}
 				return;
 			}
 		});
@@ -110,15 +106,21 @@ public class SystemTest {
 				
 				// Receive message from Scheduler and send reply
 				localActualRequest = elevator.serveRequest();
-				assertEquals(expectedRequest, localActualRequest);
+				try {
+					assertEquals(expectedRequest, localActualRequest);
+				} catch (AssertionError e) {failed.set(true);}
 				elevator.sendCompletedRequest(localActualRequest);
 				return;
-				
 			}
 		});
 		
+		floorThread.start();
+		elevatorThread.start();
 		floorThread.join();
 		elevatorThread.join();
+		
+		// Assert that no assertion errors occurred inside of the threads
+		assertFalse(failed.get());
 	}
 
 }
