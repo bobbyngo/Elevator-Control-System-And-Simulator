@@ -32,8 +32,6 @@ import main.java.scheduler.Scheduler;
  */
 public class SystemTest {
 	
-	//private static final Logger logger = Logger.getLogger(SystemTest.class.getName());
-	
 	private Scheduler scheduler;
 	private Elevator elevator;
 	private Floor floor;
