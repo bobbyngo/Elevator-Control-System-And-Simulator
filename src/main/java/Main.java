@@ -1,6 +1,3 @@
-/**
- * 
- */
 package main.java;
 
 import java.io.FileNotFoundException;
@@ -12,18 +9,17 @@ import main.java.parser.Parser;
 import main.java.scheduler.Scheduler;
 
 /**
- * Hosts the starting point of execution for the
- * application.
- * @author Zakaria Ismail, 101143497
- *
+ * Main class for application execution.
+ * @author Zakaria Ismail
+ * @version 1.0, 02/04/23
  */
 public class Main {
 	
 	private static final Logger logger = Logger.getLogger(Main.class.getName());
 
 	/**
-	 * Starting point of execution for the application.
-	 * @param args	String[], command line arguments 
+	 * Main method for program execution.
+	 * @param args	String[], default parameters 
 	 */
 	public static void main(String[] args) {
 		// Initialize objects

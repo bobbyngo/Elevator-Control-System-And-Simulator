@@ -1,16 +1,12 @@
-/**
- * 
- */
 package main.java.dto;
 
 import java.sql.Timestamp;
 
 /**
  * The ElevatorRequest class is responsible for storing all the
- * relevant information regarding passenger's elevator requests
- * 
- * @author Patrick Liu, 101142730
- * @since   2023-01-23
+ * relevant information regarding passenger's elevator requests.
+ * @author Patrick Liu
+ * @version 1.0, 02/04/23
  */
 public class ElevatorRequest {
 	
@@ -20,12 +16,11 @@ public class ElevatorRequest {
 	private Integer destinationFloor;
 	
 	/**
-	 * Constructor of the ElevatorRequest class
-	 * 
-	 * @param timestamp is a point in time which the passenger pressed the floor button
-	 * @param sourceFloor is the floor which the passenger declared his/her traveling intention
-	 * @param direction is passenger's declared traveling direction
-	 * @param destinationFloor is the destination floor which the passenger entered inside the elevator cart
+	 * Constructor of the ElevatorRequest class.
+	 * @param timestamp Timestamp, a point in time which the passenger pressed the floor button
+	 * @param sourceFloor Integer, the floor which the passenger declared his/her traveling intention
+	 * @param direction Direction, passenger's declared traveling direction
+	 * @param destinationFloor Integer, the destination floor which the passenger entered inside the elevator cart
 	 */
 	public ElevatorRequest(Timestamp timestamp, Integer sourceFloor, Direction direction, Integer destinationFloor) {
 		this.timestamp = timestamp;
@@ -35,39 +30,40 @@ public class ElevatorRequest {
 	}
 	
 	/**
-	 * getTimestamp returns a point in time which the passenger pressed the floor button
-	 * @return java.sql.Timestamp
+	 * Get the point in time which the passenger pressed the floor button.
+	 * @return Timestamp, time which the passenger pressed the floor button
+	 * @see java.sql.Timestamp
 	 */
 	public Timestamp getTimestamp() {
 		return timestamp;
 	}
 	
 	/**
-	 * getSourceFloor returns the floor which the passenger declared his/her traveling intention
-	 * @return Integer
+	 * Get the floor which the passenger declared their traveling intention.
+	 * @return Integer, the floor number chosen by the passenger
 	 */
 	public Integer getSourceFloor() {
 		return sourceFloor;
 	}
 	
 	/**
-	 * getDirection returns passenger's declared traveling direction
-	 * @return enum Direction
+	 * Get traveling direction declared by the passenger.
+	 * @return direction Direction, enum
 	 */
 	public Direction getDirection() {
 		return direction;
 	}
 	
 	/**
-	 * getDestinationFloor returns the destination floor which the passenger entered inside the elevator cart
-	 * @return Integer
+	 * Get the destination floor which the passenger entered inside the elevator cart
+	 * @return Integer, the destination floor chosen by the passenger
 	 */
 	public Integer getDestinationFloor() {
 		return destinationFloor;
 	}
 	
 	/**
-	 * toString combines the object attributes into a readable format
+	 * toString method for a readable form of object attributes
 	 * @return String
 	 */
 	@Override
@@ -77,18 +73,20 @@ public class ElevatorRequest {
 	} 
   
     /**
-	 * @author Bobby Ngo
-	 * An override method for comparing Elevator Object
+	 * Override equals method for comparing Elevator Object.
 	 * @return boolean
+	 * @author Bobby Ngo
 	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
-	    if (obj == null || getClass() != obj.getClass()) return false;
+	    if (obj == null || getClass() != obj.getClass()) {
+	    		return false;
+	    }
 	    
 	    ElevatorRequest that = (ElevatorRequest) obj;
 	    
-	    return 	timestamp.equals(that.timestamp)
+	    return timestamp.equals(that.timestamp)
 	    		&& sourceFloor.equals(that.sourceFloor) 
 	    		&& direction.equals(that.direction) 
 	    		&& destinationFloor.equals(that.destinationFloor);
