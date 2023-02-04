@@ -1,6 +1,3 @@
-/**
- * 
- */
 package test.java;
 
 import static org.junit.Assert.*;
@@ -28,7 +25,6 @@ import main.java.scheduler.Scheduler;
  * Test class for validating system interactions
  * between the Scheduler, Elevator, & Floor subsystems
  * @author Zakaria Ismail
- *
  */
 public class SystemTest {
 	
@@ -96,7 +92,7 @@ public class SystemTest {
 			public void run() {
 				ElevatorRequest localActualRequest;
 				
-				// Send mess
+				// Send request
 				floor.requestElevator(threadsafeActualRequest);
 				localActualRequest = floor.receiveCompletedRequest();
 				assertEquals(expectedRequest, localActualRequest);
