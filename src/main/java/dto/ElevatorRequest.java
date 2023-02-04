@@ -115,9 +115,9 @@ public class ElevatorRequest {
 	 * @throws ParseException
 	 * @author Zakaria Ismail
 	 */
-	private static Timestamp stringToTimestamp(String timestampString) throws ParseException {
+	public static Timestamp stringToTimestamp(String timestampString) throws ParseException {
 		Timestamp timestamp = new Timestamp(
-				new SimpleDateFormat("yyy-MM-dd hh:mm:ss.SSS")
+				new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS")
 					.parse(
 						new Timestamp(System.currentTimeMillis()).toString().split(" ")[0] +
 						" " +

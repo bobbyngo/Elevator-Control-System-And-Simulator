@@ -5,6 +5,7 @@ package test.java.dto;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -99,5 +100,18 @@ public class ElevatorRequestTest {
 	public void testEquals() {
 		ElevatorRequest elevatorRequest2 = new ElevatorRequest(timestamp, 1, Direction.UP, 5);
 		assertEquals(true, elevatorRequest2.equals(elevatorRequest));
+	}
+	
+	/**
+	 * testStringToTimestamp validates that the converted Timestamp from String has
+	 * the correct format and is equal value when compared to the Timestamp object
+	 * 
+	 * @throws IOException
+	 * @throws ParseException
+	 * 
+	 * @author Patrick Liu
+	 */
+	public void testStringToTimestamp() throws IOException, ParseException {
+		assertEquals(ElevatorRequest.stringToTimestamp("07:01:15.000"), elevatorRequest.getTimestamp());
 	}
 }
