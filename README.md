@@ -36,8 +36,8 @@ terminal. In other words, it must be able to run multiple main programs
 Navigate to `/src/main/Main.java` and run the `main` method.
 
 ## UML Diagrams
-![UML-class](/elevatorControlSystemAndSimulator/src/P1-UML-class.drawio.png)
-![UML-sequence](/elevatorControlSystemAndSimulator/src/P1-UML-sequence.drawio.png)
+![UML-class](/P1-UML-class.drawio.png)
+![UML-sequence](/P1-UML-sequence.drawio.png)
 
 # Iteration 1
 
