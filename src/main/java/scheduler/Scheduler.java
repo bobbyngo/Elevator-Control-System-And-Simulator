@@ -18,7 +18,7 @@ import main.java.dto.ElevatorRequest;
 public class Scheduler implements Runnable {
 	
 	private static final Logger logger = Logger.getLogger(Scheduler.class.getName());
-	private List<ElevatorRequest> completedQueue = Collections.synchronizedList(new ArrayList<>());
+	private List<ElevatorRequest> requestsQueue = Collections.synchronizedList(new ArrayList<>());
 
 
 	/**
