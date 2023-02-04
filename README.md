@@ -17,8 +17,7 @@ Iteration 1 - Establish Connections between the three subsystems.
 
 ## Requirements & Dependencies
 
-* Java 17 or later version
-* jdk-17 or later version
+* Java JDK-17 or later version
 * JUnit 4 for unit testing
 
 No other external dependencies required.
@@ -36,8 +35,8 @@ terminal. In other words, it must be able to run multiple main programs
 Navigate to `/src/main/Main.java` and run the `main` method.
 
 ## UML Diagrams
-![UML-class](/P1-UML-class.drawio.png)
-![UML-sequence](/P1-UML-sequence.drawio.png)
+![UML-class](/elevatorControlSystemAndSimulator/src/P1-UML-class.drawio.png)
+![UML-sequence](/elevatorControlSystemAndSimulator/src/P1-UML-sequence.drawio.png)
 
 # Iteration 1
 
