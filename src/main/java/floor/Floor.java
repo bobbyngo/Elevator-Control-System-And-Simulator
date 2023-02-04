@@ -48,8 +48,14 @@ public class Floor implements Runnable {
 	 * @author Zakaria Ismail
 	 */
 	public void requestElevator(ElevatorRequest request) {
+		ElevatorRequest completedRequest;
+		
 		logger.info("Requesting an elevator: " + request.toString());
+		// Put the request to the Scheduler
 		scheduler.putRequest(request);
+		// The elevator finished the request
+		completedRequest = scheduler.getCompletedRequest();
+		logger.info("Elevator finished the request: " + completedRequest.toString());
 	}
 
 	/**
