@@ -1,6 +1,8 @@
 package main.java.dto;
 
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 /**
  * The ElevatorRequest class is responsible for storing all the
@@ -27,6 +29,20 @@ public class ElevatorRequest {
 		this.sourceFloor = sourceFloor;
 		this.direction = direction;
 		this.destinationFloor = destinationFloor;
+	}
+	
+	
+	/**
+	 * Constructor of the ElevatorRequest class. Takes string timestamp as input.
+	 * @param timestampString String, a point in time which the passenger pressed the floor button
+	 * @param sourceFloor Integer, the floor which the passenger declared his/her traveling intention
+	 * @param direction Direction, passenger's declared traveling direction
+	 * @param destinationFloor Integer, the destination floor which the passenger entered inside the elevator cart
+	 * @throws ParseException
+	 * @author Zakaria Ismail
+	 */
+	public ElevatorRequest(String timestampString, Integer sourceFloor, Direction direction, Integer destinationFloor) throws ParseException {
+		this(stringToTimestamp(timestampString), sourceFloor, direction, destinationFloor);
 	}
 	
 	/**
@@ -90,6 +106,24 @@ public class ElevatorRequest {
 	    		&& sourceFloor.equals(that.sourceFloor) 
 	    		&& direction.equals(that.direction) 
 	    		&& destinationFloor.equals(that.destinationFloor);
+	}
+	
+	/**
+	 * Converts string timestamp to a Timestamp object
+	 * @param timestampString, input timestamp string
+	 * @return Timestamp, converted string input to Timestamp object
+	 * @throws ParseException
+	 * @author Zakaria Ismail
+	 */
+	private static Timestamp stringToTimestamp(String timestampString) throws ParseException {
+		Timestamp timestamp = new Timestamp(
+				new SimpleDateFormat("yyy-MM-dd hh:mm:ss.SSS")
+					.parse(
+						new Timestamp(System.currentTimeMillis()).toString().split(" ")[0] +
+						" " +
+						timestampString)
+					.getTime());
+		return timestamp;
 	}
 
 }
