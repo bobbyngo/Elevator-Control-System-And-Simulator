@@ -235,6 +235,9 @@ The work distribution is divided into tasks and displayed in this JIRA link:
 
 Documentation folder contains the UML class diagram and the UML sequence diagram of the system.
 It also contains the mock up of the work breakdown responsibility of the project for this iteration.
+This file is located:
+
+documentation/P1G7-Responsibilities.pdf
 
 ## Disclaimer
 
