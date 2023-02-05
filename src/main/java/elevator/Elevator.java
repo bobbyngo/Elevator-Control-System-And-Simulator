@@ -67,6 +67,9 @@ public class Elevator implements Runnable {
 			// TODO: add functionality to end when there are no more requests to serve
 			request = serveRequest();
 			// do something in between... work in progress for future iterations
+			try {
+				Thread.sleep(4000);
+			} catch (InterruptedException e) {}
 			sendCompletedRequest(request);
 			
 		}

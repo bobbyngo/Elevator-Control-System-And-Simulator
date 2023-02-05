@@ -86,11 +86,16 @@ public class Floor implements Runnable {
 			for (ElevatorRequest req : elevatorRequests) {
 				requestElevator(req);
 				reply = receiveCompletedRequest();
+				
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e) {}
 			}
 		}
 		
 		// End process when all requests have been served?
 		logger.info("All requests have been sent.");
+		System.exit(0);
 		return;
 	}
 	
