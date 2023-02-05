@@ -31,7 +31,6 @@ public class Parser {
 	private String lineEntry;
 	private ArrayList<ElevatorRequest> elevatorRequestList;
 
-	
 	/**
 	 * Constructor of the Parser class.
 	 * @param fileName String, the name of the provided file
