@@ -53,9 +53,7 @@ public class ParserTest {
 	 */
 	@Test
 	public void testTimestamp() throws IOException, ParseException {
-		assertEquals(new Timestamp(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS").parse(
-				new Timestamp(System.currentTimeMillis()).toString().split(" ")[0] + " " + 
-					"07:01:15.000").getTime()), elevatorRequestList.get(0).getTimestamp());
+		assertEquals(ElevatorRequest.stringToTimestamp("07:01:15.000"), elevatorRequestList.get(0).getTimestamp());
 	}
 	
 	/**

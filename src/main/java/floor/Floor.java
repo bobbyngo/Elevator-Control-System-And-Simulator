@@ -48,14 +48,19 @@ public class Floor implements Runnable {
 	 * @author Zakaria Ismail
 	 */
 	public void requestElevator(ElevatorRequest request) {
-		ElevatorRequest completedRequest;
 		
 		logger.info("Requesting an elevator: " + request.toString());
 		// Put the request to the Scheduler
 		scheduler.putRequest(request);
+		
+	}
+	
+	public ElevatorRequest receiveCompletedRequest() {
+		ElevatorRequest completedRequest;
 		// The elevator finished the request
 		completedRequest = scheduler.getCompletedRequest();
 		logger.info("Elevator finished the request: " + completedRequest.toString());
+		return completedRequest;
 	}
 
 	/**
@@ -68,6 +73,7 @@ public class Floor implements Runnable {
 	@Override
 	public void run() {
 		ArrayList<ElevatorRequest> elevatorRequests = null;
+		ElevatorRequest reply;
 		
 		try {
 			elevatorRequests = parser.requestParser();
@@ -79,6 +85,7 @@ public class Floor implements Runnable {
 		if (!elevatorRequests.isEmpty()) {
 			for (ElevatorRequest req : elevatorRequests) {
 				requestElevator(req);
+				reply = receiveCompletedRequest();
 			}
 		}
 		
