@@ -15,6 +15,23 @@ Iteration 1 - Establish Connections between the three subsystems.
 * Elmokdad Hussein
 * Ngo Huu Gia Bao
 
+## Work Distribution
+
+The work distribution is divided into tasks and displayed in this JIRA link:
+[JIRA - Agile Board](https://sysc3303-project-group-7.atlassian.net/jira/software/c/projects/ECSS/boards/1)
+
+The work breakdown responsibility of the project for this iteration is located:
+
+* documentation/P1G7-Responsibilities.pdf
+
+## Documentation
+
+The UML class diagram and the UML sequence diagram of the system is contained in
+the documentation folder labeled: 
+
+* documentation/P1-UML-class.drawio.pdf
+* documentation/P1-UML-sequence.drawio.pdf
+
 ## Requirements & Dependencies
 
 * Java JDK-17 or later version
@@ -26,11 +43,13 @@ No other external dependencies required.
 
 Note that this application was built on Eclipse IDE release version 4.26.0. using Window 10 OS.
 
-Download and extract the .zip file. Then import the source code directly and 
-run the program in local IDE, otherwise the program can be compiled and 
-executed via Command Prompt. Note that each program requires its own 
-terminal. In other words, it must be able to run multiple main programs 
-(projects) concurrently.
+1. Download and extract the .zip file.
+2. Import the source code and run the program in local IDE. 
+3. Navigate to src/main/java/Main.java
+4. Right click and select to "Run As" Java Application.
+
+Note that each program requires its own terminal. In other words, it must be able to 
+run multiple main programs (projects) concurrently.
 
 Navigate to `/src/main/Main.java` and run the `main` method.
 
@@ -42,7 +61,7 @@ Navigate to `/src/main/Main.java` and run the `main` method.
 
 ## Project structure:
 
-The project is separated into `main` and `test` packages. Whereas, each packages has a specific functionality <br/>
+The project is separated into `main` and `test` packages, where each package has a specific functionality <br/>
 
 ```console
 ELEVATOR-CONTROL-SYSTEM-AND-SIMULATOR
@@ -225,16 +244,6 @@ ELEVATOR-CONTROL-SYSTEM-AND-SIMULATOR
 
 ### main class
 * Main.java: A class for running the application
-
-## Work Distribution
-
-The work distribution is divided into tasks and displayed in this JIRA link:
-[JIRA - Agile Board](https://sysc3303-project-group-7.atlassian.net/jira/software/c/projects/ECSS/boards/1)
-
-## Documentation
-
-Documentation folder contains the UML class diagram and the UML sequence diagram of the system.
-It also contains the mock up of the work breakdown responsibility of the project for this iteration.
 
 ## Disclaimer
 
