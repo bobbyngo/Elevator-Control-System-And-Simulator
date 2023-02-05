@@ -35,8 +35,8 @@ terminal. In other words, it must be able to run multiple main programs
 Navigate to `/src/main/Main.java` and run the `main` method.
 
 ## UML Diagrams
-![UML-class](P1-UML-class.drawio.png)
-![UML-sequence](P1-UML-sequence.drawio.png)
+![UML-class](/documentation/P1-UML-class.drawio.png)
+![UML-sequence](/documentation/P1-UML-sequence.drawio.png)
 
 # Iteration 1
 
@@ -50,6 +50,7 @@ Iteration1
 |   .gitignore
 |   .project
 |   README.md
+|   README.txt
 |
 +---bin
 |   |   module-info.class
@@ -113,6 +114,15 @@ Iteration1
 |               incorrectInput.txt
 |               input.txt
 |               package-info.class
+|
++---documentation
+|       P1-UML-class.drawio.pdf
+|       P1-UML-class.drawio.png
+|       P1-UML-sequence.drawio.pdf
+|       P1-UML-sequence.drawio.png
+|       P1-UML.drawio
+|       P1G7-Responsibilities.docx
+|       P1G7-Responsibilities.pdf
 |
 \---src
     |   module-info.java
@@ -207,8 +217,14 @@ Iteration1
 * Main.java: A class for running the application
 
 ## Work Distribution
+
 The work distribution is divided into tasks and displayed in this JIRA link:
 [JIRA - Agile Board](https://sysc3303-project-group-7.atlassian.net/jira/software/c/projects/ECSS/boards/1)
+
+## Documentation
+
+Documenation folder contains the UML class diagram and the UML sequence diagram of the system.
+It also contains the mockup of the work breakdown responsibility of the project for this iteration.
 
 ## Disclaimer
 
