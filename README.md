@@ -45,7 +45,7 @@ Navigate to `/src/main/Main.java` and run the `main` method.
 The project is separated into `main` and `test` packages. Whereas, each packages has a specific functionality <br/>
 
 ```console
-Iteration1
+ELEVATOR-CONTROL-SYSTEM-AND-SIMULATOR
 |   .classpath
 |   .gitignore
 |   .project
@@ -92,15 +92,20 @@ Iteration1
 |   \---test
 |       +---java
 |       |   |   package-info.class
+|       |   |   SystemTest$1.class
+|       |   |   SystemTest$2.class
+|       |   |   SystemTest.class
 |       |   |
 |       |   +---dto
 |       |   |       ElevatorRequestTest.class
 |       |   |       package-info.class
 |       |   |
 |       |   +---elevator
+|       |   |       ElevatorTest.class
 |       |   |       package-info.class
 |       |   |
 |       |   +---floor
+|       |   |       FloorTest.class
 |       |   |       package-info.class
 |       |   |
 |       |   +---parser
@@ -114,6 +119,7 @@ Iteration1
 |               incorrectInput.txt
 |               input.txt
 |               package-info.class
+|               single-test-input.txt
 |
 +---documentation
 |       P1-UML-class.drawio.pdf
@@ -164,15 +170,18 @@ Iteration1
     \---test
         +---java
         |   |   package-info.java
+        |   |   SystemTest.java
         |   |
         |   +---dto
         |   |       ElevatorRequestTest.java
         |   |       package-info.java
         |   |
         |   +---elevator
+        |   |       ElevatorTest.java
         |   |       package-info.java
         |   |
         |   +---floor
+        |   |       FloorTest.java
         |   |       package-info.java
         |   |
         |   +---parser
@@ -186,6 +195,7 @@ Iteration1
                 incorrectInput.txt
                 input.txt
                 package-info.java
+                single-test-input.txt
 ```
 
 ### main package
@@ -223,8 +233,8 @@ The work distribution is divided into tasks and displayed in this JIRA link:
 
 ## Documentation
 
-Documenation folder contains the UML class diagram and the UML sequence diagram of the system.
-It also contains the mockup of the work breakdown responsibility of the project for this iteration.
+Documentation folder contains the UML class diagram and the UML sequence diagram of the system.
+It also contains the mock up of the work breakdown responsibility of the project for this iteration.
 
 ## Disclaimer
 

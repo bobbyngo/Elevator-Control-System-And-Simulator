@@ -31,7 +31,6 @@ public class ElevatorRequest {
 		this.destinationFloor = destinationFloor;
 	}
 	
-	
 	/**
 	 * Constructor of the ElevatorRequest class. Takes string timestamp as input.
 	 * @param timestampString String, a point in time which the passenger pressed the floor button
@@ -110,7 +109,7 @@ public class ElevatorRequest {
 	
 	/**
 	 * Converts string timestamp to a Timestamp object
-	 * @param timestampString, input timestamp string
+	 * @param timestamp String, input timestamp string
 	 * @return Timestamp, converted string input to Timestamp object
 	 * @throws ParseException
 	 * @author Zakaria Ismail

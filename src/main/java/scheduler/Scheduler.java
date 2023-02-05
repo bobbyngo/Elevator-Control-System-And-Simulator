@@ -63,8 +63,8 @@ public class Scheduler implements Runnable {
 	
 	/**
 	 * Puts elevator request data into the Scheduler's reply queue.
-	 * @param reply		ElevatorRequest, replied elevator request data
-	 * @author Zakaria Ismail, 101143497
+	 * @param reply ElevatorRequest, replied elevator request data
+	 * @author Zakaria Ismail
 	 */
 	public synchronized void putCompletedRequest(ElevatorRequest reply) {
 		if (!completedQueue.contains(reply)) {
@@ -76,7 +76,7 @@ public class Scheduler implements Runnable {
 	
 	/**
 	 * Gets reply message from the reply queue
-	 * @return		ElevatorRequest, message from the reply queue
+	 * @return ElevatorRequest, message from the reply queue
 	 */
 	public synchronized ElevatorRequest getCompletedRequest() {
 		ElevatorRequest reply;
