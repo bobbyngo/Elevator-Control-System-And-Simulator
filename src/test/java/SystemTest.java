@@ -66,9 +66,10 @@ public class SystemTest {
 		Thread floorThread, elevatorThread;
 		AtomicBoolean failed = new AtomicBoolean(false);
 		
+		expectedRequest = new ElevatorRequest("07:01:15.000", 2, Direction.UP, 6);
+		
 		// Read file from input and get request
 		// Q: would it work w/ .0 instead of .000?
-		expectedRequest = new ElevatorRequest("07:01:15.000", 2, Direction.UP, 6);
 		expectedParsedList = new ArrayList<>(Arrays.asList(expectedRequest));
 		actualParsedList = parser.requestParser();
 		actualRequest = actualParsedList.get(0);
