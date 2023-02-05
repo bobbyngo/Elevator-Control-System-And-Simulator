@@ -8,8 +8,7 @@ import main.java.scheduler.Scheduler;
 import main.java.elevator.Elevator;
 
 /**
- * ElevatorTest tests and validates the methods for the
- * Elevator class
+ * ElevatorTest tests and validates the methods for the Elevator class
  * @author Hussein El Mokdad
  * @version 1.0, 02/04/23
  * @since 1.0, 02/04/23
