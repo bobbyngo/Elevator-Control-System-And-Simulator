@@ -16,6 +16,7 @@ public class Elevator implements Runnable {
 	
 	private int id;
 	private Scheduler scheduler;
+	private ElevatorState elevatorState;
 	
 	/**
 	 * Constructor for Elevator class.
@@ -25,6 +26,7 @@ public class Elevator implements Runnable {
 	public Elevator(int id, Scheduler scheduler) {
 		this.id = id;
 		this.scheduler = scheduler;
+		elevatorState = ElevatorState.Idle;
 	}
 	
 	/**
@@ -33,6 +35,10 @@ public class Elevator implements Runnable {
 	 */
 	public int getElevatorId() {
 		return this.id;
+	}
+	
+	public ElevatorState getElevatorState() {
+		return elevatorState;
 	}
 	
 	/**
@@ -62,16 +68,66 @@ public class Elevator implements Runnable {
 	 */
 	@Override
 	public void run() {
-		ElevatorRequest request;
-		while (true) {
-			// TODO: add functionality to end when there are no more requests to serve
-			request = serveRequest();
-			// do something in between... work in progress for future iterations
-			try {
-				Thread.sleep(4000);
-			} catch (InterruptedException e) {}
-			sendCompletedRequest(request);
-			
+		ElevatorRequest request = null;
+		try {
+			Thread.sleep(2000);
+			while (true) {
+				if (scheduler.getRequestsQueue().size() >= 0) {
+					switch (elevatorState) {
+						case Idle: {
+							System.out.println(getElevatorState());
+							elevatorState = elevatorState.nextState();
+							break;
+						}
+						case AcknowledgeRequest: {
+							System.out.println(getElevatorState());
+							request = serveRequest();
+							elevatorState = elevatorState.nextState();
+							break;
+						}
+						case Moving: {
+							System.out.println(getElevatorState());
+							elevatorState = elevatorState.nextState();
+							break;
+						}
+						case Stop: {
+							System.out.println(getElevatorState());
+							sendCompletedRequest(request);
+							elevatorState = elevatorState.nextState();
+							break;
+						}
+						case DoorsOpen: {
+							System.out.println(getElevatorState());
+							elevatorState = elevatorState.nextState();
+							break;
+						}
+						case DoorsClose: {
+							System.out.println(getElevatorState());
+							elevatorState = elevatorState.nextState();
+							break;
+						}
+						case AwaitRequest: {
+							System.out.println(getElevatorState());
+							elevatorState = elevatorState.nextState();
+							break;
+						}
+						case DoorsObstruction: {
+							System.out.println(getElevatorState());
+							elevatorState = elevatorState.nextState();
+							break;
+						}
+						case OutOfService: {
+							System.out.println(getElevatorState());
+							elevatorState = elevatorState.nextState();
+							break;
+						}
+						default:
+							break; 		
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 

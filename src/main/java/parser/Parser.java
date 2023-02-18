@@ -91,12 +91,12 @@ public class Parser {
 			    		elevatorRequestList.clear();
 			    	} else {
 			    		for (ElevatorRequest request: elevatorRequestList) {
-			    			logger.info("Request \"" + request.getTimestamp() + " " + request.getSourceFloor() + " "
-			    					+ request.getDirection() + " " + request.getDestinationFloor() + "\" added to the list");
+			    			logger.info("Request \"" + request.getTimestamp() + " " + request.getSourceFloor() + " " + request.getDirection() + " " + request.getDestinationFloor() + "\" added to the list");
 			    		}
 			    	}
 		    }
 		}
+		System.out.println(this.getClass().getName() + ": Request task completed.");
 		return elevatorRequestList;	
 	}
 

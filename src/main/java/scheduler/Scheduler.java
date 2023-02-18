@@ -22,6 +22,10 @@ public class Scheduler implements Runnable {
 	private List<ElevatorRequest> completedQueue = Collections.synchronizedList(new ArrayList<>());
 
 
+	public List<ElevatorRequest> getRequestsQueue() {
+		return requestsQueue;
+	}
+	
 	/**
 	 * This method is called by the Floor class. The new request will be added to the list of floors to visit.
 	 * @param elevatorRequest
@@ -54,7 +58,7 @@ public class Scheduler implements Runnable {
 		// Iteration 1 we will first come first serve: remove the former index
 		ElevatorRequest removedElevatorRequest = requestsQueue.remove(0);
 		logger.info("Dispatched request " + removedElevatorRequest.toString());
-		logger.info("The queue size is " + requestsQueue.size());
+		logger.info("The request queue size is " + requestsQueue.size());
 		
 		notifyAll();
 		
@@ -69,7 +73,7 @@ public class Scheduler implements Runnable {
 	public synchronized void putCompletedRequest(ElevatorRequest reply) {
 		if (!completedQueue.contains(reply)) {
 			completedQueue.add(reply);
-			logger.info(String.format("Added %s to the completed queue. Queue size is %d", reply, completedQueue.size()));
+			logger.info(String.format("Added %s to the completed queue. Completed queue size is %d", reply, completedQueue.size()));
 		}
 		notifyAll();
 	}
@@ -106,7 +110,6 @@ public class Scheduler implements Runnable {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		return;
 	}
 	
 }
