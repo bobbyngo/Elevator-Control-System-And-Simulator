@@ -53,6 +53,7 @@ public class Parser {
 		
 		int lineNumber = 0;
 		boolean parsingSuccess = true;
+		ElevatorRequest request = null;
 		
 		while ((lineEntry = reader.readLine()) != null) {
 		    String[] line = lineEntry.split(" ");		    
@@ -71,8 +72,9 @@ public class Parser {
 		    				"Line " + lineNumber);
 		    	}
 		    	
-		    	elevatorRequestList.add(new ElevatorRequest(timestamp, Integer.valueOf(line[1]), 
-			    		Direction.valueOf(line[2]), Integer.valueOf(line[3])));
+		    	request = new ElevatorRequest(timestamp, Integer.valueOf(line[1]), 
+			    		Direction.valueOf(line[2]), Integer.valueOf(line[3]));
+		    	elevatorRequestList.add(request);
 		    	
 		    } catch (ParseException e) {
 			    	logger.severe(e.getMessage()+ " on line " + lineNumber);
@@ -90,9 +92,7 @@ public class Parser {
 			    	if (!parsingSuccess) {
 			    		elevatorRequestList.clear();
 			    	} else {
-			    		for (ElevatorRequest request: elevatorRequestList) {
-			    			logger.info("Request \"" + request.getTimestamp() + " " + request.getSourceFloor() + " " + request.getDirection() + " " + request.getDestinationFloor() + "\" added to the list");
-			    		}
+			    		logger.info("Request \"" + request.getTimestamp() + " " + request.getSourceFloor() + " " + request.getDirection() + " " + request.getDestinationFloor() + "\" added to the list");
 			    	}
 		    }
 		}
