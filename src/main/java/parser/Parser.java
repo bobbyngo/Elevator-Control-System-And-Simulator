@@ -24,7 +24,7 @@ import main.java.dto.Direction;
  */
 public class Parser {
 	
-	private static final Logger logger = Logger.getLogger(Parser.class.getName());
+	private final Logger logger = Logger.getLogger(this.getClass().getName());
 	
 	private FileReader input;
 	private BufferedReader reader;
@@ -72,31 +72,38 @@ public class Parser {
 		    				"Line " + lineNumber);
 		    	}
 		    	
-		    	request = new ElevatorRequest(timestamp, Integer.valueOf(line[1]), 
-			    		Direction.valueOf(line[2]), Integer.valueOf(line[3]));
+		    	request = new ElevatorRequest(timestamp, 
+		    			Integer.valueOf(line[1]), 
+			    		Direction.valueOf(line[2]), 
+			    		Integer.valueOf(line[3]));
 		    	elevatorRequestList.add(request);
 		    	
 		    } catch (ParseException e) {
-			    	logger.severe(e.getMessage()+ " on line " + lineNumber);
+			    	logger.severe(String.format("%s on line %d", e.getMessage(), lineNumber));
 			    	parsingSuccess = false;
 		    } catch(ElevatorReqParamException e) {
-			    	logger.severe(e.getMessage());
+		    		logger.severe(String.format("%s on line %d", e.getMessage(), lineNumber));
 			    	parsingSuccess = false;
 		    } catch (NumberFormatException e) {
-			    	logger.severe(e.getMessage() + " on line " + lineNumber);
+		    		logger.severe(String.format("%s on line %d", e.getMessage(), lineNumber));
 			    	parsingSuccess = false;
 		    } catch (IllegalArgumentException e) {
-			    	logger.severe(e.getMessage() + " on line " + lineNumber);
+		    		logger.severe(String.format("%s on line %d", e.getMessage(), lineNumber));
 			    	parsingSuccess = false;
 		    } finally {
 			    	if (!parsingSuccess) {
 			    		elevatorRequestList.clear();
 			    	} else {
-			    		logger.info("Request \"" + request.getTimestamp() + " " + request.getSourceFloor() + " " + request.getDirection() + " " + request.getDestinationFloor() + "\" added to the list");
+			    		logger.info(String.format("Request %s %s %s %s added to the list",
+			    				request.getTimestamp(), 
+			    				request.getSourceFloor(), 
+			    				request.getDirection(), 
+			    				request.getDestinationFloor()));
 			    	}
 		    }
 		}
-		System.out.println(this.getClass().getName() + ": Request task completed.");
+		System.out.println(String.format("%s : Request task completed.", 
+				this.getClass().getName()));
 		return elevatorRequestList;	
 	}
 

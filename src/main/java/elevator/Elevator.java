@@ -12,7 +12,7 @@ import main.java.scheduler.Scheduler;
  */
 public class Elevator implements Runnable {
 	
-	private static final Logger logger = Logger.getLogger(Elevator.class.getName());
+	private final Logger logger = Logger.getLogger(this.getClass().getName());
 	
 	private int id;
 	private Scheduler scheduler;
@@ -37,6 +37,10 @@ public class Elevator implements Runnable {
 		return this.id;
 	}
 	
+	/**
+	 * Get current elevator state
+	 * @return elevatorState, current elevator state
+	 */
 	public ElevatorState getElevatorState() {
 		return elevatorState;
 	}
@@ -46,9 +50,7 @@ public class Elevator implements Runnable {
 	 */
 	public ElevatorRequest serveRequest() {
 		ElevatorRequest request;
-		// dispatch request
 		request = scheduler.dispatchRequest();
-		logger.info(String.format("Elevator request queued: %s", request));
 		return request;
 	}
 	
@@ -75,44 +77,44 @@ public class Elevator implements Runnable {
 				if (scheduler.getRequestsQueue().size() >= 0) {
 					switch (elevatorState) {
 						case Idle: {
-							System.out.println("Elevator#" + getElevatorId() + ">" + getElevatorState());
+							System.out.println(String.format("Elevator# %d > %s", getElevatorId(), getElevatorState()));
 							elevatorState = elevatorState.nextState();
 							break;
 						}
 						case AwaitRequest: {
-							System.out.println("Elevator#" + getElevatorId() + ">" + getElevatorState());
+							System.out.println(String.format("Elevator# %d > %s", getElevatorId(), getElevatorState()));
 							request = serveRequest();
 							elevatorState = elevatorState.nextState();
 							break;
 						}
 						case Moving: {
-							System.out.println("Elevator#" + getElevatorId() + ">" + getElevatorState());
+							System.out.println(String.format("Elevator# %d > %s", getElevatorId(), getElevatorState()));
 							elevatorState = elevatorState.nextState();
 							break;
 						}
 						case Stop: {
-							System.out.println("Elevator#" + getElevatorId() + ">" + getElevatorState());
+							System.out.println(String.format("Elevator# %d > %s", getElevatorId(), getElevatorState()));
 							sendCompletedRequest(request);
 							elevatorState = elevatorState.nextState();
 							break;
 						}
 						case DoorsOpen: {
-							System.out.println("Elevator#" + getElevatorId() + ">" + getElevatorState());
+							System.out.println(String.format("Elevator# %d > %s", getElevatorId(), getElevatorState()));
 							elevatorState = elevatorState.nextState();
 							break;
 						}
 						case DoorsClose: {
-							System.out.println("Elevator#" + getElevatorId() + ">" + getElevatorState());
+							System.out.println(String.format("Elevator# %d > %s", getElevatorId(), getElevatorState()));
 							elevatorState = elevatorState.nextState();
 							break;
 						}
 						case DoorsObstruction: {
-							System.out.println("Elevator#" + getElevatorId() + ">" + getElevatorState());
+							System.out.println(String.format("Elevator# %d > %s", getElevatorId(), getElevatorState()));
 							elevatorState = elevatorState.nextState();
 							break;
 						}
 						case OutOfService: {
-							System.out.println("Elevator#" + getElevatorId() + ">" + getElevatorState());
+							System.out.println(String.format("Elevator# %d > %s", getElevatorId(), getElevatorState()));
 							elevatorState = elevatorState.nextState();
 							break;
 						}

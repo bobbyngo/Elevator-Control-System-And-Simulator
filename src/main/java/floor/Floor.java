@@ -12,11 +12,12 @@ import main.java.scheduler.Scheduler;
  * The class that holds information about a floor and initiates requests 
  * to the scheduler for users wanting to travel up or down
  * @author Hussein El Mokdad
- * @version 1.0, 02/04/23
+ * @since 1.0, 02/04/23
+ * @version 2.0, 02/27/23
  */
 public class Floor implements Runnable {
 	
-	private static final Logger logger = Logger.getLogger(Floor.class.getName());
+	private final Logger logger = Logger.getLogger(this.getClass().getName());
 	
 	private int floorNumber;
 	private Scheduler scheduler; 
@@ -48,18 +49,15 @@ public class Floor implements Runnable {
 	 * @author Zakaria Ismail
 	 */
 	public void requestElevator(ElevatorRequest request) {
-		
-		logger.info("Requesting an elevator: " + request.toString());
-		// Put the request to the Scheduler
 		scheduler.putRequest(request);
-		
+		logger.info(String.format("Request elevator: %s", 
+				request.toString()));
 	}
 	
 	public ElevatorRequest receiveCompletedRequest() {
-		ElevatorRequest completedRequest;
-		// The elevator finished the request
-		completedRequest = scheduler.getCompletedRequest();
-		logger.info("Elevator finished the request: " + completedRequest.toString());
+		ElevatorRequest completedRequest = scheduler.getCompletedRequest();
+		logger.info(String.format("Elevator completed request: %s", 
+				completedRequest.toString()));
 		return completedRequest;
 	}
 
@@ -76,7 +74,7 @@ public class Floor implements Runnable {
 		try {
 			elevatorRequests = parser.requestParser();
 		} catch (IOException e) {
-			logger.severe("An IOException occurred.");
+			logger.severe("IOException occurred");
 			System.exit(1);
 		}
 		
@@ -84,7 +82,8 @@ public class Floor implements Runnable {
 			for (ElevatorRequest req : elevatorRequests) {
 				requestElevator(req);
 			}
-			System.out.println(this.getClass().getName() + ": Requests have been sent to Scheduler.");
+			System.out.println(String.format("%s : Requests sent to Scheduler.", 
+					this.getClass().getName()));;
 		}
 	}
 	

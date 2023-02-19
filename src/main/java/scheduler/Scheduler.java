@@ -17,11 +17,14 @@ import main.java.dto.ElevatorRequest;
  */
 public class Scheduler implements Runnable {
 	
-	private static final Logger logger = Logger.getLogger(Scheduler.class.getName());
+	private final Logger logger = Logger.getLogger(this.getClass().getName());
 	private List<ElevatorRequest> requestsQueue = Collections.synchronizedList(new ArrayList<>());
 	private List<ElevatorRequest> completedQueue = Collections.synchronizedList(new ArrayList<>());
 
-
+	/**
+	 * Get the queue of the elevator request.
+	 * @return List<>, list of elevator request
+	 */
 	public List<ElevatorRequest> getRequestsQueue() {
 		return requestsQueue;
 	}
@@ -34,7 +37,8 @@ public class Scheduler implements Runnable {
 		// No duplicate values
 		if (!requestsQueue.contains(elevatorRequest)) {
 			requestsQueue.add(elevatorRequest);
-			logger.info("Added " + elevatorRequest.toString() + " to the request queue. Queue size is: " + requestsQueue.size());
+			logger.info(String.format("Add request %s > request queue: %d", 
+					elevatorRequest.toString(), requestsQueue.size()));
 		}
 		notifyAll();
 	}
@@ -57,11 +61,9 @@ public class Scheduler implements Runnable {
 		
 		// Iteration 1 we will first come first serve: remove the former index
 		ElevatorRequest removedElevatorRequest = requestsQueue.remove(0);
-		logger.info("Dispatched request " + removedElevatorRequest.toString());
-		logger.info("The request queue size is " + requestsQueue.size());
-		
+		logger.info(String.format("Dispatch request %s > request queue: %d", 
+				removedElevatorRequest.toString(), requestsQueue.size()));
 		notifyAll();
-		
 		return removedElevatorRequest;
 	}
 	
@@ -73,7 +75,8 @@ public class Scheduler implements Runnable {
 	public synchronized void putCompletedRequest(ElevatorRequest reply) {
 		if (!completedQueue.contains(reply)) {
 			completedQueue.add(reply);
-			logger.info(String.format("Added %s to the completed queue. Completed queue size is %d", reply, completedQueue.size()));
+			logger.info(String.format("Add requestr%s to the completed queue > completed queue: %d", 
+					reply, completedQueue.size()));
 		}
 		notifyAll();
 	}
