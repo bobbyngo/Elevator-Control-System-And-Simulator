@@ -19,8 +19,8 @@ import main.java.dto.Direction;
  * The Parser class reads through a standard text file 
  * and exports the information in a specified format
  * @author Patrick Liu
- * @version 1.0, 02/04/23
  * @since 1.0, 02/04/23
+ * @version 2.0, 02/27/23
  */
 public class Parser {
 	

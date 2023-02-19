@@ -13,7 +13,8 @@ import main.java.dto.ElevatorRequest;
  * responsible for routing each elevator to requested floors and coordinating elevators in such a way to minimize
  * waiting times for people moving between floors (avoiding starvation).
  * @author Bobby Ngo
- * @version 1.0, 02/04/23
+ * @since 1.0, 02/04/23
+ * @version 2.0, 02/27/23
  */
 public class Scheduler implements Runnable {
 	

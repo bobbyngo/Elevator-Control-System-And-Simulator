@@ -8,7 +8,8 @@ import main.java.scheduler.Scheduler;
 /**
  * Elevator class serves elevator requests from the Scheduler and stores in internal queue.
  * @author Trong Nguyen
- * @version 1.0, 02/04/23
+ * @since 1.0, 02/04/23
+ * @version 2.0, 02/27/23
  */
 public class Elevator implements Runnable {
 	
