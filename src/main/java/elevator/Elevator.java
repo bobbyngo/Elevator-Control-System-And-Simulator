@@ -75,49 +75,44 @@ public class Elevator implements Runnable {
 				if (scheduler.getRequestsQueue().size() >= 0) {
 					switch (elevatorState) {
 						case Idle: {
-							System.out.println(getElevatorState());
+							System.out.println("Elevator#" + getElevatorId() + ">" + getElevatorState());
 							elevatorState = elevatorState.nextState();
 							break;
 						}
-						case AcknowledgeRequest: {
-							System.out.println(getElevatorState());
+						case AwaitRequest: {
+							System.out.println("Elevator#" + getElevatorId() + ">" + getElevatorState());
 							request = serveRequest();
 							elevatorState = elevatorState.nextState();
 							break;
 						}
 						case Moving: {
-							System.out.println(getElevatorState());
+							System.out.println("Elevator#" + getElevatorId() + ">" + getElevatorState());
 							elevatorState = elevatorState.nextState();
 							break;
 						}
 						case Stop: {
-							System.out.println(getElevatorState());
+							System.out.println("Elevator#" + getElevatorId() + ">" + getElevatorState());
 							sendCompletedRequest(request);
 							elevatorState = elevatorState.nextState();
 							break;
 						}
 						case DoorsOpen: {
-							System.out.println(getElevatorState());
+							System.out.println("Elevator#" + getElevatorId() + ">" + getElevatorState());
 							elevatorState = elevatorState.nextState();
 							break;
 						}
 						case DoorsClose: {
-							System.out.println(getElevatorState());
-							elevatorState = elevatorState.nextState();
-							break;
-						}
-						case AwaitRequest: {
-							System.out.println(getElevatorState());
+							System.out.println("Elevator#" + getElevatorId() + ">" + getElevatorState());
 							elevatorState = elevatorState.nextState();
 							break;
 						}
 						case DoorsObstruction: {
-							System.out.println(getElevatorState());
+							System.out.println("Elevator#" + getElevatorId() + ">" + getElevatorState());
 							elevatorState = elevatorState.nextState();
 							break;
 						}
 						case OutOfService: {
-							System.out.println(getElevatorState());
+							System.out.println("Elevator#" + getElevatorId() + ">" + getElevatorState());
 							elevatorState = elevatorState.nextState();
 							break;
 						}

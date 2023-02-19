@@ -10,11 +10,11 @@ public enum ElevatorState {
 	Idle {
 		@Override
 		public ElevatorState nextState() {
-			return AcknowledgeRequest;
+			return AwaitRequest;
 		}
 	},
 	
-	AcknowledgeRequest {
+	AwaitRequest {
 		@Override
 		public ElevatorState nextState() {
 			return Moving;
@@ -53,13 +53,6 @@ public enum ElevatorState {
 		}
 	},
 	
-	AwaitRequest {
-		@Override
-		public ElevatorState nextState() {
-			return Idle;
-		}
-	},
-	
 	DoorsObstruction {
 		@Override
 		public ElevatorState nextState() {
@@ -79,4 +72,5 @@ public enum ElevatorState {
 	};
 	 
 	public abstract ElevatorState nextState(); 
+	
 }
