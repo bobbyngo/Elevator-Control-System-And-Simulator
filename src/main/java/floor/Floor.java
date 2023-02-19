@@ -86,7 +86,7 @@ public class Floor implements Runnable {
 			for (ElevatorRequest req : elevatorRequests) {
 				requestElevator(req);
 			}
-			System.out.println(String.format("%s : Requests sent to Scheduler.", 
+			System.out.println(String.format("%s: Requests sent to Scheduler.", 
 					this.getClass().getName()));;
 		}
 	}

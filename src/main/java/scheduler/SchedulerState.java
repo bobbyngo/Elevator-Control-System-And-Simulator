@@ -24,7 +24,7 @@ public enum SchedulerState {
 	InService {
 		@Override
 		public SchedulerState nextState() {
-			return Ready;
+			return this;
 		}
 	},
 	

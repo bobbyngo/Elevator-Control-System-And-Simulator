@@ -102,7 +102,7 @@ public class Parser {
 			    	}
 		    }
 		}
-		System.out.println(String.format("%s : Request task completed.", 
+		System.out.println(String.format("%s: Request task completed.", 
 				this.getClass().getName()));
 		return elevatorRequestList;	
 	}

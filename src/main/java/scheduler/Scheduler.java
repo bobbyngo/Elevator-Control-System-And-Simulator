@@ -19,15 +19,30 @@ import main.java.dto.ElevatorRequest;
 public class Scheduler implements Runnable {
 	
 	private final Logger logger = Logger.getLogger(this.getClass().getName());
-	private List<ElevatorRequest> requestsQueue = Collections.synchronizedList(new ArrayList<>());
-	private List<ElevatorRequest> completedQueue = Collections.synchronizedList(new ArrayList<>());
-
+	private List<ElevatorRequest> requestsQueue;
+	private List<ElevatorRequest> completedQueue;
+	private SchedulerState schedulerState;
+	
+	public Scheduler() {
+		requestsQueue = Collections.synchronizedList(new ArrayList<>());
+		completedQueue = Collections.synchronizedList(new ArrayList<>());
+		schedulerState = SchedulerState.Idle;
+	}
+	
 	/**
 	 * Get the queue of the elevator request.
 	 * @return List<>, list of elevator request
 	 */
 	public List<ElevatorRequest> getRequestsQueue() {
 		return requestsQueue;
+	}
+	
+	/**
+	 * Get current scheduler state
+	 * @return schedulerState, current scheduler state
+	 */
+	public SchedulerState getSchedulerState() {
+		return schedulerState;
 	}
 	
 	/**
@@ -76,7 +91,7 @@ public class Scheduler implements Runnable {
 	public synchronized void putCompletedRequest(ElevatorRequest reply) {
 		if (!completedQueue.contains(reply)) {
 			completedQueue.add(reply);
-			logger.info(String.format("Add requestr%s to the completed queue > completed queue: %d", 
+			logger.info(String.format("Add request %s to the completed queue > completed queue: %d", 
 					reply, completedQueue.size()));
 		}
 		notifyAll();
@@ -108,9 +123,33 @@ public class Scheduler implements Runnable {
 	@Override
 	public void run() {
 		try {
-			// Scheduler class is only used for its resource put/get methods
-			// Q: How will the Scheduler thread be used when we distribute our application?
 			Thread.sleep(0);
+			while (true) {
+				switch (schedulerState) {
+				case Idle: {
+					schedulerState = schedulerState.nextState();
+					break;
+				}
+				case Ready: {
+					if (!requestsQueue.isEmpty()) {
+						schedulerState = schedulerState.nextState();
+					}
+					break;
+				}
+				case InService: {
+					if (!completedQueue.isEmpty()) {
+						schedulerState = schedulerState.nextState();
+					}
+					break;
+				}
+				case OutOfService: {
+					schedulerState = schedulerState.nextState();
+					break;
+				}
+				default:
+					break;
+				}
+			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
