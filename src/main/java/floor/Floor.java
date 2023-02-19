@@ -54,6 +54,10 @@ public class Floor implements Runnable {
 				request.toString()));
 	}
 	
+	/**
+	 * Notify scheduler that request has been completed.
+	 * @return completedRequest, ElevatorRequest completed
+	 */
 	public ElevatorRequest receiveCompletedRequest() {
 		ElevatorRequest completedRequest = scheduler.getCompletedRequest();
 		logger.info(String.format("Elevator completed request: %s", 
