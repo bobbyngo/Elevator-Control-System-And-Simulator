@@ -26,13 +26,6 @@ public enum SchedulerState {
 		public SchedulerState nextState() {
 			return this;
 		}
-	},
-	
-	OutOfService {
-		@Override
-		public SchedulerState nextState() {
-			return Idle;
-		}
 	};
 	
 	public abstract SchedulerState nextState();

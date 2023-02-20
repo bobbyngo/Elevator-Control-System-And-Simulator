@@ -40,34 +40,12 @@ public enum ElevatorState {
 		public ElevatorState nextState() {
 			return DoorsClose;
 		}
-		
-		public ElevatorState doorsHeld() {
-			return DoorsObstruction;
-		}
 	},
 	
 	DoorsClose {
 		@Override
 		public ElevatorState nextState() {
 			return AwaitRequest;
-		}
-	},
-	
-	DoorsObstruction {
-		@Override
-		public ElevatorState nextState() {
-			return DoorsClose;
-		}
-		
-		public ElevatorState doorsObstruction() {
-			return OutOfService;
-		}
-	},
-	
-	OutOfService {
-		@Override
-		public ElevatorState nextState() {
-			return this;
 		}
 	};
 	 

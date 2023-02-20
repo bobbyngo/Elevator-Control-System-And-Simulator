@@ -142,10 +142,6 @@ public class Scheduler implements Runnable {
 					}
 					break;
 				}
-				case OutOfService: {
-					schedulerState = schedulerState.nextState();
-					break;
-				}
 				default:
 					break;
 				}

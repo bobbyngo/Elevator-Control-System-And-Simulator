@@ -119,18 +119,6 @@ public class Elevator implements Runnable {
 							elevatorState = elevatorState.nextState();
 							break;
 						}
-						case DoorsObstruction: {
-							System.out.println(String.format("Elevator# %d > %s", 
-									getElevatorId(), getElevatorState()));
-							elevatorState = elevatorState.nextState();
-							break;
-						}
-						case OutOfService: {
-							System.out.println(String.format("Elevator# %d > %s", 
-									getElevatorId(), getElevatorState()));
-							elevatorState = elevatorState.nextState();
-							break;
-						}
 						default:
 							break; 		
 					}
