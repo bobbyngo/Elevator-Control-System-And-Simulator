@@ -12,11 +12,12 @@ import main.java.scheduler.Scheduler;
  * The class that holds information about a floor and initiates requests 
  * to the scheduler for users wanting to travel up or down
  * @author Hussein El Mokdad
- * @version 1.0, 02/04/23
+ * @since 1.0, 02/04/23
+ * @version 2.0, 02/27/23
  */
 public class Floor implements Runnable {
 	
-	private static final Logger logger = Logger.getLogger(Floor.class.getName());
+	private final Logger logger = Logger.getLogger(this.getClass().getName());
 	
 	private int floorNumber;
 	private Scheduler scheduler; 
@@ -48,18 +49,19 @@ public class Floor implements Runnable {
 	 * @author Zakaria Ismail
 	 */
 	public void requestElevator(ElevatorRequest request) {
-		
-		logger.info("Requesting an elevator: " + request.toString());
-		// Put the request to the Scheduler
 		scheduler.putRequest(request);
-		
+		logger.info(String.format("Request elevator: %s", 
+				request.toString()));
 	}
 	
+	/**
+	 * Notify scheduler that request has been completed.
+	 * @return completedRequest, ElevatorRequest completed
+	 */
 	public ElevatorRequest receiveCompletedRequest() {
-		ElevatorRequest completedRequest;
-		// The elevator finished the request
-		completedRequest = scheduler.getCompletedRequest();
-		logger.info("Elevator finished the request: " + completedRequest.toString());
+		ElevatorRequest completedRequest = scheduler.getCompletedRequest();
+		logger.info(String.format("Elevator completed request: %s", 
+				completedRequest.toString()));
 		return completedRequest;
 	}
 
@@ -73,30 +75,20 @@ public class Floor implements Runnable {
 	@Override
 	public void run() {
 		ArrayList<ElevatorRequest> elevatorRequests = null;
-		ElevatorRequest reply;
-		
 		try {
 			elevatorRequests = parser.requestParser();
 		} catch (IOException e) {
-			logger.severe("An IOException occurred.");
+			logger.severe("IOException occurred");
 			System.exit(1);
 		}
 		
 		if (!elevatorRequests.isEmpty()) {
 			for (ElevatorRequest req : elevatorRequests) {
 				requestElevator(req);
-				reply = receiveCompletedRequest();
-				
-				try {
-					Thread.sleep(2000);
-				} catch (InterruptedException e) {}
 			}
+			System.out.println(String.format("%s: Requests sent to Scheduler.", 
+					this.getClass().getName()));;
 		}
-		
-		// End process when all requests have been served?
-		logger.info("All requests have been sent.");
-		System.exit(0);
-		return;
 	}
 	
 }

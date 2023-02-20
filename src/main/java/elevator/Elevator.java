@@ -8,14 +8,16 @@ import main.java.scheduler.Scheduler;
 /**
  * Elevator class serves elevator requests from the Scheduler and stores in internal queue.
  * @author Trong Nguyen
- * @version 1.0, 02/04/23
+ * @since 1.0, 02/04/23
+ * @version 2.0, 02/27/23
  */
 public class Elevator implements Runnable {
 	
-	private static final Logger logger = Logger.getLogger(Elevator.class.getName());
+	private final Logger logger = Logger.getLogger(this.getClass().getName());
 	
 	private int id;
 	private Scheduler scheduler;
+	private ElevatorState elevatorState;
 	
 	/**
 	 * Constructor for Elevator class.
@@ -25,6 +27,7 @@ public class Elevator implements Runnable {
 	public Elevator(int id, Scheduler scheduler) {
 		this.id = id;
 		this.scheduler = scheduler;
+		elevatorState = ElevatorState.Idle;
 	}
 	
 	/**
@@ -36,13 +39,21 @@ public class Elevator implements Runnable {
 	}
 	
 	/**
+	 * Get current elevator state
+	 * @return elevatorState, current elevator state
+	 */
+	public ElevatorState getElevatorState() {
+		return elevatorState;
+	}
+	
+	/**
 	 * Fetch a request from the Scheduler and add to requests queue.
 	 */
 	public ElevatorRequest serveRequest() {
 		ElevatorRequest request;
-		// dispatch request
 		request = scheduler.dispatchRequest();
-		logger.info(String.format("Elevator request queued: %s", request));
+		logger.info(String.format("Serve request %s ", 
+				request.toString()));
 		return request;
 	}
 	
@@ -52,6 +63,8 @@ public class Elevator implements Runnable {
 	 */
 	public void sendCompletedRequest(ElevatorRequest request) {
 		scheduler.putCompletedRequest(request);
+		logger.info(String.format("Complete request %s ", 
+				request.toString()));
 		return;
 	}
 
@@ -62,16 +75,57 @@ public class Elevator implements Runnable {
 	 */
 	@Override
 	public void run() {
-		ElevatorRequest request;
-		while (true) {
-			// TODO: add functionality to end when there are no more requests to serve
-			request = serveRequest();
-			// do something in between... work in progress for future iterations
-			try {
-				Thread.sleep(4000);
-			} catch (InterruptedException e) {}
-			sendCompletedRequest(request);
-			
+		ElevatorRequest request = null;
+		try {
+			Thread.sleep(1000);
+			while (true) {
+				if (scheduler.getRequestsQueue().size() >= 0) {
+					switch (elevatorState) {
+						case Idle: {
+							System.out.println(String.format("Elevator# %d > %s", 
+									getElevatorId(), getElevatorState()));
+							elevatorState = elevatorState.nextState();
+							break;
+						}
+						case AwaitRequest: {
+							System.out.println(String.format("Elevator# %d > %s", 
+									getElevatorId(), getElevatorState()));
+							request = serveRequest();
+							elevatorState = elevatorState.nextState();
+							break;
+						}
+						case Moving: {
+							System.out.println(String.format("Elevator# %d > %s", 
+									getElevatorId(), getElevatorState()));
+							elevatorState = elevatorState.nextState();
+							break;
+						}
+						case Stop: {
+							System.out.println(String.format("Elevator# %d > %s", 
+									getElevatorId(), getElevatorState()));
+							sendCompletedRequest(request);
+							elevatorState = elevatorState.nextState();
+							break;
+						}
+						case DoorsOpen: {
+							System.out.println(String.format("Elevator# %d > %s", 
+									getElevatorId(), getElevatorState()));
+							elevatorState = elevatorState.nextState();
+							break;
+						}
+						case DoorsClose: {
+							System.out.println(String.format("Elevator# %d > %s", 
+									getElevatorId(), getElevatorState()));
+							elevatorState = elevatorState.nextState();
+							break;
+						}
+						default:
+							break; 		
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 

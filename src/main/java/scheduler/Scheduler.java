@@ -13,15 +13,38 @@ import main.java.dto.ElevatorRequest;
  * responsible for routing each elevator to requested floors and coordinating elevators in such a way to minimize
  * waiting times for people moving between floors (avoiding starvation).
  * @author Bobby Ngo
- * @version 1.0, 02/04/23
+ * @since 1.0, 02/04/23
+ * @version 2.0, 02/27/23
  */
 public class Scheduler implements Runnable {
 	
-	private static final Logger logger = Logger.getLogger(Scheduler.class.getName());
-	private List<ElevatorRequest> requestsQueue = Collections.synchronizedList(new ArrayList<>());
-	private List<ElevatorRequest> completedQueue = Collections.synchronizedList(new ArrayList<>());
-
-
+	private final Logger logger = Logger.getLogger(this.getClass().getName());
+	private List<ElevatorRequest> requestsQueue;
+	private List<ElevatorRequest> completedQueue;
+	private SchedulerState schedulerState;
+	
+	public Scheduler() {
+		requestsQueue = Collections.synchronizedList(new ArrayList<>());
+		completedQueue = Collections.synchronizedList(new ArrayList<>());
+		schedulerState = SchedulerState.Idle;
+	}
+	
+	/**
+	 * Get the queue of the elevator request.
+	 * @return List<>, list of elevator request
+	 */
+	public List<ElevatorRequest> getRequestsQueue() {
+		return requestsQueue;
+	}
+	
+	/**
+	 * Get current scheduler state
+	 * @return schedulerState, current scheduler state
+	 */
+	public SchedulerState getSchedulerState() {
+		return schedulerState;
+	}
+	
 	/**
 	 * This method is called by the Floor class. The new request will be added to the list of floors to visit.
 	 * @param elevatorRequest
@@ -30,7 +53,8 @@ public class Scheduler implements Runnable {
 		// No duplicate values
 		if (!requestsQueue.contains(elevatorRequest)) {
 			requestsQueue.add(elevatorRequest);
-			logger.info("Added " + elevatorRequest.toString() + " to the request queue. Queue size is: " + requestsQueue.size());
+			logger.info(String.format("Add request %s > request queue: %d", 
+					elevatorRequest.toString(), requestsQueue.size()));
 		}
 		notifyAll();
 	}
@@ -53,11 +77,9 @@ public class Scheduler implements Runnable {
 		
 		// Iteration 1 we will first come first serve: remove the former index
 		ElevatorRequest removedElevatorRequest = requestsQueue.remove(0);
-		logger.info("Dispatched request " + removedElevatorRequest.toString());
-		logger.info("The queue size is " + requestsQueue.size());
-		
+		logger.info(String.format("Dispatch request %s > request queue: %d", 
+				removedElevatorRequest.toString(), requestsQueue.size()));
 		notifyAll();
-		
 		return removedElevatorRequest;
 	}
 	
@@ -69,7 +91,8 @@ public class Scheduler implements Runnable {
 	public synchronized void putCompletedRequest(ElevatorRequest reply) {
 		if (!completedQueue.contains(reply)) {
 			completedQueue.add(reply);
-			logger.info(String.format("Added %s to the completed queue. Queue size is %d", reply, completedQueue.size()));
+			logger.info(String.format("Add request %s to the completed queue > completed queue: %d", 
+					reply, completedQueue.size()));
 		}
 		notifyAll();
 	}
@@ -100,13 +123,32 @@ public class Scheduler implements Runnable {
 	@Override
 	public void run() {
 		try {
-			// Scheduler class is only used for its resource put/get methods
-			// Q: How will the Scheduler thread be used when we distribute our application?
 			Thread.sleep(0);
+			while (true) {
+				switch (schedulerState) {
+				case Idle: {
+					schedulerState = schedulerState.nextState();
+					break;
+				}
+				case Ready: {
+					if (!requestsQueue.isEmpty()) {
+						schedulerState = schedulerState.nextState();
+					}
+					break;
+				}
+				case InService: {
+					if (!completedQueue.isEmpty()) {
+						schedulerState = schedulerState.nextState();
+					}
+					break;
+				}
+				default:
+					break;
+				}
+			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		return;
 	}
 	
 }
