@@ -53,8 +53,8 @@ public class Scheduler implements Runnable {
 		// No duplicate values
 		if (!requestsQueue.contains(elevatorRequest)) {
 			requestsQueue.add(elevatorRequest);
-			logger.info(String.format("Add request %s > request queue: %d", 
-					elevatorRequest.toString(), requestsQueue.size()));
+			String loggerStr = String.format("Add request %s > request queue: %d", elevatorRequest.toString(), requestsQueue.size());
+			logger.info(loggerStr);
 		}
 		notifyAll();
 	}
@@ -77,8 +77,8 @@ public class Scheduler implements Runnable {
 		
 		// Iteration 1 we will first come first serve: remove the former index
 		ElevatorRequest removedElevatorRequest = requestsQueue.remove(0);
-		logger.info(String.format("Dispatch request %s > request queue: %d", 
-				removedElevatorRequest.toString(), requestsQueue.size()));
+		String loggerStr = String.format("Dispatch request %s > request queue: %d", removedElevatorRequest.toString(), requestsQueue.size());
+		logger.info(loggerStr);
 		notifyAll();
 		return removedElevatorRequest;
 	}
@@ -91,8 +91,8 @@ public class Scheduler implements Runnable {
 	public synchronized void putCompletedRequest(ElevatorRequest reply) {
 		if (!completedQueue.contains(reply)) {
 			completedQueue.add(reply);
-			logger.info(String.format("Add request %s to the completed queue > completed queue: %d", 
-					reply, completedQueue.size()));
+			String loggerStr = String.format("Add request %s to the completed queue > completed queue: %d", reply, completedQueue.size());
+			logger.info(loggerStr);
 		}
 		notifyAll();
 	}

@@ -52,8 +52,8 @@ public class Elevator implements Runnable {
 	public ElevatorRequest serveRequest() {
 		ElevatorRequest request;
 		request = scheduler.dispatchRequest();
-		logger.info(String.format("Serve request %s ", 
-				request.toString()));
+		String loggerStr = String.format("Serve request %s ", request.toString());
+		logger.info(loggerStr);
 		return request;
 	}
 	
@@ -63,8 +63,8 @@ public class Elevator implements Runnable {
 	 */
 	public void sendCompletedRequest(ElevatorRequest request) {
 		scheduler.putCompletedRequest(request);
-		logger.info(String.format("Complete request %s ", 
-				request.toString()));
+		String loggerStr = String.format("Complete request %s ", request.toString());
+		logger.info(loggerStr);
 		return;
 	}
 

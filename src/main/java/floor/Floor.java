@@ -50,8 +50,8 @@ public class Floor implements Runnable {
 	 */
 	public void requestElevator(ElevatorRequest request) {
 		scheduler.putRequest(request);
-		logger.info(String.format("Request elevator: %s", 
-				request.toString()));
+		String loggerStr = String.format("Request elevator: %s", request.toString());
+		logger.info(loggerStr);
 	}
 	
 	/**
@@ -60,8 +60,8 @@ public class Floor implements Runnable {
 	 */
 	public ElevatorRequest receiveCompletedRequest() {
 		ElevatorRequest completedRequest = scheduler.getCompletedRequest();
-		logger.info(String.format("Elevator completed request: %s", 
-				completedRequest.toString()));
+		String loggerStr = String.format("Elevator completed request: %s", completedRequest.toString());
+		logger.info(loggerStr);
 		return completedRequest;
 	}
 
@@ -76,6 +76,7 @@ public class Floor implements Runnable {
 	public void run() {
 		ArrayList<ElevatorRequest> elevatorRequests = null;
 		try {
+			System.out.println("-------------------------- Parsing user requests -------------------------");
 			elevatorRequests = parser.requestParser();
 		} catch (IOException e) {
 			logger.severe("IOException occurred");
