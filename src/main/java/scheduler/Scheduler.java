@@ -3,7 +3,9 @@ package main.java.scheduler;
 import java.util.ArrayList;
 import java.util.logging.*;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import main.java.dto.ElevatorRequest;
 
@@ -21,11 +23,15 @@ public class Scheduler implements Runnable {
 	private final Logger logger = Logger.getLogger(this.getClass().getName());
 	private List<ElevatorRequest> requestsQueue;
 	private List<ElevatorRequest> completedQueue;
+	Map<Integer, Integer> elevatorLocation;
 	private SchedulerState schedulerState;
 	
 	public Scheduler() {
 		requestsQueue = Collections.synchronizedList(new ArrayList<>());
 		completedQueue = Collections.synchronizedList(new ArrayList<>());
+		
+		elevatorLocation = Collections.synchronizedMap(new HashMap<>());
+		
 		schedulerState = SchedulerState.Idle;
 	}
 	
@@ -114,7 +120,29 @@ public class Scheduler implements Runnable {
 		notifyAll();
 		return reply;
 	}
-
+	
+	/**
+	 * registerElevatorLocation stores the elevator's current floor number together with its id
+	 * 
+	 * @param id
+	 * @param floorNumber
+	 * @author Patrick Liu
+	 */
+	public synchronized void registerElevatorLocation(Integer id, Integer floorNumber) {
+		elevatorLocation.put(id, floorNumber);
+		System.out.println(String.format("Scheduler: Elevator# %s current location: Floor %s", id, displayElevatorLocation(id)));
+	}
+	
+	/**
+	 * displayElevatorLocation returns the elevator's current location based on the provided id
+	 * 
+	 * @param id
+	 * @author Patrick Liu
+	 */
+	public synchronized Integer displayElevatorLocation(Integer id) {
+		return elevatorLocation.get(id);
+	}
+	
 	/**
 	 * Scheduler override run() method. Sleeps until the process is killed.
 	 * @see java.lang.Runnable#run()

@@ -75,6 +75,7 @@ public class Floor implements Runnable {
 	@Override
 	public void run() {
 		ArrayList<ElevatorRequest> elevatorRequests = null;
+		
 		try {
 			elevatorRequests = parser.requestParser();
 		} catch (IOException e) {
@@ -85,10 +86,20 @@ public class Floor implements Runnable {
 		if (!elevatorRequests.isEmpty()) {
 			for (ElevatorRequest req : elevatorRequests) {
 				requestElevator(req);
+				
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e) {}
 			}
+			
 			System.out.println(String.format("%s: Requests sent to Scheduler.", 
 					this.getClass().getName()));;
 		}
+		
+		// End process when all requests have been served?
+		logger.info("All requests have been sent.");
+		System.exit(0);
+		return;
 	}
 	
 }

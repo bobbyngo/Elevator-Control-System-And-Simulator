@@ -104,6 +104,7 @@ public class Elevator implements Runnable {
 							System.out.println(String.format("Elevator# %d > %s", 
 									getElevatorId(), getElevatorState()));
 							sendCompletedRequest(request);
+							scheduler.registerElevatorLocation(Integer.valueOf(id), request.getDestinationFloor());
 							elevatorState = elevatorState.nextState();
 							break;
 						}
