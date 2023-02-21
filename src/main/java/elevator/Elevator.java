@@ -81,42 +81,38 @@ public class Elevator implements Runnable {
 			while (true) {
 				if (scheduler.getRequestsQueue().size() >= 0) {
 					switch (elevatorState) {
+						// Only State Moving and Stop only use request argument
 						case Idle: {
-							System.out.println(String.format("Elevator# %d > %s", 
-									getElevatorId(), getElevatorState()));
+							System.out.println(elevatorState.displayCurrentState(getElevatorId(), request));
 							elevatorState = elevatorState.nextState();
 							break;
 						}
 						case AwaitRequest: {
-							System.out.println(String.format("Elevator# %d > %s", 
-									getElevatorId(), getElevatorState()));
+							System.out.println(elevatorState.displayCurrentState(getElevatorId(), request));
 							request = serveRequest();
 							elevatorState = elevatorState.nextState();
 							break;
 						}
 						case Moving: {
-							System.out.println(String.format("Elevator# %d > %s", 
-									getElevatorId(), getElevatorState()));
+							// request must never be null here since it's init in AwaitRequest state
+							System.out.println(elevatorState.displayCurrentState(getElevatorId(), request));
 							elevatorState = elevatorState.nextState();
 							break;
 						}
 						case Stop: {
-							System.out.println(String.format("Elevator# %d > %s", 
-									getElevatorId(), getElevatorState()));
+							System.out.println(elevatorState.displayCurrentState(getElevatorId(), request));
 							sendCompletedRequest(request);
 							scheduler.registerElevatorLocation(Integer.valueOf(id), request.getDestinationFloor());
 							elevatorState = elevatorState.nextState();
 							break;
 						}
 						case DoorsOpen: {
-							System.out.println(String.format("Elevator# %d > %s", 
-									getElevatorId(), getElevatorState()));
+							System.out.println(elevatorState.displayCurrentState(getElevatorId(), request));
 							elevatorState = elevatorState.nextState();
 							break;
 						}
 						case DoorsClose: {
-							System.out.println(String.format("Elevator# %d > %s", 
-									getElevatorId(), getElevatorState()));
+							System.out.println(elevatorState.displayCurrentState(getElevatorId(), request));
 							elevatorState = elevatorState.nextState();
 							break;
 						}
