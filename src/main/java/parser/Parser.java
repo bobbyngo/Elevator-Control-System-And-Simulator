@@ -41,6 +41,7 @@ public class Parser {
 		reader = new BufferedReader(input);
 		lineEntry = null;
 		elevatorRequestList = new ArrayList<>();
+		logger.setLevel(Level.INFO);
 	}
 	
 	/**
@@ -94,7 +95,7 @@ public class Parser {
 			    	if (!parsingSuccess) {
 			    		elevatorRequestList.clear();
 			    	} else {
-			    		logger.info(String.format("Request %s %s %s %s added to the list",
+			    		logger.info(String.format("Request %s %s %s %s added to the list \n",
 			    				request.getTimestamp(), 
 			    				request.getSourceFloor(), 
 			    				request.getDirection(), 
@@ -102,8 +103,7 @@ public class Parser {
 			    	}
 		    }
 		}
-		System.out.println(String.format("%s: Request task completed.", 
-				this.getClass().getName()));
+		System.out.println("------------------------ Finished parsing requests ----------------------- \n");
 		return elevatorRequestList;	
 	}
 

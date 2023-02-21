@@ -2,6 +2,7 @@ package main.java.floor;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import main.java.dto.ElevatorRequest;
@@ -33,6 +34,7 @@ public class Floor implements Runnable {
 		this.floorNumber = floorNumber;
 		this.scheduler = scheduler;
 		this.parser = parser;
+		logger.setLevel(Level.INFO);
 	}
 	
 	/**
@@ -50,7 +52,7 @@ public class Floor implements Runnable {
 	 */
 	public void requestElevator(ElevatorRequest request) {
 		scheduler.putRequest(request);
-		String loggerStr = String.format("Request elevator: %s", request.toString());
+		String loggerStr = String.format("Request elevator: %s \n", request.toString());
 		logger.info(loggerStr);
 	}
 	
@@ -76,7 +78,7 @@ public class Floor implements Runnable {
 	public void run() {
 		ArrayList<ElevatorRequest> elevatorRequests = null;
 		try {
-			System.out.println("-------------------------- Parsing user requests -------------------------");
+			System.out.println("-------------------------- Parsing user requests ------------------------- \n");
 			elevatorRequests = parser.requestParser();
 		} catch (IOException e) {
 			logger.severe("IOException occurred");
@@ -84,11 +86,11 @@ public class Floor implements Runnable {
 		}
 		
 		if (!elevatorRequests.isEmpty()) {
+			System.out.println("------------------------ Adding requests to queue ------------------------ \n");
 			for (ElevatorRequest req : elevatorRequests) {
 				requestElevator(req);
 			}
-			System.out.println(String.format("%s: Requests sent to Scheduler.", 
-					this.getClass().getName()));;
+			System.out.println("----------------------- Requests sent to Scheduler ----------------------- \n");
 		}
 	}
 	

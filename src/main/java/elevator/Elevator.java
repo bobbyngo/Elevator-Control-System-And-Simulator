@@ -1,5 +1,6 @@
 package main.java.elevator;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import main.java.dto.ElevatorRequest;
@@ -28,6 +29,7 @@ public class Elevator implements Runnable {
 		this.id = id;
 		this.scheduler = scheduler;
 		elevatorState = ElevatorState.Idle;
+		logger.setLevel(Level.INFO);
 	}
 	
 	/**
@@ -52,7 +54,7 @@ public class Elevator implements Runnable {
 	public ElevatorRequest serveRequest() {
 		ElevatorRequest request;
 		request = scheduler.dispatchRequest();
-		String loggerStr = String.format("Serve request %s ", request.toString());
+		String loggerStr = String.format("Serve request %s \n", request.toString());
 		logger.info(loggerStr);
 		return request;
 	}
@@ -63,7 +65,7 @@ public class Elevator implements Runnable {
 	 */
 	public void sendCompletedRequest(ElevatorRequest request) {
 		scheduler.putCompletedRequest(request);
-		String loggerStr = String.format("Complete request %s ", request.toString());
+		String loggerStr = String.format("Complete request %s \n", request.toString());
 		logger.info(loggerStr);
 		return;
 	}
@@ -88,7 +90,7 @@ public class Elevator implements Runnable {
 							break;
 						}
 						case AwaitRequest: {
-							System.out.println(String.format("Elevator# %d > %s", 
+							System.out.println(String.format("Elevator# %d > %s ----------------------------------------------- \n", 
 									getElevatorId(), getElevatorState()));
 							request = serveRequest();
 							elevatorState = elevatorState.nextState();
@@ -101,7 +103,7 @@ public class Elevator implements Runnable {
 							break;
 						}
 						case Stop: {
-							System.out.println(String.format("Elevator# %d > %s", 
+							System.out.println(String.format("Elevator# %d > %s \n", 
 									getElevatorId(), getElevatorState()));
 							sendCompletedRequest(request);
 							elevatorState = elevatorState.nextState();

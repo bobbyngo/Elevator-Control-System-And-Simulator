@@ -27,6 +27,7 @@ public class Scheduler implements Runnable {
 		requestsQueue = Collections.synchronizedList(new ArrayList<>());
 		completedQueue = Collections.synchronizedList(new ArrayList<>());
 		schedulerState = SchedulerState.Idle;
+		logger.setLevel(Level.INFO);
 	}
 	
 	/**
