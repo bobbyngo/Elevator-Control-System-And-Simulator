@@ -81,6 +81,7 @@ public class Elevator implements Runnable {
 			while (true) {
 				if (scheduler.getRequestsQueue().size() >= 0) {
 					switch (elevatorState) {
+						// Only State Moving and Stop only use request argument
 						case Idle: {
 							System.out.println(elevatorState.displayCurrentState(getElevatorId(), request));
 							elevatorState = elevatorState.nextState();
@@ -93,9 +94,8 @@ public class Elevator implements Runnable {
 							break;
 						}
 						case Moving: {
-							if (request != null) {
-								System.out.println(elevatorState.displayCurrentState(getElevatorId(), request));
-							}
+							// request must never be null here since it's init in AwaitRequest state
+							System.out.println(elevatorState.displayCurrentState(getElevatorId(), request));
 							elevatorState = elevatorState.nextState();
 							break;
 						}
