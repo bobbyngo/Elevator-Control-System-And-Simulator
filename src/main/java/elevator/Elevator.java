@@ -82,40 +82,36 @@ public class Elevator implements Runnable {
 				if (scheduler.getRequestsQueue().size() >= 0) {
 					switch (elevatorState) {
 						case Idle: {
-							System.out.println(String.format("Elevator# %d > %s", 
-									getElevatorId(), getElevatorState()));
+							System.out.println(elevatorState.displayCurrentState(getElevatorId(), request));
 							elevatorState = elevatorState.nextState();
 							break;
 						}
 						case AwaitRequest: {
-							System.out.println(String.format("Elevator# %d > %s", 
-									getElevatorId(), getElevatorState()));
+							System.out.println(elevatorState.displayCurrentState(getElevatorId(), request));
 							request = serveRequest();
 							elevatorState = elevatorState.nextState();
 							break;
 						}
 						case Moving: {
-							System.out.println(String.format("Elevator# %d > %s", 
-									getElevatorId(), getElevatorState()));
+							if (request != null) {
+								System.out.println(elevatorState.displayCurrentState(getElevatorId(), request));
+							}
 							elevatorState = elevatorState.nextState();
 							break;
 						}
 						case Stop: {
-							System.out.println(String.format("Elevator# %d > %s", 
-									getElevatorId(), getElevatorState()));
+							System.out.println(elevatorState.displayCurrentState(getElevatorId(), request));
 							sendCompletedRequest(request);
 							elevatorState = elevatorState.nextState();
 							break;
 						}
 						case DoorsOpen: {
-							System.out.println(String.format("Elevator# %d > %s", 
-									getElevatorId(), getElevatorState()));
+							System.out.println(elevatorState.displayCurrentState(getElevatorId(), request));
 							elevatorState = elevatorState.nextState();
 							break;
 						}
 						case DoorsClose: {
-							System.out.println(String.format("Elevator# %d > %s", 
-									getElevatorId(), getElevatorState()));
+							System.out.println(elevatorState.displayCurrentState(getElevatorId(), request));
 							elevatorState = elevatorState.nextState();
 							break;
 						}

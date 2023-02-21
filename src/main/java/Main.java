@@ -37,24 +37,22 @@ public class Main {
 			System.exit(1);
 		}
 		
-		try {
-			// Define objects
-			scheduler = new Scheduler();
-			floor = new Floor(1, scheduler, parser);
-			elevator = new Elevator(1, scheduler);
-			
-			// Define threads
-			schedulerThread = new Thread(scheduler, "Thread-Scheduler");
-			floorThread = new Thread(floor, "Thread-Floor");
-			elevatorThread = new Thread(elevator, "Thread-Elevator");
-			
-			// Start threads
-			schedulerThread.start();
-			floorThread.start();
-			elevatorThread.start();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		
+		// Define objects
+		scheduler = new Scheduler();
+		floor = new Floor(1, scheduler, parser);
+		elevator = new Elevator(1, scheduler);
+		
+		// Define threads
+		schedulerThread = new Thread(scheduler, "Thread-Scheduler");
+		floorThread = new Thread(floor, "Thread-Floor");
+		elevatorThread = new Thread(elevator, "Thread-Elevator");
+		
+		// Start threads
+		schedulerThread.start();
+		floorThread.start();
+		elevatorThread.start();
+
 	}
 
 }
