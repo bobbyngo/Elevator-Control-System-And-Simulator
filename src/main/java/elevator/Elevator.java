@@ -82,42 +82,41 @@ public class Elevator implements Runnable {
 			Thread.sleep(1000);
 			while (true) {
 				if (scheduler.getRequestsQueue().size() >= 0) {
+					String elevatorStateStr = elevatorState.displayCurrentState(getElevatorId(), request);
 					switch (elevatorState) {
+						// Only State Moving and Stop only use request argument
 						case Idle: {
-							System.out.println(String.format("Elevator# %d > %s", 
-									getElevatorId(), getElevatorState()));
+							System.out.println(elevatorStateStr);
 							elevatorState = elevatorState.nextState();
 							break;
 						}
 						case AwaitRequest: {
-							System.out.println(String.format("Elevator# %d > %s ----------------------------------------------- \n", 
-									getElevatorId(), getElevatorState()));
+							
+							System.out.println(elevatorStateStr + "----------------------------------------------- \n");
 							request = serveRequest();
 							elevatorState = elevatorState.nextState();
 							break;
 						}
 						case Moving: {
-							System.out.println(String.format("Elevator# %d > %s", 
-									getElevatorId(), getElevatorState()));
+							// request must never be null here since it's init in AwaitRequest state
+							System.out.println(elevatorStateStr);
 							elevatorState = elevatorState.nextState();
 							break;
 						}
 						case Stop: {
-							System.out.println(String.format("Elevator# %d > %s \n", 
-									getElevatorId(), getElevatorState()));
+							System.out.println(elevatorStateStr + "----------------------------------------------- \n");
 							sendCompletedRequest(request);
+							scheduler.registerElevatorLocation(Integer.valueOf(id), request.getDestinationFloor());
 							elevatorState = elevatorState.nextState();
 							break;
 						}
 						case DoorsOpen: {
-							System.out.println(String.format("Elevator# %d > %s", 
-									getElevatorId(), getElevatorState()));
+							System.out.println(elevatorState.displayCurrentState(getElevatorId(), request));
 							elevatorState = elevatorState.nextState();
 							break;
 						}
 						case DoorsClose: {
-							System.out.println(String.format("Elevator# %d > %s", 
-									getElevatorId(), getElevatorState()));
+							System.out.println(elevatorState.displayCurrentState(getElevatorId(), request));
 							elevatorState = elevatorState.nextState();
 							break;
 						}
