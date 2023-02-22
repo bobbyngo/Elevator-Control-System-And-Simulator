@@ -19,7 +19,7 @@ import main.java.dto.Direction;
 import main.java.dto.ElevatorRequest;
 import main.java.elevator.Elevator;
 import main.java.floor.Floor;
-import main.java.parser.Parser;
+import main.java.floor.parser.Parser;
 import main.java.scheduler.Scheduler;
 
 /**

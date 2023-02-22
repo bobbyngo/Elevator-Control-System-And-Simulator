@@ -5,7 +5,7 @@ import java.util.logging.Logger;
 
 import main.java.elevator.Elevator;
 import main.java.floor.Floor;
-import main.java.parser.Parser;
+import main.java.floor.parser.Parser;
 import main.java.scheduler.Scheduler;
 
 /**
