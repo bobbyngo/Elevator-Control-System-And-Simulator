@@ -95,15 +95,7 @@ public class Floor implements Runnable {
 					Thread.sleep(2000);
 				} catch (InterruptedException e) {}
 			}
-<<<<<<< HEAD
-			System.out.println("----------------------- Requests sent to Scheduler ----------------------- \n");
-=======
-			
-			System.out.println(String.format("%s: Requests sent to Scheduler.", 
-					this.getClass().getName()));;
->>>>>>> 371c5d28ff660ec28b8cbf538c256c0edffd72c1
 		}
-		
 		// End process when all requests have been served?
 		logger.info("All requests have been sent.");
 		System.exit(0);

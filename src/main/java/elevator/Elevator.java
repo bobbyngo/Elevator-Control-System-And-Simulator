@@ -92,7 +92,7 @@ public class Elevator implements Runnable {
 						}
 						case AwaitRequest: {
 							
-							System.out.println(elevatorStateStr + "----------------------------------------------- \n");
+							System.out.println(elevatorStateStr + " ------------------------------------------ \n");
 							request = serveRequest();
 							elevatorState = elevatorState.nextState();
 							break;
@@ -104,7 +104,7 @@ public class Elevator implements Runnable {
 							break;
 						}
 						case Stop: {
-							System.out.println(elevatorStateStr + "----------------------------------------------- \n");
+							System.out.println(elevatorStateStr + "\n");
 							sendCompletedRequest(request);
 							scheduler.registerElevatorLocation(Integer.valueOf(id), request.getDestinationFloor());
 							elevatorState = elevatorState.nextState();
