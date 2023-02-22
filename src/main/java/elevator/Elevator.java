@@ -1,5 +1,6 @@
 package main.java.elevator;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import main.java.dto.ElevatorRequest;
@@ -28,6 +29,7 @@ public class Elevator implements Runnable {
 		this.id = id;
 		this.scheduler = scheduler;
 		elevatorState = ElevatorState.Idle;
+		logger.setLevel(Level.INFO);
 	}
 	
 	/**
@@ -52,8 +54,8 @@ public class Elevator implements Runnable {
 	public ElevatorRequest serveRequest() {
 		ElevatorRequest request;
 		request = scheduler.dispatchRequest();
-		logger.info(String.format("Serve request %s ", 
-				request.toString()));
+		String loggerStr = String.format("Serve request %s \n", request.toString());
+		logger.info(loggerStr);
 		return request;
 	}
 	
@@ -63,8 +65,8 @@ public class Elevator implements Runnable {
 	 */
 	public void sendCompletedRequest(ElevatorRequest request) {
 		scheduler.putCompletedRequest(request);
-		logger.info(String.format("Complete request %s ", 
-				request.toString()));
+		String loggerStr = String.format("Complete request %s \n", request.toString());
+		logger.info(loggerStr);
 		return;
 	}
 
@@ -80,27 +82,29 @@ public class Elevator implements Runnable {
 			Thread.sleep(1000);
 			while (true) {
 				if (scheduler.getRequestsQueue().size() >= 0) {
+					String elevatorStateStr = elevatorState.displayCurrentState(getElevatorId(), request);
 					switch (elevatorState) {
 						// Only State Moving and Stop only use request argument
 						case Idle: {
-							System.out.println(elevatorState.displayCurrentState(getElevatorId(), request));
+							System.out.println(elevatorStateStr);
 							elevatorState = elevatorState.nextState();
 							break;
 						}
 						case AwaitRequest: {
-							System.out.println(elevatorState.displayCurrentState(getElevatorId(), request));
+							
+							System.out.println(elevatorStateStr + " ------------------------------------------ \n");
 							request = serveRequest();
 							elevatorState = elevatorState.nextState();
 							break;
 						}
 						case Moving: {
 							// request must never be null here since it's init in AwaitRequest state
-							System.out.println(elevatorState.displayCurrentState(getElevatorId(), request));
+							System.out.println(elevatorStateStr);
 							elevatorState = elevatorState.nextState();
 							break;
 						}
 						case Stop: {
-							System.out.println(elevatorState.displayCurrentState(getElevatorId(), request));
+							System.out.println(elevatorStateStr + "\n");
 							sendCompletedRequest(request);
 							scheduler.registerElevatorLocation(Integer.valueOf(id), request.getDestinationFloor());
 							elevatorState = elevatorState.nextState();

@@ -2,6 +2,7 @@ package main.java.floor;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import main.java.dto.ElevatorRequest;
@@ -33,6 +34,7 @@ public class Floor implements Runnable {
 		this.floorNumber = floorNumber;
 		this.scheduler = scheduler;
 		this.parser = parser;
+		logger.setLevel(Level.INFO);
 	}
 	
 	/**
@@ -50,8 +52,8 @@ public class Floor implements Runnable {
 	 */
 	public void requestElevator(ElevatorRequest request) {
 		scheduler.putRequest(request);
-		logger.info(String.format("Request elevator: %s", 
-				request.toString()));
+		String loggerStr = String.format("Request elevator: %s \n", request.toString());
+		logger.info(loggerStr);
 	}
 	
 	/**
@@ -60,8 +62,8 @@ public class Floor implements Runnable {
 	 */
 	public ElevatorRequest receiveCompletedRequest() {
 		ElevatorRequest completedRequest = scheduler.getCompletedRequest();
-		logger.info(String.format("Elevator completed request: %s", 
-				completedRequest.toString()));
+		String loggerStr = String.format("Elevator completed request: %s", completedRequest.toString());
+		logger.info(loggerStr);
 		return completedRequest;
 	}
 
@@ -77,6 +79,7 @@ public class Floor implements Runnable {
 		ArrayList<ElevatorRequest> elevatorRequests = null;
 		
 		try {
+			System.out.println("-------------------------- Parsing user requests ------------------------- \n");
 			elevatorRequests = parser.requestParser();
 		} catch (IOException e) {
 			logger.severe("IOException occurred");
@@ -84,6 +87,7 @@ public class Floor implements Runnable {
 		}
 		
 		if (!elevatorRequests.isEmpty()) {
+			System.out.println("------------------------ Adding requests to queue ------------------------ \n");
 			for (ElevatorRequest req : elevatorRequests) {
 				requestElevator(req);
 				
@@ -91,11 +95,7 @@ public class Floor implements Runnable {
 					Thread.sleep(2000);
 				} catch (InterruptedException e) {}
 			}
-			
-			System.out.println(String.format("%s: Requests sent to Scheduler.", 
-					this.getClass().getName()));;
 		}
-		
 		// End process when all requests have been served?
 		logger.info("All requests have been sent.");
 		System.exit(0);
