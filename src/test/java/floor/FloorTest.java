@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 import main.java.floor.Floor;
-import main.java.parser.Parser;
+import main.java.floor.parser.Parser;
 import main.java.scheduler.Scheduler;
 
 

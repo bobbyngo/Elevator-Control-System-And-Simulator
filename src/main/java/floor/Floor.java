@@ -6,7 +6,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import main.java.dto.ElevatorRequest;
-import main.java.parser.Parser;
+import main.java.floor.parser.Parser;
 import main.java.scheduler.Scheduler;
 
 /**
