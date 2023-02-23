@@ -67,6 +67,9 @@ The ElevatorRequest as a shared object that is used for threads to communicate.
 
 # Iteration 2
 Adding State Machine functionality for the Scheduler subsystem and Elevator subsystem. Demonstrating the state changes of subsystems when there is an action or event that trigger it
+<br/>
+![Scheduler-State](/documentation/P2-UML-schedulerState.drawio.png)
+![Elevator-State](/documentation/P2-UML-elevatorState.drawio.png)
 
 ## Project structure:
 
