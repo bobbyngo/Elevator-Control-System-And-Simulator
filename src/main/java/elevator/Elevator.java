@@ -1,5 +1,6 @@
 package main.java.elevator;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import main.java.dto.ElevatorRequest;
@@ -8,14 +9,16 @@ import main.java.scheduler.Scheduler;
 /**
  * Elevator class serves elevator requests from the Scheduler and stores in internal queue.
  * @author Trong Nguyen
- * @version 1.0, 02/04/23
+ * @since 1.0, 02/04/23
+ * @version 2.0, 02/27/23
  */
 public class Elevator implements Runnable {
 	
-	private static final Logger logger = Logger.getLogger(Elevator.class.getName());
+	private final Logger logger = Logger.getLogger(this.getClass().getName());
 	
 	private int id;
 	private Scheduler scheduler;
+	private ElevatorState elevatorState;
 	
 	/**
 	 * Constructor for Elevator class.
@@ -25,6 +28,8 @@ public class Elevator implements Runnable {
 	public Elevator(int id, Scheduler scheduler) {
 		this.id = id;
 		this.scheduler = scheduler;
+		elevatorState = ElevatorState.Idle;
+		logger.setLevel(Level.INFO);
 	}
 	
 	/**
@@ -36,13 +41,22 @@ public class Elevator implements Runnable {
 	}
 	
 	/**
+	 * Get current elevator state
+	 * @return elevatorState, current elevator state
+	 */
+	public ElevatorState getElevatorState() {
+		return elevatorState;
+	}
+	
+	/**
 	 * Fetch a request from the Scheduler and add to requests queue.
+	 * @return request ElevatorRequest object
 	 */
 	public ElevatorRequest serveRequest() {
 		ElevatorRequest request;
-		// dispatch request
 		request = scheduler.dispatchRequest();
-		logger.info(String.format("Elevator request queued: %s", request));
+		String loggerStr = String.format("Serve request %s \n", request.toString());
+		logger.info(loggerStr);
 		return request;
 	}
 	
@@ -52,6 +66,8 @@ public class Elevator implements Runnable {
 	 */
 	public void sendCompletedRequest(ElevatorRequest request) {
 		scheduler.putCompletedRequest(request);
+		String loggerStr = String.format("Complete request %s \n", request.toString());
+		logger.info(loggerStr);
 		return;
 	}
 
@@ -62,16 +78,54 @@ public class Elevator implements Runnable {
 	 */
 	@Override
 	public void run() {
-		ElevatorRequest request;
-		while (true) {
-			// TODO: add functionality to end when there are no more requests to serve
-			request = serveRequest();
-			// do something in between... work in progress for future iterations
-			try {
-				Thread.sleep(4000);
-			} catch (InterruptedException e) {}
-			sendCompletedRequest(request);
-			
+		ElevatorRequest request = null;
+		try {
+			Thread.sleep(1000);
+			while (true) {
+				if (scheduler.getRequestsQueue().size() >= 0) {
+					String elevatorStateStr = elevatorState.displayCurrentState(getElevatorId(), request);
+					switch (elevatorState) {
+						// Only State Moving and Stop only use request argument
+						case Idle: {
+							System.out.println(elevatorStateStr);
+							elevatorState = elevatorState.nextState();
+							break;
+						}
+						case AwaitRequest: {
+							System.out.println(elevatorStateStr + " ------------------------------------------ \n");
+							request = serveRequest();
+							elevatorState = elevatorState.nextState();
+							break;
+						}
+						case Moving: {
+							System.out.println(elevatorStateStr);
+							elevatorState = elevatorState.nextState();
+							break;
+						}
+						case Stop: {
+							System.out.println(elevatorStateStr + "\n");
+							sendCompletedRequest(request);
+							scheduler.registerElevatorLocation(Integer.valueOf(id), request.getDestinationFloor());
+							elevatorState = elevatorState.nextState();
+							break;
+						}
+						case DoorsOpen: {
+							System.out.println(elevatorState.displayCurrentState(getElevatorId(), request));
+							elevatorState = elevatorState.nextState();
+							break;
+						}
+						case DoorsClose: {
+							System.out.println(elevatorState.displayCurrentState(getElevatorId(), request));
+							elevatorState = elevatorState.nextState();
+							break;
+						}
+						default:
+							break; 		
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 

@@ -2,21 +2,23 @@ package main.java.floor;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import main.java.dto.ElevatorRequest;
-import main.java.parser.Parser;
+import main.java.floor.parser.Parser;
 import main.java.scheduler.Scheduler;
 
 /**
  * The class that holds information about a floor and initiates requests 
  * to the scheduler for users wanting to travel up or down
  * @author Hussein El Mokdad
- * @version 1.0, 02/04/23
+ * @since 1.0, 02/04/23
+ * @version 2.0, 02/27/23
  */
 public class Floor implements Runnable {
 	
-	private static final Logger logger = Logger.getLogger(Floor.class.getName());
+	private final Logger logger = Logger.getLogger(this.getClass().getName());
 	
 	private int floorNumber;
 	private Scheduler scheduler; 
@@ -32,6 +34,7 @@ public class Floor implements Runnable {
 		this.floorNumber = floorNumber;
 		this.scheduler = scheduler;
 		this.parser = parser;
+		logger.setLevel(Level.INFO);
 	}
 	
 	/**
@@ -48,18 +51,19 @@ public class Floor implements Runnable {
 	 * @author Zakaria Ismail
 	 */
 	public void requestElevator(ElevatorRequest request) {
-		
-		logger.info("Requesting an elevator: " + request.toString());
-		// Put the request to the Scheduler
 		scheduler.putRequest(request);
-		
+		String loggerStr = String.format("Request elevator: %s \n", request.toString());
+		logger.info(loggerStr);
 	}
 	
+	/**
+	 * Notify scheduler that request has been completed.
+	 * @return completedRequest, ElevatorRequest completed
+	 */
 	public ElevatorRequest receiveCompletedRequest() {
-		ElevatorRequest completedRequest;
-		// The elevator finished the request
-		completedRequest = scheduler.getCompletedRequest();
-		logger.info("Elevator finished the request: " + completedRequest.toString());
+		ElevatorRequest completedRequest = scheduler.getCompletedRequest();
+		String loggerStr = String.format("Elevator completed request: %s", completedRequest.toString());
+		logger.info(loggerStr);
 		return completedRequest;
 	}
 
@@ -73,26 +77,25 @@ public class Floor implements Runnable {
 	@Override
 	public void run() {
 		ArrayList<ElevatorRequest> elevatorRequests = null;
-		ElevatorRequest reply;
 		
 		try {
+			System.out.println("-------------------------- Parsing user requests ------------------------- \n");
 			elevatorRequests = parser.requestParser();
 		} catch (IOException e) {
-			logger.severe("An IOException occurred.");
+			logger.severe("IOException occurred");
 			System.exit(1);
 		}
 		
 		if (!elevatorRequests.isEmpty()) {
+			System.out.println("------------------------ Adding requests to queue ------------------------ \n");
 			for (ElevatorRequest req : elevatorRequests) {
 				requestElevator(req);
-				reply = receiveCompletedRequest();
 				
 				try {
 					Thread.sleep(2000);
 				} catch (InterruptedException e) {}
 			}
 		}
-		
 		// End process when all requests have been served?
 		logger.info("All requests have been sent.");
 		System.exit(0);

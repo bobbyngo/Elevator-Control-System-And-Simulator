@@ -3,7 +3,9 @@ package main.java.scheduler;
 import java.util.ArrayList;
 import java.util.logging.*;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import main.java.dto.ElevatorRequest;
 
@@ -13,15 +15,44 @@ import main.java.dto.ElevatorRequest;
  * responsible for routing each elevator to requested floors and coordinating elevators in such a way to minimize
  * waiting times for people moving between floors (avoiding starvation).
  * @author Bobby Ngo
- * @version 1.0, 02/04/23
+ * @since 1.0, 02/04/23
+ * @version 2.0, 02/27/23
  */
 public class Scheduler implements Runnable {
 	
-	private static final Logger logger = Logger.getLogger(Scheduler.class.getName());
-	private List<ElevatorRequest> requestsQueue = Collections.synchronizedList(new ArrayList<>());
-	private List<ElevatorRequest> completedQueue = Collections.synchronizedList(new ArrayList<>());
-
-
+	private final Logger logger = Logger.getLogger(this.getClass().getName());
+	private List<ElevatorRequest> requestsQueue;
+	private List<ElevatorRequest> completedQueue;
+	private Map<Integer, Integer> elevatorLocation;
+	private SchedulerState schedulerState;
+	
+	/**
+	 * Constructor for the Scheduler.
+	 */
+	public Scheduler() {
+		requestsQueue = Collections.synchronizedList(new ArrayList<>());
+		completedQueue = Collections.synchronizedList(new ArrayList<>());
+		elevatorLocation = Collections.synchronizedMap(new HashMap<>());
+		schedulerState = SchedulerState.Idle;
+		logger.setLevel(Level.INFO);
+	}
+	
+	/**
+	 * Get the queue of the elevator request.
+	 * @return List<>, list of elevator request
+	 */
+	public List<ElevatorRequest> getRequestsQueue() {
+		return requestsQueue;
+	}
+	
+	/**
+	 * Get current scheduler state
+	 * @return schedulerState SchedulerState, current scheduler state
+	 */
+	public SchedulerState getSchedulerState() {
+		return schedulerState;
+	}
+	
 	/**
 	 * This method is called by the Floor class. The new request will be added to the list of floors to visit.
 	 * @param elevatorRequest
@@ -30,7 +61,8 @@ public class Scheduler implements Runnable {
 		// No duplicate values
 		if (!requestsQueue.contains(elevatorRequest)) {
 			requestsQueue.add(elevatorRequest);
-			logger.info("Added " + elevatorRequest.toString() + " to the request queue. Queue size is: " + requestsQueue.size());
+			String loggerStr = String.format("Add request %s > request queue: %d", elevatorRequest.toString(), requestsQueue.size());
+			logger.info(loggerStr);
 		}
 		notifyAll();
 	}
@@ -51,13 +83,11 @@ public class Scheduler implements Runnable {
 			}
 		}
 		
-		// Iteration 1 we will first come first serve: remove the former index
+		// For this iteration: we will first come first serve: remove the former index
 		ElevatorRequest removedElevatorRequest = requestsQueue.remove(0);
-		logger.info("Dispatched request " + removedElevatorRequest.toString());
-		logger.info("The queue size is " + requestsQueue.size());
-		
+		String loggerStr = String.format("Dispatch request %s > request queue: %d", removedElevatorRequest.toString(), requestsQueue.size());
+		logger.info(loggerStr);
 		notifyAll();
-		
 		return removedElevatorRequest;
 	}
 	
@@ -69,7 +99,8 @@ public class Scheduler implements Runnable {
 	public synchronized void putCompletedRequest(ElevatorRequest reply) {
 		if (!completedQueue.contains(reply)) {
 			completedQueue.add(reply);
-			logger.info(String.format("Added %s to the completed queue. Queue size is %d", reply, completedQueue.size()));
+			String loggerStr = String.format("Add request %s to the completed queue > completed queue: %d", reply, completedQueue.size());
+			logger.info(loggerStr);
 		}
 		notifyAll();
 	}
@@ -91,7 +122,28 @@ public class Scheduler implements Runnable {
 		notifyAll();
 		return reply;
 	}
-
+	
+	/**
+	 * This method stores the elevator's current floor number together with its id.
+	 * @param id Integer, the id of the elevator
+	 * @param floorNumber, Integer, the floor number
+	 * @author Patrick Liu
+	 */
+	public synchronized void registerElevatorLocation(Integer id, Integer floorNumber) {
+		elevatorLocation.put(id, floorNumber);
+		System.out.println(String.format("Scheduler: Elevator# %s current location: Floor %s", id, displayElevatorLocation(id)));
+	}
+	
+	/**
+	 * Display the elevator's current location based on the provided id.
+	 * @param id Integer, the elevator id
+	 * @return Integer, the elevator's current location based on the provided id
+	 * @author Patrick Liu
+	 */
+	public synchronized Integer displayElevatorLocation(Integer id) {
+		return elevatorLocation.get(id);
+	}
+	
 	/**
 	 * Scheduler override run() method. Sleeps until the process is killed.
 	 * @see java.lang.Runnable#run()
@@ -100,13 +152,32 @@ public class Scheduler implements Runnable {
 	@Override
 	public void run() {
 		try {
-			// Scheduler class is only used for its resource put/get methods
-			// Q: How will the Scheduler thread be used when we distribute our application?
 			Thread.sleep(0);
+			while (true) {
+				switch (schedulerState) {
+				case Idle: {
+					schedulerState = schedulerState.nextState();
+					break;
+				}
+				case Ready: {
+					if (!requestsQueue.isEmpty()) {
+						schedulerState = schedulerState.nextState();
+					}
+					break;
+				}
+				case InService: {
+					if (!completedQueue.isEmpty()) {
+						schedulerState = schedulerState.nextState();
+					}
+					break;
+				}
+				default:
+					break;
+				}
+			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		return;
 	}
 	
 }
