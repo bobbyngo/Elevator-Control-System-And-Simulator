@@ -1,14 +1,9 @@
-/**
- * 
- */
 package test.java.parser;
 
 import static org.junit.Assert.*;
 
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import org.junit.Before;
@@ -21,7 +16,6 @@ import main.java.dto.Direction;
 /**
  * ParserTest tests and validates methods for Parser
  * subsystem in the Elevator Control System & Simulator
- * 
  * @author Patrick Liu
  */
 public class ParserTest {
@@ -31,10 +25,7 @@ public class ParserTest {
 	
 	/**
 	 * setUp initializes the test environment, the method is run before every Test 
-	 * 
 	 * @throws Exception
-	 * 
-	 * @author Patrick Liu
 	 */
 	@Before
     public void setUp() throws Exception {
@@ -45,11 +36,8 @@ public class ParserTest {
 	
 	/**
 	 * testTimestamp validates that the timestamp from the input file is properly parsed
-	 * 
 	 * @throws IOException
 	 * @throws ParseException
-	 * 
-	 * @author Patrick Liu
 	 */
 	@Test
 	public void testTimestamp() throws IOException, ParseException {
@@ -60,11 +48,8 @@ public class ParserTest {
 	 * testParsingException tests the situation when the provided input file contains
 	 * incorrect/illegal argument numbers/types, the list containing the elevator requests 
 	 * will be cleared and Exception will be displayed in the terminal
-	 * 
 	 * @throws IOException
 	 * @throws ParseException
-	 * 
-	 * @author Patrick Liu
 	 */
 	@Test
 	public void testParsingException() throws IOException, ParseException {
@@ -75,8 +60,6 @@ public class ParserTest {
 	/**
 	 * testSourceFloor validates that the floor source number (Integer)
 	 * from the input file is properly parsed
-	 * 
-	 * @author Patrick Liu
 	 */
 	@Test
 	public void testSourceFloor() {
@@ -84,11 +67,8 @@ public class ParserTest {
 	}
 	
 	/**
-	 *
 	 * testDirectionUp validates that the direction (Direction.UP)
 	 * from the input file is properly parsed
-	 * 
-	 * @author Patrick Liu
 	 */
 	@Test
 	public void testDirectionUp() {
@@ -98,8 +78,6 @@ public class ParserTest {
 	/**
 	 * testDirectionDown validates that the direction (Direction.DOWN)
 	 * from the input file is properly parsed
-	 * 
-	 * @author Patrick Liu
 	 */
 	@Test
 	public void testDirectionDown() {
@@ -109,8 +87,6 @@ public class ParserTest {
 	/**
 	 * testDestinationFloor validates that the floor destination number (Integer)
 	 * from the input file is properly parsed
-	 * 
-	 * @author Patrick Liu
 	 */
 	@Test
 	public void testDestinationFloor() {

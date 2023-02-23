@@ -52,7 +52,6 @@ public class Main {
 		schedulerThread.start();
 		floorThread.start();
 		elevatorThread.start();
-
 	}
 
 }

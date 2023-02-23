@@ -56,4 +56,5 @@ public class SchedulerStateTest {
 		assertEquals(schedulerState, SchedulerState.InService);
 		schedulerState = schedulerState.nextState();
 	}
+	
 }

@@ -84,16 +84,16 @@ public enum ElevatorState {
 	};
 	
 	/**
-	 * Method responsible for changing the current state
-	 * @return void
+	 * Method for changing the current state
+	 * @return ElevatorState, the enum state of the elevator
 	 */
 	public abstract ElevatorState nextState(); 
 	
 	/**
-	 * Method that display information of the current state and request
-	 * @param id
-	 * @param request
-	 * @return String
+	 * Method that display information of the current state and request.
+	 * @param id int, id of the elevator
+	 * @param request ElevatorRequest object
+	 * @return String, the current state of the elevator
 	 */
 	public abstract String displayCurrentState(int id, ElevatorRequest request);	
 }
