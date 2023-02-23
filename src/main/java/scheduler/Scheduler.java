@@ -23,15 +23,16 @@ public class Scheduler implements Runnable {
 	private final Logger logger = Logger.getLogger(this.getClass().getName());
 	private List<ElevatorRequest> requestsQueue;
 	private List<ElevatorRequest> completedQueue;
-	Map<Integer, Integer> elevatorLocation;
+	private Map<Integer, Integer> elevatorLocation;
 	private SchedulerState schedulerState;
 	
+	/**
+	 * Constructor for the Scheduler.
+	 */
 	public Scheduler() {
 		requestsQueue = Collections.synchronizedList(new ArrayList<>());
 		completedQueue = Collections.synchronizedList(new ArrayList<>());
-		
 		elevatorLocation = Collections.synchronizedMap(new HashMap<>());
-		
 		schedulerState = SchedulerState.Idle;
 		logger.setLevel(Level.INFO);
 	}
@@ -46,7 +47,7 @@ public class Scheduler implements Runnable {
 	
 	/**
 	 * Get current scheduler state
-	 * @return schedulerState, current scheduler state
+	 * @return schedulerState SchedulerState, current scheduler state
 	 */
 	public SchedulerState getSchedulerState() {
 		return schedulerState;
@@ -82,7 +83,7 @@ public class Scheduler implements Runnable {
 			}
 		}
 		
-		// Iteration 1 we will first come first serve: remove the former index
+		// For this iteration: we will first come first serve: remove the former index
 		ElevatorRequest removedElevatorRequest = requestsQueue.remove(0);
 		String loggerStr = String.format("Dispatch request %s > request queue: %d", removedElevatorRequest.toString(), requestsQueue.size());
 		logger.info(loggerStr);
@@ -123,10 +124,9 @@ public class Scheduler implements Runnable {
 	}
 	
 	/**
-	 * registerElevatorLocation stores the elevator's current floor number together with its id
-	 * 
-	 * @param id
-	 * @param floorNumber
+	 * This method stores the elevator's current floor number together with its id.
+	 * @param id Integer, the id of the elevator
+	 * @param floorNumber, Integer, the floor number
 	 * @author Patrick Liu
 	 */
 	public synchronized void registerElevatorLocation(Integer id, Integer floorNumber) {
@@ -135,9 +135,9 @@ public class Scheduler implements Runnable {
 	}
 	
 	/**
-	 * displayElevatorLocation returns the elevator's current location based on the provided id
-	 * 
-	 * @param id
+	 * Display the elevator's current location based on the provided id.
+	 * @param id Integer, the elevator id
+	 * @return Integer, the elevator's current location based on the provided id
 	 * @author Patrick Liu
 	 */
 	public synchronized Integer displayElevatorLocation(Integer id) {

@@ -50,6 +50,7 @@ public class Elevator implements Runnable {
 	
 	/**
 	 * Fetch a request from the Scheduler and add to requests queue.
+	 * @return request ElevatorRequest object
 	 */
 	public ElevatorRequest serveRequest() {
 		ElevatorRequest request;
@@ -91,14 +92,12 @@ public class Elevator implements Runnable {
 							break;
 						}
 						case AwaitRequest: {
-							
 							System.out.println(elevatorStateStr + " ------------------------------------------ \n");
 							request = serveRequest();
 							elevatorState = elevatorState.nextState();
 							break;
 						}
 						case Moving: {
-							// request must never be null here since it's init in AwaitRequest state
 							System.out.println(elevatorStateStr);
 							elevatorState = elevatorState.nextState();
 							break;

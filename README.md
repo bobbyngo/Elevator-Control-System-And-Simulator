@@ -5,9 +5,9 @@ Carleton University
 Department of Systems and Computer Engineering 
 SYSC 3303A Real-Time Concurrent Systems Winter 2023 
 Iteration 1 - Establish Connections between the three subsystems.
-Iteration 2 - Adding the Scheduler and Elevator Subsystems
+Iteration 2 - Adding the Scheduler and Elevator Subsystems.
 @version 1.0, 02/04/23
-@version 2.0, 02/22/2023
+@version 2.0, 02/27/23
 ```
 
 ## Group 7 Members:
@@ -24,7 +24,6 @@ The work distribution is divided into tasks and displayed in this JIRA link:
 
 The work breakdown responsibility of the project for the iteration is located:
 
-* documentation/P1G7-Responsibilities.pdf
 * documentation/P2G7-Responsibilities.pdf
 
 ## Documentation
@@ -32,8 +31,8 @@ The work breakdown responsibility of the project for the iteration is located:
 The UML class diagram and the UML sequence diagram of the system is contained in
 the documentation folder labeled: 
 
-* documentation/P1-UML-class.drawio.pdf
-* documentation/P1-UML-sequence.drawio.pdf
+* documentation/P2-UML-class.drawio.pdf
+* documentation/P2-UML-sequence.drawio.pdf
 
 ## Requirements & Dependencies
 
@@ -57,16 +56,19 @@ run multiple main programs (projects) concurrently.
 Navigate to `/src/main/Main.java` and run the `main` method.
 
 ## UML Diagrams
-![UML-class](/documentation/P1-UML-class.drawio.png)
-![UML-sequence](/documentation/P1-UML-sequence.drawio.png)
+![UML-class](/documentation/P2-UML-class.drawio.png)
+![UML-sequence](/documentation/P2-UML-sequence.drawio.png)
 
 # Iteration 1
-Set up an application for 3 subsystems: Floor, Scheduler, and Elevator. Floor thread send the request to the Scheduler and the Scheduler assign the request to the Elevator. The Elevator will notify the Scheduler to notify the Floor that the request has been finished. The ElevatorRequest as a shared object that is used for threads to communicate  
+Set up an application for 3 subsystems: Floor, Scheduler, and Elevator. 
+Floor thread send the request to the Scheduler and the Scheduler assign the request to the Elevator. 
+The Elevator will notify the Scheduler to notify the Floor that the request has been finished. 
+The ElevatorRequest as a shared object that is used for threads to communicate.
 
 # Iteration 2
 Adding State Machine functionality for the Scheduler subsystem and Elevator subsystem. Demonstrating the state changes of subsystems when there is an action or event that trigger it
 
-# Project structure:
+## Project structure:
 
 The project is separated into `main` and `test` packages, where each package has a specific functionality <br/>
 
@@ -77,9 +79,14 @@ ELEVATOR-CONTROL-SYSTEM-AND-SIMULATOR
 |   .project
 |   README.md
 |   README.txt
+|
 +---documentation
 |       P2-UML-class.drawio.pdf
 |       P2-UML-class.drawio.png
+|       P2-UML-elevatorState.drawio.pdf
+|       P2-UML-elevatorState.drawio.png
+|       P2-UML-schedulerState.drawio.pdf
+|       P2-UML-schedulerState.drawio.png
 |       P2-UML-sequence.drawio.pdf
 |       P2-UML-sequence.drawio.png
 |       P2-UML.drawio
@@ -109,17 +116,17 @@ ELEVATOR-CONTROL-SYSTEM-AND-SIMULATOR
     |   |   |       package-info.java
     |   |   |
     |   |   +---floor
-    |   |   |       Floor.java
-    |   |   |       package-info.java
-    |   |   |
-    |   |   +---parser
-    |   |   |       package-info.java
-    |   |   |       Parser.java
+    |   |   |   |   Floor.java
+    |   |   |   |   package-info.java
+    |   |   |   |
+    |   |   |   \---parser
+    |   |   |           package-info.java
+    |   |   |           Parser.java
     |   |   |
     |   |   \---scheduler
-    |   |   |       package-info.java
-    |   |   |       Scheduler.java
-    |   |   |       SchedulerState.java
+    |   |           package-info.java
+    |   |           Scheduler.java
+    |   |           SchedulerState.java
     |   |
     |   \---resources
     |           input.txt
@@ -148,8 +155,8 @@ ELEVATOR-CONTROL-SYSTEM-AND-SIMULATOR
         |   |       ParserTest.java
         |   |
         |   \---scheduler
-        |   |       SchedulerStateTest.java
-        |   |       package-info.java
+        |           package-info.java
+        |           SchedulerStateTest.java
         |
         \---resources
                 incorrectInput.txt

@@ -28,5 +28,9 @@ public enum SchedulerState {
 		}
 	};
 	
+	/**
+	 * Moves the scheduler to the next state.
+	 * @return SchedulerState, the enum state of th
+	 */
 	public abstract SchedulerState nextState();
 }

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package test.java.dto;
 
 import static org.junit.Assert.*;
@@ -18,7 +15,6 @@ import main.java.dto.ElevatorRequest;
 
 /**
  * ElevatorRequestTest tests and validates methods in the data transfer object
- * 
  * @author Patrick Liu
  */
 public class ElevatorRequestTest {
@@ -28,10 +24,7 @@ public class ElevatorRequestTest {
 
 	/**
 	 * setUp initializes the test environment, the method is run before every Test 
-	 * 
 	 * @throws ParseException 
-	 * 
-	 * @author Patrick Liu
 	 */
 	@Before
 	public void setUp() throws ParseException {
@@ -41,8 +34,6 @@ public class ElevatorRequestTest {
 	
 	/**
 	 * testGetTimestamp validates that the returned timestamp value is correct
-	 * 
-	 * @author Patrick Liu
 	 */
 	@Test
 	public void testGetTimestamp() {
@@ -51,8 +42,6 @@ public class ElevatorRequestTest {
 	
 	/**
 	 * testGetSourceFloor validates that the returned floorRequest value is correct
-	 * 
-	 * @author Patrick Liu
 	 */
 	@Test
 	public void testGetSourceFloor() {
@@ -61,8 +50,6 @@ public class ElevatorRequestTest {
 	
 	/**
 	 * testGetDirection validates that the returned Direction enum value is correct
-	 * 
-	 * @author Patrick Liu
 	 */
 	@Test
 	public void testGetDirection() {
@@ -71,8 +58,6 @@ public class ElevatorRequestTest {
 	
 	/**
 	 * testGetDestinationFloor validates that the returned floorDestination value is correct
-	 * 
-	 * @author Patrick Liu
 	 */
 	@Test
 	public void testGetDestinationFloor() {
@@ -82,8 +67,6 @@ public class ElevatorRequestTest {
 	/**
 	 * testToString validates that the returned String value is contains the correct value and 
 	 * is in the required format
-	 * 
-	 * @author Patrick Liu
 	 */
 	@Test
 	public void testToString() {
@@ -93,8 +76,6 @@ public class ElevatorRequestTest {
 	/**
 	 * testEqual validates that two elevatorRequest object are the
 	 * same or have the equal values of their attributes
-	 * 
-	 * @author Patrick Liu
 	 */
 	@Test
 	public void testEquals() {
@@ -105,13 +86,11 @@ public class ElevatorRequestTest {
 	/**
 	 * testStringToTimestamp validates that the converted Timestamp from String has
 	 * the correct format and is equal value when compared to the Timestamp object
-	 * 
 	 * @throws IOException
 	 * @throws ParseException
-	 * 
-	 * @author Patrick Liu
 	 */
 	public void testStringToTimestamp() throws IOException, ParseException {
 		assertEquals(ElevatorRequest.stringToTimestamp("07:01:15.000"), elevatorRequest.getTimestamp());
 	}
+	
 }

@@ -79,7 +79,7 @@ public class ElevatorRequest {
 	
 	/**
 	 * toString method for a readable form of object attributes
-	 * @return String
+	 * @return String, output in console
 	 */
 	@Override
 	public String toString(){ 
@@ -89,7 +89,7 @@ public class ElevatorRequest {
   
     /**
 	 * Override equals method for comparing Elevator Object.
-	 * @return boolean
+	 * @return boolean, true if the object are equal
 	 * @author Bobby Ngo
 	 */
 	@Override
