@@ -27,6 +27,8 @@ public class ElevatorStateTest {
 	 */
 	@Before
 	public void setUp() {
+		// If we don't init this we will get NPE cause when we create Elevator instances, scheduler will register the floor for it
+		scheduler = new Scheduler();
 		elevator1 = new Elevator(1, scheduler);
 		elevatorState = ElevatorState.Idle;
 	}
