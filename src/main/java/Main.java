@@ -1,6 +1,7 @@
 package main.java;
 
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import main.java.elevator.Elevator;
@@ -16,6 +17,7 @@ import main.java.scheduler.Scheduler;
 public class Main {
 	
 	private static final Logger logger = Logger.getLogger(Main.class.getName());
+	
 
 	/**
 	 * Main method for program execution.
@@ -26,9 +28,11 @@ public class Main {
 		String filename = "./src/main/resources/input.txt";
 		Scheduler scheduler;
 		Floor floor;
-		Elevator elevator;
+		ArrayList<Elevator> elevatorArr;
+		final int NUM_OF_ELEVATORS = 4;
 		Parser parser = null;
-		Thread schedulerThread, floorThread, elevatorThread;	
+		Thread schedulerThread, floorThread;
+		
 		
 		try {
 			parser = new Parser(filename);
@@ -41,17 +45,24 @@ public class Main {
 		// Define objects
 		scheduler = new Scheduler();
 		floor = new Floor(1, scheduler, parser);
-		elevator = new Elevator(1, scheduler);
+		elevatorArr = new ArrayList<>();
+		for (int i = 0; i < NUM_OF_ELEVATORS; i++) {
+			elevatorArr.add(new Elevator(i + 1, scheduler));
+		}
 		
 		// Define threads
 		schedulerThread = new Thread(scheduler, "Thread-Scheduler");
 		floorThread = new Thread(floor, "Thread-Floor");
-		elevatorThread = new Thread(elevator, "Thread-Elevator");
 		
 		// Start threads
 		schedulerThread.start();
 		floorThread.start();
-		elevatorThread.start();
+		
+		// Defines and starts the elevator threads
+		for (Elevator elevator : elevatorArr) {
+			Thread elevatorThread = new Thread(elevator, "Thread-Elevator " + elevator.getElevatorId());
+			elevatorThread.start();
+		}
 	}
 
 }

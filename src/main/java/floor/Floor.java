@@ -98,7 +98,7 @@ public class Floor implements Runnable {
 		}
 		// End process when all requests have been served?
 		logger.info("All requests have been sent.");
-		System.exit(0);
+		System.exit(0); // This is terminates the program even if the elevators are still serving the requests. Need to fix
 		return;
 	}
 	
