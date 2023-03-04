@@ -27,11 +27,12 @@ public class Main {
 		// Initialize objects
 		String filename = "./src/main/resources/input.txt";
 		Scheduler scheduler;
-		Floor floor;
-		ArrayList<Elevator> elevatorArr;
+		ArrayList<Elevator> elevatorsArr;
+		ArrayList<Floor> floorsArr;
 		final int NUM_OF_ELEVATORS = 4;
+		final int NUM_OF_FLOORS = 10;
 		Parser parser = null;
-		Thread schedulerThread, floorThread;
+		Thread schedulerThread;
 		
 		
 		try {
@@ -44,22 +45,31 @@ public class Main {
 		
 		// Define objects
 		scheduler = new Scheduler();
-		floor = new Floor(1, scheduler, parser);
-		elevatorArr = new ArrayList<>();
+		elevatorsArr = new ArrayList<>();
+		floorsArr = new ArrayList<>();
+		
+		for (int i = 0; i < NUM_OF_FLOORS; i++) {
+			floorsArr.add(new Floor(i + 1, scheduler, parser));
+		}
 		for (int i = 0; i < NUM_OF_ELEVATORS; i++) {
-			elevatorArr.add(new Elevator(i + 1, scheduler));
+			elevatorsArr.add(new Elevator(i + 1, scheduler));
 		}
 		
 		// Define threads
 		schedulerThread = new Thread(scheduler, "Thread-Scheduler");
-		floorThread = new Thread(floor, "Thread-Floor");
 		
 		// Start threads
 		schedulerThread.start();
-		floorThread.start();
 		
-		// Defines and starts the elevator threads
-		for (Elevator elevator : elevatorArr) {
+		System.out.println("-------------------------- Parsing user requests ------------------------- \n");
+		// Defines and starts the elevator and floor threads
+		for (Floor floor : floorsArr) {
+			Thread floorThread = new Thread(floor, "Thread-Floor" + floor.getFloorNumber());
+			floorThread.start();
+		}
+		//System.out.println("------------------------ Finished parsing requests ----------------------- \n");
+		
+		for (Elevator elevator : elevatorsArr) {
 			Thread elevatorThread = new Thread(elevator, "Thread-Elevator " + elevator.getElevatorId());
 			elevatorThread.start();
 		}

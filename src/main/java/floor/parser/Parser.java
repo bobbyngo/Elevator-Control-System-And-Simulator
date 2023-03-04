@@ -103,7 +103,6 @@ public class Parser {
 			    	}
 		    }
 		}
-		System.out.println("------------------------ Finished parsing requests ----------------------- \n");
 		return elevatorRequestList;	
 	}
 

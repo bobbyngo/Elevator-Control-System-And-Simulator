@@ -79,7 +79,6 @@ public class Floor implements Runnable {
 		ArrayList<ElevatorRequest> elevatorRequests = null;
 		
 		try {
-			System.out.println("-------------------------- Parsing user requests ------------------------- \n");
 			elevatorRequests = parser.requestParser();
 		} catch (IOException e) {
 			logger.severe("IOException occurred");
@@ -87,18 +86,17 @@ public class Floor implements Runnable {
 		}
 		
 		if (!elevatorRequests.isEmpty()) {
-			System.out.println("------------------------ Adding requests to queue ------------------------ \n");
+			//System.out.println("------------------------ Adding requests to queue ------------------------ \n");
 			for (ElevatorRequest req : elevatorRequests) {
-				requestElevator(req);
-				
+				if (req.getSourceFloor() == getFloorNumber()) requestElevator(req);
 				try {
-					Thread.sleep(2000);
+					Thread.sleep(10);
 				} catch (InterruptedException e) {}
 			}
 		}
 		// End process when all requests have been served?
 		logger.info("All requests have been sent.");
-		System.exit(0); // This is terminates the program even if the elevators are still serving the requests. Need to fix
+		// System.exit(0); // This terminates the program even if the elevators are still serving the requests. Need to fix
 		return;
 	}
 	
