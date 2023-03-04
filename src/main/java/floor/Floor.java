@@ -90,12 +90,12 @@ public class Floor implements Runnable {
 			for (ElevatorRequest req : elevatorRequests) {
 				if (req.getSourceFloor() == getFloorNumber()) requestElevator(req);
 				try {
-					Thread.sleep(10);
+					Thread.sleep(2000);
 				} catch (InterruptedException e) {}
 			}
 		}
 		// End process when all requests have been served?
-		logger.info("All requests have been sent.");
+		//logger.info("All requests have been sent.");
 		// System.exit(0); // This terminates the program even if the elevators are still serving the requests. Need to fix
 		return;
 	}

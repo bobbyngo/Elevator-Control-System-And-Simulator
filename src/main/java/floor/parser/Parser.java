@@ -95,11 +95,13 @@ public class Parser {
 			    	if (!parsingSuccess) {
 			    		elevatorRequestList.clear();
 			    	} else {
+			    		/*
 			    		logger.info(String.format("Request %s %s %s %s added to the list \n",
 			    				request.getTimestamp(), 
 			    				request.getSourceFloor(), 
 			    				request.getDirection(), 
 			    				request.getDestinationFloor()));
+			    				*/
 			    	}
 		    }
 		}

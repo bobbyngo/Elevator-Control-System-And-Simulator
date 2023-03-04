@@ -29,19 +29,9 @@ public class Main {
 		Scheduler scheduler;
 		ArrayList<Elevator> elevatorsArr;
 		ArrayList<Floor> floorsArr;
-		final int NUM_OF_ELEVATORS = 4;
+		final int NUM_OF_ELEVATORS = 3;
 		final int NUM_OF_FLOORS = 10;
-		Parser parser = null;
 		Thread schedulerThread;
-		
-		
-		try {
-			parser = new Parser(filename);
-		} catch (FileNotFoundException e) {
-			logger.severe(String.format("Input file %s not found. Exiting program.", filename));
-			System.exit(1);
-		}
-		
 		
 		// Define objects
 		scheduler = new Scheduler();
@@ -49,7 +39,15 @@ public class Main {
 		floorsArr = new ArrayList<>();
 		
 		for (int i = 0; i < NUM_OF_FLOORS; i++) {
-			floorsArr.add(new Floor(i + 1, scheduler, parser));
+			// Create a parser for each floor object
+			try {
+				Parser parser = new Parser(filename);
+				floorsArr.add(new Floor(i + 1, scheduler, parser));
+			} catch (FileNotFoundException e) {
+				logger.severe(String.format("Input file %s not found. Exiting program.", filename));
+				System.exit(1);
+			}
+			
 		}
 		for (int i = 0; i < NUM_OF_ELEVATORS; i++) {
 			elevatorsArr.add(new Elevator(i + 1, scheduler));
