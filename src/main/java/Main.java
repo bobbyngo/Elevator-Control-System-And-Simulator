@@ -37,6 +37,7 @@ public class Main {
 			System.exit(1);
 		}
 		
+		/*
 		
 		// Define objects
 		scheduler = new Scheduler();
@@ -52,6 +53,7 @@ public class Main {
 		schedulerThread.start();
 		floorThread.start();
 		elevatorThread.start();
+		*/
 	}
 
 }

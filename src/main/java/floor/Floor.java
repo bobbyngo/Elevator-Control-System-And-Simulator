@@ -1,105 +1,226 @@
 package main.java.floor;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import main.java.dto.ElevatorRequest;
 import main.java.floor.parser.Parser;
-import main.java.scheduler.Scheduler;
 
 /**
  * The class that holds information about a floor and initiates requests 
  * to the scheduler for users wanting to travel up or down
  * @author Hussein El Mokdad
  * @since 1.0, 02/04/23
- * @version 2.0, 02/27/23
+ * @version 3.0, 03/11/23
  */
 public class Floor implements Runnable {
 	
 	private final Logger logger = Logger.getLogger(this.getClass().getName());
-	
-	private int floorNumber;
-	private Scheduler scheduler; 
 	private Parser parser;
+	private int floorNumber = 0;
+	
+	private static final String FILENAME = "./src/main/resources/input.txt";
+	private static final int FLOOR_PORT = 23;
+	private DatagramSocket dataSocket, ackSocket;
+	
+	/**
+	 * Main method for the Floor class.
+	 * @param args, default parameters
+	 */
+	public static void main(String[] args) {
+		new Thread(new Floor()).start();
+	}
 	
 	/**
 	 * Constructor for the Floor class.
-	 * @param floorNumber int, the floor number
-	 * @param scheduler Scheduler, the scheduler obj
-	 * @param parser	 Parser, parser obj to read the text file input
 	 */
-	public Floor(int floorNumber, Scheduler scheduler, Parser parser) {
-		this.floorNumber = floorNumber;
-		this.scheduler = scheduler;
-		this.parser = parser;
+	public Floor() {
+		this.floorNumber = floorNumber++;
 		logger.setLevel(Level.INFO);
+		try {
+			this.parser = new Parser(FILENAME);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**
-	 * Get the floor number.
-	 * @return int, the floor number
-	 */
-	public int getFloorNumber() {
-		return floorNumber;
-	}
-	
-	/**
-	 * Request an elevator from the Scheduler.
-	 * @param request ElevatorRequest, user requested Elevator
-	 * @author Zakaria Ismail
-	 */
-	public void requestElevator(ElevatorRequest request) {
-		scheduler.putRequest(request);
-		String loggerStr = String.format("Request elevator: %s \n", request.toString());
-		logger.info(loggerStr);
-	}
-	
-	/**
-	 * Notify scheduler that request has been completed.
-	 * @return completedRequest, ElevatorRequest completed
-	 */
-	public ElevatorRequest receiveCompletedRequest() {
-		ElevatorRequest completedRequest = scheduler.getCompletedRequest();
-		String loggerStr = String.format("Elevator completed request: %s", completedRequest.toString());
-		logger.info(loggerStr);
-		return completedRequest;
-	}
-
-	/**
-	 * Floor override run() method. 
-	 * Parses all elevator requests from the input file and 
-	 * sends ElevatorRequest objects to the Scheduler.
+	 * Floor override run() method.
 	 * @see java.lang.Runnable#run()
-	 * @author Zakaria Ismail
 	 */
 	@Override
 	public void run() {
-		ArrayList<ElevatorRequest> elevatorRequests = null;
-		
 		try {
-			System.out.println("-------------------------- Parsing user requests ------------------------- \n");
+			dataSocket = new DatagramSocket();
+			ackSocket = new DatagramSocket();
+			ArrayList<ElevatorRequest> elevatorRequests = getElevatorRequests();
+			addRequestToQueue(elevatorRequests);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			dataSocket.close();
+			ackSocket.close();
+			logger.info("Program terminated.");
+		}
+	}
+	
+	/**
+	 * Parse user requests.
+	 * @return elevatorRequests ArrayList<>, a list of elevator requests
+	 */
+	private ArrayList<ElevatorRequest> getElevatorRequests() {
+		ArrayList<ElevatorRequest> elevatorRequests = null;
+		try {
 			elevatorRequests = parser.requestParser();
 		} catch (IOException e) {
-			logger.severe("IOException occurred");
+			e.printStackTrace();
 			System.exit(1);
 		}
-		
+		return elevatorRequests;
+	}
+	
+	/**
+	 * 
+	 * Sends the series of elevator requests to the Scheduler.
+	 * @param elevatorRequests
+	 */
+	private void addRequestToQueue(ArrayList<ElevatorRequest> elevatorRequests) {
 		if (!elevatorRequests.isEmpty()) {
-			System.out.println("------------------------ Adding requests to queue ------------------------ \n");
+			// TODO: Send request as per time stamp logic potential added here
+			// Sends all the request for all Floors at once - OK for now
 			for (ElevatorRequest req : elevatorRequests) {
-				requestElevator(req);
-				
-				try {
-					Thread.sleep(2000);
-				} catch (InterruptedException e) {}
+				byte[] data = encodeData(req);
+				sendData(data);
+				DatagramPacket reply = receive();
+				send(reply);
+				receiveAck();
+				System.out.println("--------------------------------------");
 			}
 		}
-		// End process when all requests have been served?
-		logger.info("All requests have been sent.");
-		System.exit(0);
-		return;
+	}
+	
+	/**
+	 * Send data to destination port.
+	 * @param data byte[], parsed floor requests
+	 */
+	private void sendData(byte[] data) {
+		try {
+			DatagramPacket dataPacket = new DatagramPacket(
+					data, 
+					data.length, 
+					InetAddress.getLocalHost(), 
+					FLOOR_PORT);
+			dataSocket.send(dataPacket);
+			printPacketContent(dataPacket, "send(:request) -> Scheduler");
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+	}
+	
+	/**
+	 * Receive reply from sender.
+	 * @return DatagramPacket, message received from sender
+	 */
+	private DatagramPacket receive() {
+		byte[] data = new byte[100];
+		DatagramPacket replyPacket = null;
+		try {
+			replyPacket = new DatagramPacket(data, data.length);
+			System.out.println(this.getClass().getName() + ": Waiting...\n");
+			dataSocket.receive(replyPacket);
+			printPacketContent(replyPacket, "reply() <- Scheduler");
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+		return replyPacket;
+	}
+	
+	/**
+	 * Request acknowledge from Scheduler.
+	 * @param replyPacket DatagramPacket, message containing request for ack
+	 */
+	private void send(DatagramPacket replyPacket) {
+		byte[] data = (this.getClass().getName() + " - request ack").getBytes();
+		try {
+			DatagramPacket ackPacket = new DatagramPacket(
+					data, 
+					data.length, 
+					replyPacket.getAddress(), 
+					replyPacket.getPort());
+			ackSocket.send(ackPacket);
+			printPacketContent(ackPacket, "send() -> Scheduler");
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+	}
+	
+	/**
+	 * Receive acknowledge request from Scheduler.
+	 */
+	private void receiveAck() {
+		byte[] data = new byte[100];
+		DatagramPacket ackPacket = new DatagramPacket(data, data.length);
+		try {
+			System.out.println(this.getClass().getName() + ": Waiting...\n");
+			ackSocket.receive(ackPacket);
+			printPacketContent(ackPacket, "reply(:ack) <- Scheduler");
+		} catch (IOException e) {
+			System.err.println(this.getClass().getName() + ": Program terminated.");
+			e.printStackTrace();
+			System.exit(1);
+		}
+	}
+	
+	/**
+	 * Encodes an elevator request object into a byte[] data.
+	 * @param elevatorRequest, ElevatorRequest obj
+	 * @return message byte[], the encoded elevatorRequest
+	 * @throws IOException
+	 */
+	private byte[] encodeData(ElevatorRequest elevatorRequest) {
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		byte[] message = null;
+		try {
+			os.write(elevatorRequest.toString().getBytes());
+			os.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		message = os.toByteArray();
+		return message;
+	}
+	
+	/**
+	 * Prints out the information it has put in the packet 
+	 * both as a String and as bytes. 
+	 * @param packet, DatagramPacket
+	 * @param direction, String (i.e. received or sending)
+	 */
+	private void printPacketContent(DatagramPacket packet, String direction) {
+		System.out.println(this.getClass().getName() + ": " + direction);
+	    System.out.println("Address: " + packet.getAddress());
+	    System.out.println("Port: " + packet.getPort());
+	    int len = packet.getLength();
+	    System.out.println("Length: " + packet.getLength());
+	    System.out.print("Containing: ");
+	    String packetStr = new String(packet.getData(), 0, len);
+	    System.out.println(packetStr + "\n");
+	    try {
+	        Thread.sleep(1000);
+	    } catch (InterruptedException e ) {
+	        e.printStackTrace();
+	        System.exit(1);
+	    }
 	}
 	
 }
