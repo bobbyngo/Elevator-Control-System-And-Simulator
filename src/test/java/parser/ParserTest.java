@@ -22,6 +22,7 @@ public class ParserTest {
 	
 	ArrayList<ElevatorRequest> elevatorRequestList;
 	Parser parser;
+	ElevatorRequest singleRequest;
 	
 	/**
 	 * setUp initializes the test environment, the method is run before every Test 
@@ -32,7 +33,21 @@ public class ParserTest {
 		elevatorRequestList = new ArrayList<>();
 		parser = new Parser("./src/test/resources/input.txt");
 		elevatorRequestList = parser.requestParser();
+		singleRequest = parser.textParser("07:01:15.000 2 UP 6");
     }
+	
+	/**
+	 * testTextParser validates that a String is parsed properly into an 
+	 * ElevatorRequest object with all parameters being correct
+	 * @throws ParseException
+	 */
+	@Test
+	public void testTextParser() throws ParseException {
+		assertEquals(ElevatorRequest.stringToTimestamp("07:01:15.000"), singleRequest.getTimestamp());
+		assertEquals(Integer.valueOf(2), singleRequest.getSourceFloor());
+		assertEquals(Direction.UP, singleRequest.getDirection());
+		assertEquals(Integer.valueOf(6), singleRequest.getDestinationFloor());
+	}
 	
 	/**
 	 * testTimestamp validates that the timestamp from the input file is properly parsed
@@ -54,7 +69,7 @@ public class ParserTest {
 	@Test
 	public void testParsingException() throws IOException, ParseException {
 		Parser parser = new Parser("./src/test/resources/incorrectInput.txt");
-		assertTrue(parser.requestParser().isEmpty());
+		assertEquals(1, parser.requestParser().size());
 	}
 	
 	/**

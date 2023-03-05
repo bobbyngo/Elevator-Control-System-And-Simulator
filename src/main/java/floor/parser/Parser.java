@@ -45,6 +45,44 @@ public class Parser {
 	}
 	
 	/**
+	 * textParser is responsible for parsing a String and storing 
+	 * the extracted information in an ElevatorRequest object.
+	 * @param textRequest String, containing text information about the request
+	 * @return an ElevatorRequest object
+	 */
+	public ElevatorRequest textParser(String textRequest) {
+        ElevatorRequest elevatorRequest = null;
+        String[] line = textRequest.split(" ");
+        Timestamp timestamp = null;
+        
+        try {
+            Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+            Date parsedDate = dateFormat.parse(currentTime.toString().split(" ")[0] + " " + line[0]);
+            timestamp = new Timestamp(parsedDate.getTime());
+            
+            if(line.length != 4) {
+	    		throw new ElevatorReqParamException("");
+	    	}
+            
+            elevatorRequest = new ElevatorRequest(timestamp, 
+                    Integer.valueOf(line[1]), 
+                    Direction.valueOf(line[2]), 
+                    Integer.valueOf(line[3]));
+        
+        } catch (ParseException e) {
+	    	logger.severe(e.getMessage());
+        } catch(ElevatorReqParamException e) {
+        	logger.severe(e.getMessage());
+        } catch (NumberFormatException e) {
+        	logger.severe(e.getMessage());
+        } catch (IllegalArgumentException e) {
+        	logger.severe(e.getMessage());
+        }
+        return elevatorRequest;
+    }
+	
+	/**
 	 * RequestParser is responsible for parsing the text file and 
 	 * storing the extracted information in ElevatorRequest object.
 	 * @return ArrayList, containing ElevatorRequest object
@@ -62,6 +100,7 @@ public class Parser {
 		    lineNumber ++;
 		    
 		    try {
+		    	parsingSuccess = true;
 		    	Timestamp currentTime = new Timestamp(System.currentTimeMillis());
 		    	
 		    	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
@@ -92,9 +131,7 @@ public class Parser {
 		    		logger.severe(String.format("%s on line %d", e.getMessage(), lineNumber));
 			    	parsingSuccess = false;
 		    } finally {
-			    	if (!parsingSuccess) {
-			    		elevatorRequestList.clear();
-			    	} else {
+			    	if(parsingSuccess) {
 			    		logger.info(String.format("Request %s %s %s %s added to the list \n",
 			    				request.getTimestamp(), 
 			    				request.getSourceFloor(), 
