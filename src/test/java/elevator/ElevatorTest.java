@@ -27,6 +27,8 @@ public class ElevatorTest {
 	 */
 	@Before
     	public void setUp() throws Exception {
+		// If we don't init this we will get NPE cause when we create Elevator instances, scheduler will register the floor for it
+		scheduler = new Scheduler();
 		elevator1 = new Elevator(10, scheduler);
 		elevator2 = new Elevator(1200, scheduler);
 		elevator3 = new Elevator(0, scheduler);

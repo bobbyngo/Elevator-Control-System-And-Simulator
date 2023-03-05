@@ -30,6 +30,8 @@ public class Elevator implements Runnable {
 		this.scheduler = scheduler;
 		elevatorState = ElevatorState.Idle;
 		logger.setLevel(Level.INFO);
+		// Start of the program, the elevator should be in floor 1
+		scheduler.registerElevatorLocation(id, 1);
 	}
 	
 	/**
@@ -94,18 +96,29 @@ public class Elevator implements Runnable {
 						case AwaitRequest: {
 							System.out.println(elevatorStateStr + " ------------------------------------------ \n");
 							request = serveRequest();
+							
 							elevatorState = elevatorState.nextState();
 							break;
 						}
 						case Moving: {
 							System.out.println(elevatorStateStr);
+							// Note: Elevator needs to move to the floor that the users request the elevator
+							// to pick up the users then move the the floor they want
+							
+							// Move from the current floor to the floor that request the elevator
+							if (scheduler.displayElevatorLocation(id) != request.getSourceFloor()) {
+								logger.info(String.format("Elevator %d is moving to floor %d to pick up the users", id , request.getSourceFloor()));
+								scheduler.movingTo(id, scheduler.displayElevatorLocation(id), request.getSourceFloor());
+								logger.info(String.format("Elevator %d picked up the users, start doing the request", id));
+							}
+							// Move from the picked up floor to the floor users want 
+							scheduler.movingTo(id, scheduler.displayElevatorLocation(id), request.getDestinationFloor());
 							elevatorState = elevatorState.nextState();
 							break;
 						}
 						case Stop: {
 							System.out.println(elevatorStateStr + "\n");
 							sendCompletedRequest(request);
-							scheduler.registerElevatorLocation(Integer.valueOf(id), request.getDestinationFloor());
 							elevatorState = elevatorState.nextState();
 							break;
 						}
