@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.logging.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -42,6 +44,37 @@ public class Parser {
 		lineEntry = null;
 		elevatorRequestList = new ArrayList<>();
 		logger.setLevel(Level.INFO);
+	}
+	
+	/**
+	 * fillTimestampZero is responsible for filling the elevator request's timestamp milliseconds position to 3 digits
+	 * @param textRequest String, containing text information about the request
+	 * @return an elevator request String
+	 */
+	public String fillTimestampZero(String textRequest) {
+		Pattern formatOne = Pattern.compile("^([0-9]{2}+):([0-9]{2}+):([0-9]{2}+)\\.([0-9]{1}+)\\s([0-9]+)\\s(UP|DOWN)\\s([0-9]+)$");
+		Pattern formatTwo = Pattern.compile("^([0-9]{2}+):([0-9]{2}+):([0-9]{2}+)\\.([0-9]{2}+)\\s([0-9]+)\\s(UP|DOWN)\\s([0-9]+)$");
+		Pattern formatThree = Pattern.compile("^([0-9]{2}+):([0-9]{2}+):([0-9]{2}+)\\.([0-9]{3}+)\\s([0-9]+)\\s(UP|DOWN)\\s([0-9]+)$");
+		
+		Matcher m = formatOne.matcher(textRequest);
+		if (m.matches()) {
+			String parts[] = textRequest.split(" ", 2);
+			return parts[0] + "00 " + parts[1];
+		}
+		
+		m = formatTwo.matcher(textRequest);
+		if (m.matches()) {
+			String parts[] = textRequest.split(" ", 2);
+			return parts[0] + "0 " + parts[1];
+		}
+		
+		m = formatThree.matcher(textRequest);
+		if (m.matches()) {
+			return textRequest;
+		}
+		
+		logger.severe("Incorrect Elevator Request String Provided");
+		return null;
 	}
 	
 	/**
