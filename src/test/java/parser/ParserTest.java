@@ -37,6 +37,16 @@ public class ParserTest {
     }
 	
 	/**
+	 * testFillTimestampZero validates that an elevator request String has its timestamp 0 correctly filled
+	 */
+	@Test
+	public void testFillTimestampZero() {
+		assertEquals("07:01:15.500 2 UP 6", parser.fillTimestampZero("07:01:15.5 2 UP 6"));
+		assertEquals("07:01:15.560 2 UP 6", parser.fillTimestampZero("07:01:15.56 2 UP 6"));
+		assertEquals("07:01:15.567 2 UP 6", parser.fillTimestampZero("07:01:15.567 2 UP 6"));
+	}
+	
+	/**
 	 * testTextParser validates that a String is parsed properly into an 
 	 * ElevatorRequest object with all parameters being correct
 	 * @throws ParseException
