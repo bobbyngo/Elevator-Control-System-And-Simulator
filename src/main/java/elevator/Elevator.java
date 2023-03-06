@@ -1,13 +1,16 @@
 package main.java.elevator;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import main.java.dto.Direction;
 import main.java.dto.ElevatorRequest;
 import main.java.scheduler.Scheduler;
 
@@ -24,9 +27,9 @@ public class Elevator implements Runnable {
 	public static final int ELEVATOR_PORT = 69;
 	private DatagramSocket dataSocket, ackSocket;
 	
-	private int id = 0;
-	private Scheduler scheduler;
+	private int id = 1;
 	private ElevatorState elevatorState;
+	private Scheduler scheduler;
 	
 	/**
 	 * Main method for the Floor class.
@@ -57,68 +60,66 @@ public class Elevator implements Runnable {
 	 */
 	@Override
 	public void run() {
-		ElevatorRequest request = null;
 		DatagramPacket reply = null;
+		ElevatorRequest request = null;
+		String elevatorStateStr;
 		try {
 			dataSocket = new DatagramSocket();
 			ackSocket = new DatagramSocket();
 			Thread.sleep(1000);
 			while (true) {
-				//if (scheduler.getRequestsQueue().size() >= 0) {
-					//String elevatorStateStr = elevatorState.displayCurrentState(getElevatorId(), request);
-					switch (elevatorState) {
-						// Only State Moving and Stop only use request argument
-						case Idle: {
-							//System.out.println(elevatorStateStr);
-							elevatorState = elevatorState.nextState();
-							break;
-						}
-						case AwaitRequest: {
-							//System.out.println(elevatorStateStr + " ------------------------------------------ \n");
-							send();
-							reply = receiveData();
-							elevatorState = elevatorState.nextState();
-							break;
-						}
-						case Moving: {
-							//System.out.println(elevatorStateStr);
-							// Note: Elevator needs to move to the floor that the users request the elevator
-							// to pick up the users then move the the floor they want
-							
-							// Move from the current floor to the floor that request the elevator
-							//if (scheduler.displayElevatorLocation(id) != request.getSourceFloor()) {
-								//logger.info(String.format("Elevator %d is moving to floor %d to pick up the users", id , request.getSourceFloor()));
-								//scheduler.movingTo(id, scheduler.displayElevatorLocation(id), request.getSourceFloor());
-								logger.info(String.format("Elevator %d picked up the users, start doing the request", id));
-							//}
-							// Move from the picked up floor to the floor users want 
-							//scheduler.movingTo(id, scheduler.displayElevatorLocation(id), request.getDestinationFloor());
-							elevatorState = elevatorState.nextState();
-							break;
-						}
-						case Stop: {
-							//System.out.println(elevatorStateStr + "\n");							
-							sendAck(reply);
-							receive();
-							System.out.println("--------------------------------------");
-							elevatorState = elevatorState.nextState();
-							break;
-						}
-						case DoorsOpen: {
-							//System.out.println(elevatorState.displayCurrentState(getElevatorId(), request));
-							elevatorState = elevatorState.nextState();
-							break;
-						}
-						case DoorsClose: {
-							//System.out.println(elevatorState.displayCurrentState(getElevatorId(), request));
-							elevatorState = elevatorState.nextState();
-							break;
-						}
-						default:
-							break; 		
+				elevatorStateStr = elevatorState.displayCurrentState(getElevatorId(), request);
+				switch (elevatorState) {
+					case Idle: {
+						System.out.println(elevatorStateStr);
+						elevatorState = elevatorState.nextState();
+						break;
 					}
+					case AwaitRequest: {
+						System.out.println(elevatorStateStr + " ------------------------------------------ \n");
+						send();
+						reply = receiveData();
+						request = decodeData(reply);
+						// TODO: Add request to elevator working queue
+						elevatorState = elevatorState.nextState();
+						break;
+					}
+					case Moving: {
+						System.out.println(elevatorStateStr);
+						// Note: Elevator needs to move to the floor that the users request the elevator
+						// to pick up the users then move the the floor they want
+						
+						// Move from the current floor to the floor that request the elevator
+						//if (scheduler.displayElevatorLocation(id) != request.getSourceFloor()) {
+							logger.info(String.format("Elevator %d is moving to floor %d to pick up the users", id , request.getSourceFloor()));
+							//scheduler.movingTo(id, scheduler.displayElevatorLocation(id), request.getSourceFloor());
+						//}
+						// Move from the picked up floor to the floor users want 
+						//scheduler.movingTo(id, scheduler.displayElevatorLocation(id), request.getDestinationFloor());
+						elevatorState = elevatorState.nextState();
+						break;
+					}
+					case Stop: {
+						System.out.println(elevatorStateStr + "\n");							
+						sendAck(reply);
+						receive();
+						elevatorState = elevatorState.nextState();
+						break;
+					}
+					case DoorsOpen: {
+						System.out.println(elevatorState.displayCurrentState(getElevatorId(), request));
+						elevatorState = elevatorState.nextState();
+						break;
+					}
+					case DoorsClose: {
+						System.out.println(elevatorState.displayCurrentState(getElevatorId(), request));
+						elevatorState = elevatorState.nextState();
+						break;
+					}
+					default:
+						break; 		
 				}
-			//}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -127,7 +128,6 @@ public class Elevator implements Runnable {
 			System.err.println(this.getClass().getName() + ": Program terminated.");
 		}
 	}
-	
 	
 	/**
 	 * Send request for data to Scheduler.
@@ -171,9 +171,7 @@ public class Elevator implements Runnable {
 	 * @param receiveHostPacket DatagramPacket, data packet received from request
 	 */
 	public void sendAck(DatagramPacket replyPacket) {
-		//decodeData(replyPacket.getData());
-		// Add verification of data method here
-		//byte[] data = replyPacket.getData();
+		// TODO: Add possible verification of data method here
 		DatagramPacket ackPacket = new DatagramPacket(
 				replyPacket.getData(), 
 				replyPacket.getLength(), 
@@ -210,13 +208,25 @@ public class Elevator implements Runnable {
 	 * @return elevatorRequest, ElevatorRequest obj
 	 * @throws IOException
 	 */
-	private String decodeData(byte[] message) {
-		//ElevatorRequest elevatorRequest = null;
-		ByteArrayInputStream is = new ByteArrayInputStream(message);
-		String reqStr = is.toString();
-		System.out.println(reqStr);
-		// Return string for now, but later convert to ElevatorRequest
-		return reqStr;
+	private ElevatorRequest decodeData(DatagramPacket packet) {
+		ElevatorRequest elevatorRequest = null;
+		Timestamp timestamp = null;
+	    String[] line = new String(packet.getData(), 0, packet.getLength()).split(" ");
+		
+	    try {
+	    		Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+	    		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+	    		Date parsedDate = dateFormat.parse(currentTime.toString().split(" ")[0] + " " + line[0]);
+	        timestamp = new Timestamp(parsedDate.getTime());
+	    	
+	        elevatorRequest = new ElevatorRequest(timestamp, 
+	    			Integer.valueOf(line[1]), 
+		    		Direction.valueOf(line[2]), 
+		    		Integer.valueOf(line[3]));
+	    } catch (Exception e) {
+	    		e.printStackTrace();
+	    }
+	    return elevatorRequest;
 	}
 	
 	/**

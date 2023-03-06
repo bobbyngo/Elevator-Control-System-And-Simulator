@@ -72,21 +72,6 @@ public class Floor implements Runnable {
 	}
 	
 	/**
-	 * Parse user requests.
-	 * @return elevatorRequests ArrayList<>, a list of elevator requests
-	 */
-	private ArrayList<ElevatorRequest> getElevatorRequests() {
-		ArrayList<ElevatorRequest> elevatorRequests = null;
-		try {
-			elevatorRequests = parser.requestParser();
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-		return elevatorRequests;
-	}
-	
-	/**
 	 * 
 	 * Sends the series of elevator requests to the Scheduler.
 	 * @param elevatorRequests
@@ -149,7 +134,7 @@ public class Floor implements Runnable {
 	 * @param replyPacket DatagramPacket, message containing request for ack
 	 */
 	private void send(DatagramPacket replyPacket) {
-		byte[] data = (this.getClass().getName() + " - request ack").getBytes();
+		byte[] data = (this.getClass().getName() + ": Waiting for ack").getBytes();
 		try {
 			DatagramPacket ackPacket = new DatagramPacket(
 					data, 
@@ -175,7 +160,6 @@ public class Floor implements Runnable {
 			ackSocket.receive(ackPacket);
 			printPacketContent(ackPacket, "reply(:ack) <- Scheduler");
 		} catch (IOException e) {
-			System.err.println(this.getClass().getName() + ": Program terminated.");
 			e.printStackTrace();
 			System.exit(1);
 		}
@@ -221,6 +205,29 @@ public class Floor implements Runnable {
 	        e.printStackTrace();
 	        System.exit(1);
 	    }
+	}
+	
+	/**
+	 * Get the floor number.
+	 * @return int, floor number
+	 */
+	public int getFloorNumber() {
+		return this.floorNumber;
+	}
+	
+	/**
+	 * Parse user requests.
+	 * @return elevatorRequests ArrayList<>, a list of elevator requests
+	 */
+	private ArrayList<ElevatorRequest> getElevatorRequests() {
+		ArrayList<ElevatorRequest> elevatorRequests = null;
+		try {
+			elevatorRequests = parser.requestParser();
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+		return elevatorRequests;
 	}
 	
 }

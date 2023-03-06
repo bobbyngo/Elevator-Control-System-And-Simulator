@@ -1,15 +1,20 @@
 package main.java.scheduler;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.logging.*;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import main.java.dto.Direction;
 import main.java.dto.ElevatorRequest;
 
 /**
@@ -29,7 +34,6 @@ public class Scheduler implements Runnable {
 	private static final int ELEVATOR_PORT = 69;
 	
 	private DatagramSocket floorSocket, elevatorSocket;
-	
 	private List<ElevatorRequest> requestsQueue;
 	private List<ElevatorRequest> completedQueue;
 	private Map<Integer, Integer> elevatorLocation;
@@ -58,7 +62,6 @@ public class Scheduler implements Runnable {
 	/**
 	 * Scheduler override run() method. Sleeps until the process is killed.
 	 * @see java.lang.Runnable#run()
-	 * @author Zakaria Ismail
 	 */
 	@Override
 	public void run() {
@@ -72,21 +75,26 @@ public class Scheduler implements Runnable {
 					schedulerState = schedulerState.nextState();
 					break;
 				}
-				case Ready: {
-					//if (!requestsQueue.isEmpty()) {
-						schedulerState = schedulerState.nextState();
-					//}
-						DatagramPacket reply = replyFloor();
-						replyElevator(reply);
+				case Ready: {;
+					DatagramPacket reply = replyFloor();
+					ElevatorRequest elevatorRequest = decodeData(reply);
+					putRequest(elevatorRequest);
+					// TODO: Scanning algorithm to the queue should happen here
+					elevatorRequest = dispatchRequest();
+					byte[] data = encodeData(elevatorRequest);
+					replyElevator(data);
+					schedulerState = schedulerState.nextState();
 					break;
 				}
 				case InService: {
-					//if (!completedQueue.isEmpty()) {
-						schedulerState = schedulerState.nextState();
-					//}
-						DatagramPacket ack = ackElevator();
-						ackFloor(ack);
-						System.out.println("--------------------------------------");
+					DatagramPacket ack = ackElevator();
+					ElevatorRequest elevatorRequest = decodeData(ack);
+					putCompletedRequest(elevatorRequest);
+					elevatorRequest = getCompletedRequest();
+					byte[] data = encodeData(elevatorRequest);
+					ackFloor(data);
+					schedulerState = schedulerState.nextState();
+					System.out.println("--------------------------------------");
 					break;
 				}
 				default:
@@ -129,7 +137,7 @@ public class Scheduler implements Runnable {
 	 * Reply to Elevator with request.
 	 * @param DatagramPacket, containing the request from Floor
 	 */
-	private void replyElevator(DatagramPacket sendPacket) {
+	private void replyElevator(byte[] reply) {
 		byte[] data = new byte[100];
 		try {
 			DatagramPacket receivePacket = new DatagramPacket(data, data.length);
@@ -138,8 +146,8 @@ public class Scheduler implements Runnable {
 			printPacketContent(receivePacket, "send() <- Elevator");
 			
 			DatagramPacket replyPacket = new DatagramPacket(
-					sendPacket.getData(),
-					sendPacket.getLength(), 
+					reply,
+					reply.length, 
 					receivePacket.getAddress(), 
 					receivePacket.getPort());
 			elevatorSocket.send(replyPacket);
@@ -184,7 +192,7 @@ public class Scheduler implements Runnable {
 	 * Acknowledge Floor request.
 	 * @param ack DatagramPacket, ack packet containing data from Server
 	 */
-	private void ackFloor(DatagramPacket ackPacket) {
+	private void ackFloor(byte[] ack) {
 		byte[] data = new byte[100];
 		try {
 			DatagramPacket receiveAckPacket = new DatagramPacket(data, data.length);
@@ -194,8 +202,8 @@ public class Scheduler implements Runnable {
 			
 			DatagramSocket ackSocket = new DatagramSocket();
 			DatagramPacket replyAckPacket = new DatagramPacket(
-					ackPacket.getData(), 
-					ackPacket.getLength(), 
+					ack, 
+					ack.length, 
 					receiveAckPacket.getAddress(), 
 					receiveAckPacket.getPort());
 			ackSocket.send(replyAckPacket);
@@ -231,6 +239,52 @@ public class Scheduler implements Runnable {
 	}
 	
 	/**
+	 * Encodes an elevator request object into a byte[] data.
+	 * @param elevatorRequest, ElevatorRequest obj
+	 * @return message byte[], the encoded elevatorRequest
+	 * @throws IOException
+	 */
+	private byte[] encodeData(ElevatorRequest elevatorRequest) {
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		byte[] message = null;
+		try {
+			os.write(elevatorRequest.toString().getBytes());
+			os.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		message = os.toByteArray();
+		return message;
+	}
+	
+	/**
+	 * Decodes byte[] data into an ElevatorRequest object.
+	 * @param message byte[], the encoded elevatorRequest
+	 * @return elevatorRequest, ElevatorRequest obj
+	 * @throws IOException
+	 */
+	private ElevatorRequest decodeData(DatagramPacket packet) {
+		ElevatorRequest elevatorRequest = null;
+		Timestamp timestamp = null;
+	    String[] line = new String(packet.getData(), 0, packet.getLength()).split(" ");
+		
+	    try {
+	    		Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+	    		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+	    		Date parsedDate = dateFormat.parse(currentTime.toString().split(" ")[0] + " " + line[0]);
+	        timestamp = new Timestamp(parsedDate.getTime());
+	    	
+	        elevatorRequest = new ElevatorRequest(timestamp, 
+	    			Integer.valueOf(line[1]), 
+		    		Direction.valueOf(line[2]), 
+		    		Integer.valueOf(line[3]));
+	    } catch (Exception e) {
+	    		return null;
+	    }
+	    return elevatorRequest;
+	}
+	
+	/**
 	 * Get the queue of the elevator request.
 	 * @return List<>, list of elevator request
 	 */
@@ -251,8 +305,11 @@ public class Scheduler implements Runnable {
 	 * @param elevatorRequest
 	 */
 	public synchronized void putRequest(ElevatorRequest elevatorRequest) {
+		if (elevatorRequest == null) {
+			return;
+		}
 		// No duplicate values
-		if (!requestsQueue.contains(elevatorRequest)) {
+		else if (!requestsQueue.contains(elevatorRequest)) {
 			requestsQueue.add(elevatorRequest);
 			String loggerStr = String.format("Add request %s > request queue: %d", elevatorRequest.toString(), requestsQueue.size());
 			logger.info(loggerStr);
@@ -276,7 +333,7 @@ public class Scheduler implements Runnable {
 			}
 		}
 		
-		// For this iteration: we will first come first serve: remove the former index
+		// TODO: Elevator assignment algorithm goes here
 		ElevatorRequest removedElevatorRequest = requestsQueue.remove(0);
 		String loggerStr = String.format("Dispatch request %s > request queue: %d", removedElevatorRequest.toString(), requestsQueue.size());
 		logger.info(loggerStr);
