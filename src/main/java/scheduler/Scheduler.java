@@ -3,7 +3,6 @@ package main.java.scheduler;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -16,6 +15,7 @@ import java.util.Map;
 
 import main.java.dto.Direction;
 import main.java.dto.ElevatorRequest;
+import main.java.dto.RPC;
 
 /**
  * Responsible for accepting input from all of the sensors, and
@@ -29,16 +29,12 @@ import main.java.dto.ElevatorRequest;
 public class Scheduler implements Runnable {
 	
 	private final Logger logger = Logger.getLogger(this.getClass().getName());
-	
-	private static final int FLOOR_PORT = 23;
-	private static final int ELEVATOR_PORT = 69;
-	
-	private DatagramSocket floorSocket, elevatorSocket;
+		
 	private List<ElevatorRequest> requestsQueue;
 	private List<ElevatorRequest> completedQueue;
 	private Map<Integer, Integer> elevatorLocation;
 	private SchedulerState schedulerState;
-	
+	private RPC rpc;
 	
 	/**
 	 * Main method for the Scheduler class.
@@ -55,6 +51,7 @@ public class Scheduler implements Runnable {
 		requestsQueue = Collections.synchronizedList(new ArrayList<>());
 		completedQueue = Collections.synchronizedList(new ArrayList<>());
 		elevatorLocation = Collections.synchronizedMap(new HashMap<>());
+		rpc = new RPC();
 		schedulerState = SchedulerState.Idle;
 		logger.setLevel(Level.INFO);
 	}
@@ -66,8 +63,7 @@ public class Scheduler implements Runnable {
 	@Override
 	public void run() {
 		try {
-			floorSocket = new DatagramSocket(FLOOR_PORT);
-			elevatorSocket = new DatagramSocket(ELEVATOR_PORT);
+			rpc.openSchedulerSocket();
 			Thread.sleep(0);
 			while (true) {
 				switch (schedulerState) {
@@ -76,23 +72,23 @@ public class Scheduler implements Runnable {
 					break;
 				}
 				case Ready: {;
-					DatagramPacket reply = replyFloor();
+					DatagramPacket reply = rpc.replyFloor();
 					ElevatorRequest elevatorRequest = decodeData(reply);
 					putRequest(elevatorRequest);
 					// TODO: Scanning algorithm to the queue should happen here
 					elevatorRequest = dispatchRequest();
 					byte[] data = encodeData(elevatorRequest);
-					replyElevator(data);
+					rpc.replyElevator(data);
 					schedulerState = schedulerState.nextState();
 					break;
 				}
 				case InService: {
-					DatagramPacket ack = ackElevator();
+					DatagramPacket ack = rpc.ackElevator();
 					ElevatorRequest elevatorRequest = decodeData(ack);
 					putCompletedRequest(elevatorRequest);
 					elevatorRequest = getCompletedRequest();
 					byte[] data = encodeData(elevatorRequest);
-					ackFloor(data);
+					rpc.ackFloor(data);
 					schedulerState = schedulerState.nextState();
 					System.out.println("--------------------------------------");
 					break;
@@ -103,139 +99,10 @@ public class Scheduler implements Runnable {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			rpc.closeSchedulerSocket();
+			logger.info("Program terminated.");
 		}
-	}
-	
-	/**
-	 * Reply to Floor.
-	 * @return DatagramPacket, containing the same message received
-	 */
-	private DatagramPacket replyFloor() {
-		byte[] data = new byte[100];
-		DatagramPacket receivePacket = null;
-		try {
-			receivePacket = new DatagramPacket(data, data.length);
-			System.out.println(this.getClass().getName() + ": Waiting...\n");
-			floorSocket.receive(receivePacket);
-			printPacketContent(receivePacket, "Floor -> send(:request)");
-			
-			DatagramPacket replyClientPacket = new DatagramPacket(
-					receivePacket.getData(), 
-					receivePacket.getLength(), 
-					receivePacket.getAddress(), 
-					receivePacket.getPort());
-			floorSocket.send(replyClientPacket);
-			printPacketContent(replyClientPacket, "Floor <- reply()");
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-		return receivePacket;
-	}
-	
-	/**
-	 * Reply to Elevator with request.
-	 * @param DatagramPacket, containing the request from Floor
-	 */
-	private void replyElevator(byte[] reply) {
-		byte[] data = new byte[100];
-		try {
-			DatagramPacket receivePacket = new DatagramPacket(data, data.length);
-			System.out.println(this.getClass().getName() + ": Waiting...\n");
-			elevatorSocket.receive(receivePacket);
-			printPacketContent(receivePacket, "send() <- Elevator");
-			
-			DatagramPacket replyPacket = new DatagramPacket(
-					reply,
-					reply.length, 
-					receivePacket.getAddress(), 
-					receivePacket.getPort());
-			elevatorSocket.send(replyPacket);
-			printPacketContent(replyPacket, "reply(:request) -> Elevator");
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-	}
-	
-	/**
-	 * Acknowledge Elevator request.
-	 * @return DatagramPacket, ack packet containing data from Elevator
-	 */
-	private DatagramPacket ackElevator() {
-		byte[] data = new byte[100];
-		DatagramPacket ackReceivePacket = null;
-		try {
-			ackReceivePacket = new DatagramPacket(data, data.length);
-			System.out.println(this.getClass().getName() + ": Waiting...\n");
-			elevatorSocket.receive(ackReceivePacket);
-			printPacketContent(ackReceivePacket, "send(:request) <- Elevator");
-			
-			DatagramSocket ackSocket = new DatagramSocket();
-			DatagramPacket ackReplyPacket = new DatagramPacket(
-					ackReceivePacket.getData(),
-					ackReceivePacket.getLength(), 
-					ackReceivePacket.getAddress(), 
-					ackReceivePacket.getPort());
-			ackSocket.send(ackReplyPacket);
-			printPacketContent(ackReplyPacket, "reply() -> Elevator");
-			ackSocket.close();
-		} catch (IOException e) {
-			System.err.println(this.getClass().getName() + ": Program terminated.");
-			e.printStackTrace();
-			System.exit(1);
-		}
-		return ackReceivePacket;
-	}
-	
-	/**
-	 * Acknowledge Floor request.
-	 * @param ack DatagramPacket, ack packet containing data from Server
-	 */
-	private void ackFloor(byte[] ack) {
-		byte[] data = new byte[100];
-		try {
-			DatagramPacket receiveAckPacket = new DatagramPacket(data, data.length);
-			System.out.println(this.getClass().getName() + ": Waiting...\n");
-			floorSocket.receive(receiveAckPacket);
-			printPacketContent(receiveAckPacket, "Floor -> send()");
-			
-			DatagramSocket ackSocket = new DatagramSocket();
-			DatagramPacket replyAckPacket = new DatagramPacket(
-					ack, 
-					ack.length, 
-					receiveAckPacket.getAddress(), 
-					receiveAckPacket.getPort());
-			ackSocket.send(replyAckPacket);
-			printPacketContent(replyAckPacket, "Floor <- reply(:ack)");
-			ackSocket.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-	}
-	
-	/**
-	 * Prints out the information it has put in the packet 
-	 * both as a String and as bytes. 
-	 * @param packet, DatagramPacket
-	 * @param direction, String (i.e. received or sending)
-	 */
-	private void printPacketContent(DatagramPacket packet, String direction) {
-		System.out.println(this.getClass().getName() + ": " + direction);
-	    System.out.println("Address: " + packet.getAddress());
-	    System.out.println("Port: " + packet.getPort());
-	    int len = packet.getLength();
-	    System.out.println("Length: " + packet.getLength());
-	    System.out.print("Containing: ");
-	    String packetStr = new String(packet.getData(), 0, len);
-	    System.out.println(packetStr + "\n");
-	    try {
-	        Thread.sleep(1000);
-	    } catch (InterruptedException e ) {
-	        e.printStackTrace();
-	        System.exit(1);
-	    }
 	}
 	
 	/**
