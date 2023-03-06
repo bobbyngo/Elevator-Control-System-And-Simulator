@@ -1,6 +1,7 @@
 package main.java.floor;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -22,7 +23,7 @@ import main.java.floor.parser.Parser;
 public class Floor implements Runnable {
 	
 	private final Logger logger = Logger.getLogger(this.getClass().getName());
-	private static final String FILENAME = "./src/main/resources/input.txt";
+	private final File file = new File("/src/main/resources/input.txt");
 	private static final int FLOOR_PORT = 23;
 	
 	private int floorNumber;
@@ -45,10 +46,15 @@ public class Floor implements Runnable {
 		rpc = new RPC();
 		logger.setLevel(Level.INFO);
 		try {
+			// Filename before compilation
+			String FILENAME = System.getProperty("user.dir") + file.getPath();
 			this.parser = new Parser(FILENAME);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+		} catch (FileNotFoundException e) {}
+		try {
+			// Filename after compilation
+			String FILENAME = System.getProperty("user.dir") + file.getPath().substring(4);
+			this.parser = new Parser(FILENAME);
+		} catch (FileNotFoundException e) {}
 	}
 	
 	/**

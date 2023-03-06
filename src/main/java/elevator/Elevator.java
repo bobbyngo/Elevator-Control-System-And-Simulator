@@ -33,7 +33,7 @@ public class Elevator implements Runnable {
 
 	
 	/**
-	 * Main method for the Floor class.
+	 * Main method for the Elevator class.
 	 * @param args, default parameters
 	 */
 	public static void main(String[] args) {
