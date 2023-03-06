@@ -163,17 +163,18 @@ public class Parser {
 		    } catch (IllegalArgumentException e) {
 		    		logger.severe(String.format("%s on line %d", e.getMessage(), lineNumber));
 			    	parsingSuccess = false;
-		    } finally {
+		    } finally {			   
 			    	if(parsingSuccess) {
+            /*
 			    		logger.info(String.format("Request %s %s %s %s added to the list \n",
 			    				request.getTimestamp(), 
 			    				request.getSourceFloor(), 
 			    				request.getDirection(), 
 			    				request.getDestinationFloor()));
+			    				*/
 			    	}
 		    }
 		}
-		System.out.println("------------------------ Finished parsing requests ----------------------- \n");
 		return elevatorRequestList;	
 	}
 

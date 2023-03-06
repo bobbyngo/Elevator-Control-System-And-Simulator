@@ -1,5 +1,6 @@
 package main.java;
 
+import java.util.ArrayList;
 import main.java.elevator.Elevator;
 import main.java.floor.Floor;
 import main.java.scheduler.Scheduler;
@@ -9,32 +10,44 @@ import main.java.scheduler.Scheduler;
  * @version 3.0, 03/11/23
  */
 public class Main {
-
 	/**
 	 * Main method for program execution.
 	 * @param args	String[], default parameters 
 	 */
 	public static void main(String[] args) {
-		// Initialize objects
+		
 		Scheduler scheduler;
-		Floor floor;
-		Elevator elevator;
 		Thread schedulerThread, floorThread, elevatorThread;	
-		
-		// Define objects
+		ArrayList<Elevator> elevatorsArr;
+		ArrayList<Floor> floorsArr;
+		final int NUM_OF_ELEVATORS = 3;
+		final int NUM_OF_FLOORS = 10;
+
 		scheduler = new Scheduler();
-		floor = new Floor(1);
-		elevator = new Elevator(1, scheduler);
+		elevatorsArr = new ArrayList<>();
+		floorsArr = new ArrayList<>();
 		
-		// Define threads
+		for (int i = 0; i < NUM_OF_FLOORS; i++) {
+			floorsArr.add(new Floor(i + 1));	
+		}
+		
+		for (int i = 0; i < NUM_OF_ELEVATORS; i++) {
+			elevatorsArr.add(new Elevator(i + 1, scheduler));
+		}
+		
 		schedulerThread = new Thread(scheduler, "Thread-Scheduler");
-		floorThread = new Thread(floor, "Thread-Floor");
-		elevatorThread = new Thread(elevator, "Thread-Elevator");
-		
-		// Start threads
 		schedulerThread.start();
-		floorThread.start();
-		elevatorThread.start();
+		
+		// Defines and starts the elevator and floor threads
+		for (Floor floor : floorsArr) {
+			floorThread = new Thread(floor, "Thread-Floor" + floor.getFloorNumber());
+			floorThread.start();
+		}
+		
+		for (Elevator elevator : elevatorsArr) {
+			elevatorThread = new Thread(elevator, "Thread-Elevator " + elevator.getElevatorId());
+			elevatorThread.start();
+		}
 	}
 
 }

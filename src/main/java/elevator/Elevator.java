@@ -3,6 +3,7 @@ package main.java.elevator;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
@@ -153,6 +154,10 @@ public class Elevator implements Runnable {
 	    			Integer.valueOf(line[1]), 
 		    		Direction.valueOf(line[2]), 
 		    		Integer.valueOf(line[3]));
+	    } catch (NullPointerException npe) {
+	    		return null;
+	    } catch (ParseException pe) {
+    			return null;
 	    } catch (Exception e) {
 	    		e.printStackTrace();
 	    }

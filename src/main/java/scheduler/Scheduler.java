@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.logging.*;
@@ -145,8 +146,12 @@ public class Scheduler implements Runnable {
 	    			Integer.valueOf(line[1]), 
 		    		Direction.valueOf(line[2]), 
 		    		Integer.valueOf(line[3]));
-	    } catch (Exception e) {
+	    } catch (NullPointerException npe) {
 	    		return null;
+	    } catch (ParseException pe) {
+			return null;
+	    } catch (Exception e) {
+	    		e.printStackTrace();
 	    }
 	    return elevatorRequest;
 	}
