@@ -1,6 +1,7 @@
 package main.java;
 
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import main.java.elevator.Elevator;
@@ -16,6 +17,7 @@ import main.java.scheduler.Scheduler;
 public class Main {
 	
 	private static final Logger logger = Logger.getLogger(Main.class.getName());
+	
 
 	/**
 	 * Main method for program execution.
@@ -25,33 +27,50 @@ public class Main {
 		// Initialize objects
 		String filename = "./src/main/resources/input.txt";
 		Scheduler scheduler;
-		Floor floor;
-		Elevator elevator;
-		Parser parser = null;
-		Thread schedulerThread, floorThread, elevatorThread;	
-		
-		try {
-			parser = new Parser(filename);
-		} catch (FileNotFoundException e) {
-			logger.severe(String.format("Input file %s not found. Exiting program.", filename));
-			System.exit(1);
-		}
-		
+		ArrayList<Elevator> elevatorsArr;
+		ArrayList<Floor> floorsArr;
+		final int NUM_OF_ELEVATORS = 3;
+		final int NUM_OF_FLOORS = 10;
+		Thread schedulerThread;
 		
 		// Define objects
 		scheduler = new Scheduler();
-		floor = new Floor(1, scheduler, parser);
-		elevator = new Elevator(1, scheduler);
+		elevatorsArr = new ArrayList<>();
+		floorsArr = new ArrayList<>();
+		
+		for (int i = 0; i < NUM_OF_FLOORS; i++) {
+			// Create a parser for each floor object
+			try {
+				Parser parser = new Parser(filename);
+				floorsArr.add(new Floor(i + 1, scheduler, parser));
+			} catch (FileNotFoundException e) {
+				logger.severe(String.format("Input file %s not found. Exiting program.", filename));
+				System.exit(1);
+			}
+			
+		}
+		for (int i = 0; i < NUM_OF_ELEVATORS; i++) {
+			elevatorsArr.add(new Elevator(i + 1, scheduler));
+		}
 		
 		// Define threads
 		schedulerThread = new Thread(scheduler, "Thread-Scheduler");
-		floorThread = new Thread(floor, "Thread-Floor");
-		elevatorThread = new Thread(elevator, "Thread-Elevator");
 		
 		// Start threads
 		schedulerThread.start();
-		floorThread.start();
-		elevatorThread.start();
+		
+		System.out.println("-------------------------- Parsing user requests ------------------------- \n");
+		// Defines and starts the elevator and floor threads
+		for (Floor floor : floorsArr) {
+			Thread floorThread = new Thread(floor, "Thread-Floor" + floor.getFloorNumber());
+			floorThread.start();
+		}
+		//System.out.println("------------------------ Finished parsing requests ----------------------- \n");
+		
+		for (Elevator elevator : elevatorsArr) {
+			Thread elevatorThread = new Thread(elevator, "Thread-Elevator " + elevator.getElevatorId());
+			elevatorThread.start();
+		}
 	}
 
 }
