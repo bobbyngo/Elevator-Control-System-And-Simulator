@@ -27,30 +27,31 @@ public class Elevator implements Runnable {
 	public static final int ELEVATOR_PORT = 69;
 	private DatagramSocket dataSocket, ackSocket;
 	
-	private int id = 1;
+	private int id;
 	private ElevatorState elevatorState;
 	private Scheduler scheduler;
+
 	
 	/**
 	 * Main method for the Floor class.
 	 * @param args, default parameters
 	 */
 	public static void main(String[] args) {
-		new Thread(new Elevator()).start();
+		new Thread(new Elevator(1, new Scheduler())).start();
 	}
-	
 	
 	/**
 	 * Constructor for Elevator class.
 	 * @param id int, elevator id
 	 * @param scheduler	Scheduler, scheduler object referenced by Elevator
 	 */
-	public Elevator() {
-		this.id = id++;
+	public Elevator(int id, Scheduler scheduler) {
+		this.id = id;
+		this.scheduler = scheduler;
 		elevatorState = ElevatorState.Idle;
 		logger.setLevel(Level.INFO);
 		// Start of the program, the elevator should be in floor 1
-		//scheduler.registerElevatorLocation(id, 1);
+		scheduler.registerElevatorLocation(id, 1);
 	}
 
 	/**
@@ -90,12 +91,12 @@ public class Elevator implements Runnable {
 						// to pick up the users then move the the floor they want
 						
 						// Move from the current floor to the floor that request the elevator
-						//if (scheduler.displayElevatorLocation(id) != request.getSourceFloor()) {
+						if (scheduler.displayElevatorLocation(id) != request.getSourceFloor()) {
 							logger.info(String.format("Elevator %d is moving to floor %d to pick up the users", id , request.getSourceFloor()));
-							//scheduler.movingTo(id, scheduler.displayElevatorLocation(id), request.getSourceFloor());
-						//}
+							scheduler.movingTo(id, scheduler.displayElevatorLocation(id), request.getSourceFloor());
+						}
 						// Move from the picked up floor to the floor users want 
-						//scheduler.movingTo(id, scheduler.displayElevatorLocation(id), request.getDestinationFloor());
+						scheduler.movingTo(id, scheduler.displayElevatorLocation(id), request.getDestinationFloor());
 						elevatorState = elevatorState.nextState();
 						break;
 					}

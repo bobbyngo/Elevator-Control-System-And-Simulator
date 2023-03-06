@@ -382,6 +382,11 @@ public class Scheduler implements Runnable {
 	 */
 	public int movingTo(int id, int currentFloor, int destinationFloor) {
 		while (currentFloor != destinationFloor) {
+			try {
+				Thread.sleep(200);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			String loggerStr = String.format("Moving from floor %d -> floor %d \n", currentFloor, destinationFloor);
 			logger.info(loggerStr);
 			

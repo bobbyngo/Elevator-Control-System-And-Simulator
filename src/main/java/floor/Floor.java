@@ -23,11 +23,11 @@ import main.java.floor.parser.Parser;
 public class Floor implements Runnable {
 	
 	private final Logger logger = Logger.getLogger(this.getClass().getName());
-	private Parser parser;
-	private int floorNumber = 0;
-	
 	private static final String FILENAME = "./src/main/resources/input.txt";
 	private static final int FLOOR_PORT = 23;
+	
+	private int floorNumber;
+	private Parser parser;
 	private DatagramSocket dataSocket, ackSocket;
 	
 	/**
@@ -35,14 +35,14 @@ public class Floor implements Runnable {
 	 * @param args, default parameters
 	 */
 	public static void main(String[] args) {
-		new Thread(new Floor()).start();
+		new Thread(new Floor(1)).start();
 	}
 	
 	/**
 	 * Constructor for the Floor class.
 	 */
-	public Floor() {
-		this.floorNumber = floorNumber++;
+	public Floor(int floorNumber) {
+		this.floorNumber = floorNumber;
 		logger.setLevel(Level.INFO);
 		try {
 			this.parser = new Parser(FILENAME);
