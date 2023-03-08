@@ -1,13 +1,22 @@
 package main.java.scheduler;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.logging.*;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import main.java.dto.Direction;
 import main.java.dto.ElevatorRequest;
+import main.java.dto.RPC;
 
 /**
  * Responsible for accepting input from all of the sensors, and
@@ -21,10 +30,20 @@ import main.java.dto.ElevatorRequest;
 public class Scheduler implements Runnable {
 	
 	private final Logger logger = Logger.getLogger(this.getClass().getName());
+		
 	private List<ElevatorRequest> requestsQueue;
 	private List<ElevatorRequest> completedQueue;
 	private Map<Integer, Integer> elevatorLocation;
 	private SchedulerState schedulerState;
+	private RPC rpc;
+	
+	/**
+	 * Main method for the Scheduler class.
+	 * @param args, default parameters
+	 */
+	public static void main(String[] args) {
+		new Thread(new Scheduler()).start();
+	}
 	
 	/**
 	 * Constructor for the Scheduler.
@@ -33,9 +52,108 @@ public class Scheduler implements Runnable {
 		requestsQueue = Collections.synchronizedList(new ArrayList<>());
 		completedQueue = Collections.synchronizedList(new ArrayList<>());
 		elevatorLocation = Collections.synchronizedMap(new HashMap<>());
+		rpc = new RPC();
 		schedulerState = SchedulerState.Idle;
 		logger.setLevel(Level.INFO);
+	}
+	
+	/**
+	 * Scheduler override run() method. Sleeps until the process is killed.
+	 * @see java.lang.Runnable#run()
+	 */
+	@Override
+	public void run() {
+		try {
+			rpc.openSchedulerSocket();
+			Thread.sleep(0);
+			while (true) {
+				switch (schedulerState) {
+				case Idle: {
+					schedulerState = schedulerState.nextState();
+					break;
+				}
+				case Ready: {;
+					DatagramPacket reply = rpc.replyFloor();
+					ElevatorRequest elevatorRequest = decodeData(reply);
+					putRequest(elevatorRequest);
+					// TODO: Scanning algorithm to the queue should happen here
+					elevatorRequest = dispatchRequest();
+					byte[] data = encodeData(elevatorRequest);
+					rpc.replyElevator(data);
+					schedulerState = schedulerState.nextState();
+					break;
+				}
+				case InService: {
+					DatagramPacket ack = rpc.ackElevator();
+					ElevatorRequest elevatorRequest = decodeData(ack);
+					putCompletedRequest(elevatorRequest);
+					elevatorRequest = getCompletedRequest();
+					byte[] data = encodeData(elevatorRequest);
+					rpc.ackFloor(data);
+					schedulerState = schedulerState.nextState();
+					System.out.println("--------------------------------------");
+					break;
+				}
+				default:
+					break;
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			rpc.closeSchedulerSocket();
+			logger.info("Program terminated.");
+		}
+	}
+	
+	/**
+	 * Encodes an elevator request object into a byte[] data.
+	 * @param elevatorRequest, ElevatorRequest obj
+	 * @return message byte[], the encoded elevatorRequest
+	 * @throws IOException
+	 */
+	private byte[] encodeData(ElevatorRequest elevatorRequest) {
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		byte[] message = null;
+		try {
+			os.write(elevatorRequest.toString().getBytes());
+			os.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		message = os.toByteArray();
+		return message;
+	}
+	
+	/**
+	 * Decodes byte[] data into an ElevatorRequest object.
+	 * @param message byte[], the encoded elevatorRequest
+	 * @return elevatorRequest, ElevatorRequest obj
+	 * @throws IOException
+	 */
+	private ElevatorRequest decodeData(DatagramPacket packet) {
+		ElevatorRequest elevatorRequest = null;
+		Timestamp timestamp = null;
+	    String[] line = new String(packet.getData(), 0, packet.getLength()).split(" ");
 		
+	    try {
+	    		Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+	    		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+	    		Date parsedDate = dateFormat.parse(currentTime.toString().split(" ")[0] + " " + line[0]);
+	        timestamp = new Timestamp(parsedDate.getTime());
+	    	
+	        elevatorRequest = new ElevatorRequest(timestamp, 
+	    			Integer.valueOf(line[1]), 
+		    		Direction.valueOf(line[2]), 
+		    		Integer.valueOf(line[3]));
+	    } catch (NullPointerException npe) {
+	    		return null;
+	    } catch (ParseException pe) {
+			return null;
+	    } catch (Exception e) {
+	    		e.printStackTrace();
+	    }
+	    return elevatorRequest;
 	}
 	
 	/**
@@ -59,8 +177,11 @@ public class Scheduler implements Runnable {
 	 * @param elevatorRequest
 	 */
 	public synchronized void putRequest(ElevatorRequest elevatorRequest) {
+		if (elevatorRequest == null) {
+			return;
+		}
 		// No duplicate values
-		if (!requestsQueue.contains(elevatorRequest)) {
+		else if (!requestsQueue.contains(elevatorRequest)) {
 			requestsQueue.add(elevatorRequest);
 			String loggerStr = String.format("Add request %s > request queue: %d", elevatorRequest.toString(), requestsQueue.size());
 			logger.info(loggerStr);
@@ -84,7 +205,7 @@ public class Scheduler implements Runnable {
 			}
 		}
 		
-		// For this iteration: we will first come first serve: remove the former index
+		// TODO: Elevator assignment algorithm goes here
 		ElevatorRequest removedElevatorRequest = requestsQueue.remove(0);
 		String loggerStr = String.format("Dispatch request %s > request queue: %d", removedElevatorRequest.toString(), requestsQueue.size());
 		logger.info(loggerStr);
@@ -133,6 +254,11 @@ public class Scheduler implements Runnable {
 	 */
 	public int movingTo(int id, int currentFloor, int destinationFloor) {
 		while (currentFloor != destinationFloor) {
+			try {
+				Thread.sleep(200);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			String loggerStr = String.format("Moving from floor %d -> floor %d \n", currentFloor, destinationFloor);
 			logger.info(loggerStr);
 			
@@ -169,41 +295,6 @@ public class Scheduler implements Runnable {
 		return elevatorLocation.get(id);
 	}
 	
-	/**
-	 * Scheduler override run() method. Sleeps until the process is killed.
-	 * @see java.lang.Runnable#run()
-	 * @author Zakaria Ismail
-	 */
-	@Override
-	public void run() {
-		try {
-			Thread.sleep(0);
-			while (true) {
-				switch (schedulerState) {
-				case Idle: {
-					schedulerState = schedulerState.nextState();
-					break;
-				}
-				case Ready: {
-					if (!requestsQueue.isEmpty()) {
-						schedulerState = schedulerState.nextState();
-					}
-					break;
-				}
-				case InService: {
-					if (!completedQueue.isEmpty()) {
-						schedulerState = schedulerState.nextState();
-					}
-					break;
-				}
-				default:
-					break;
-				}
-			}
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
 	
 }
 

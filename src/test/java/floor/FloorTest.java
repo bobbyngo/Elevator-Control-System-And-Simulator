@@ -5,8 +5,6 @@ import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 import main.java.floor.Floor;
-import main.java.floor.parser.Parser;
-import main.java.scheduler.Scheduler;
 
 /**
  * FloorTest tests and validates the methods for the Floor class
@@ -20,8 +18,6 @@ public class FloorTest {
 	private Floor floor2;
 	private Floor floor3;
 	private Floor floor4;
-	private Scheduler scheduler;
-	private Parser parser;
 	
 	/**
 	 * Responsible for setting up the test environment 
@@ -29,10 +25,10 @@ public class FloorTest {
 	 */
 	@Before
     	public void setUp() throws Exception {
-		floor1 = new Floor(1, scheduler, parser);
-		floor2 = new Floor(2, scheduler, parser);
-		floor3 = new Floor(6, scheduler, parser);
-		floor4 = new Floor(10, scheduler, parser);
+		floor1 = new Floor(1);
+		floor2 = new Floor(2);
+		floor3 = new Floor(6);
+		floor4 = new Floor(10);
     	}
 	
 	/**

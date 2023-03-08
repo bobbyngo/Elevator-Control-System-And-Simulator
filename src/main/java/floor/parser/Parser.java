@@ -130,7 +130,7 @@ public class Parser {
 		while ((lineEntry = reader.readLine()) != null) {
 		    String[] line = lineEntry.split(" ");		    
 		    Timestamp timestamp = null;
-		    lineNumber ++;
+		    lineNumber++;
 		    
 		    try {
 		    	parsingSuccess = true;

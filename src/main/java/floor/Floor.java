@@ -1,103 +1,137 @@
 package main.java.floor;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.DatagramPacket;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import main.java.dto.ElevatorRequest;
+import main.java.dto.RPC;
 import main.java.floor.parser.Parser;
-import main.java.scheduler.Scheduler;
 
 /**
  * The class that holds information about a floor and initiates requests 
  * to the scheduler for users wanting to travel up or down
  * @author Hussein El Mokdad
  * @since 1.0, 02/04/23
- * @version 2.0, 02/27/23
+ * @version 3.0, 03/11/23
  */
 public class Floor implements Runnable {
 	
 	private final Logger logger = Logger.getLogger(this.getClass().getName());
+	private final File file = new File("/src/main/resources/input.txt");
+	private static final int FLOOR_PORT = 23;
 	
 	private int floorNumber;
-	private Scheduler scheduler; 
 	private Parser parser;
+	private RPC rpc;
+	
+	/**
+	 * Main method for the Floor class.
+	 * @param args, default parameters
+	 */
+	public static void main(String[] args) {
+		new Thread(new Floor(1)).start();
+	}
 	
 	/**
 	 * Constructor for the Floor class.
-	 * @param floorNumber int, the floor number
-	 * @param scheduler Scheduler, the scheduler obj
-	 * @param parser	 Parser, parser obj to read the text file input
 	 */
-	public Floor(int floorNumber, Scheduler scheduler, Parser parser) {
+	public Floor(int floorNumber) {
 		this.floorNumber = floorNumber;
-		this.scheduler = scheduler;
-		this.parser = parser;
+		rpc = new RPC();
 		logger.setLevel(Level.INFO);
+		try {
+			// Filename before compilation
+			String FILENAME = System.getProperty("user.dir") + file.getPath();
+			this.parser = new Parser(FILENAME);
+		} catch (FileNotFoundException e) {}
+		try {
+			// Filename after compilation
+			String FILENAME = System.getProperty("user.dir") + file.getPath().substring(4);
+			this.parser = new Parser(FILENAME);
+		} catch (FileNotFoundException e) {}
+	}
+	
+	/**
+	 * Floor override run() method.
+	 * @see java.lang.Runnable#run()
+	 */
+	@Override
+	public void run() {
+		try {
+			rpc.openSocket();
+			ArrayList<ElevatorRequest> elevatorRequests = getElevatorRequests();
+			addRequestToQueue(elevatorRequests);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			rpc.closeSocket();
+			logger.info("Program terminated.");
+		}
+	}
+	
+	/**
+	 * Sends the series of elevator requests to the Scheduler.
+	 * @param elevatorRequests
+	 */
+	private void addRequestToQueue(ArrayList<ElevatorRequest> elevatorRequests) {
+		if (!elevatorRequests.isEmpty()) {
+			// TODO: Send request as per time stamp logic potential added here
+			// Sends all the request for Floors at serially
+			for (ElevatorRequest req : elevatorRequests) {
+				byte[] data = encodeData(req);
+				DatagramPacket reply = rpc.floorSendReceive(data, FLOOR_PORT);
+				rpc.floorAck(reply);
+				System.out.println("--------------------------------------");
+			}
+		}
+	}
+	
+	/**
+	 * Encodes an elevator request object into a byte[] data.
+	 * @param elevatorRequest, ElevatorRequest obj
+	 * @return message byte[], the encoded elevatorRequest
+	 * @throws IOException
+	 */
+	private byte[] encodeData(ElevatorRequest elevatorRequest) {
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		byte[] message = null;
+		try {
+			os.write(elevatorRequest.toString().getBytes());
+			os.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		message = os.toByteArray();
+		return message;
 	}
 	
 	/**
 	 * Get the floor number.
-	 * @return int, the floor number
+	 * @return int, floor number
 	 */
 	public int getFloorNumber() {
-		return floorNumber;
+		return this.floorNumber;
 	}
 	
 	/**
-	 * Request an elevator from the Scheduler.
-	 * @param request ElevatorRequest, user requested Elevator
-	 * @author Zakaria Ismail
+	 * Parse user requests.
+	 * @return elevatorRequests ArrayList<>, a list of elevator requests
 	 */
-	public void requestElevator(ElevatorRequest request) {
-		scheduler.putRequest(request);
-		String loggerStr = String.format("Request elevator: %s \n", request.toString());
-		logger.info(loggerStr);
-	}
-	
-	/**
-	 * Notify scheduler that request has been completed.
-	 * @return completedRequest, ElevatorRequest completed
-	 */
-	public ElevatorRequest receiveCompletedRequest() {
-		ElevatorRequest completedRequest = scheduler.getCompletedRequest();
-		String loggerStr = String.format("Elevator completed request: %s", completedRequest.toString());
-		logger.info(loggerStr);
-		return completedRequest;
-	}
-
-	/**
-	 * Floor override run() method. 
-	 * Parses all elevator requests from the input file and 
-	 * sends ElevatorRequest objects to the Scheduler.
-	 * @see java.lang.Runnable#run()
-	 * @author Zakaria Ismail
-	 */
-	@Override
-	public void run() {
+	private ArrayList<ElevatorRequest> getElevatorRequests() {
 		ArrayList<ElevatorRequest> elevatorRequests = null;
-		
 		try {
 			elevatorRequests = parser.requestParser();
 		} catch (IOException e) {
-			logger.severe("IOException occurred");
+			e.printStackTrace();
 			System.exit(1);
 		}
-		
-		if (!elevatorRequests.isEmpty()) {
-			//System.out.println("------------------------ Adding requests to queue ------------------------ \n");
-			for (ElevatorRequest req : elevatorRequests) {
-				if (req.getSourceFloor() == getFloorNumber()) requestElevator(req);
-				try {
-					Thread.sleep(2000);
-				} catch (InterruptedException e) {}
-			}
-		}
-		// End process when all requests have been served?
-		//logger.info("All requests have been sent.");
-		// System.exit(0); // This terminates the program even if the elevators are still serving the requests. Need to fix
-		return;
+		return elevatorRequests;
 	}
 	
 }
