@@ -47,6 +47,19 @@ public class ParserTest {
 	}
 	
 	/**
+	 * testSortListByTimestamp validates that the elevatorRequest objects are inserted into the
+	 * Arraylist in the order from smallest to greatest
+	 */
+	@Test
+	public void testSortListByTimestamp() {
+		assertEquals("00:08:32.0 7 UP 10", elevatorRequestList.get(0).toString());
+		assertEquals("03:02:56.0 10 UP 15", elevatorRequestList.get(1).toString());
+		assertEquals("05:35:44.0 1 UP 4", elevatorRequestList.get(2).toString());
+		assertEquals("07:01:15.0 2 UP 6", elevatorRequestList.get(3).toString());
+		assertEquals("08:16:45.0 3 DOWN 1", elevatorRequestList.get(4).toString());
+	}
+	
+	/**
 	 * testTextParser validates that a String is parsed properly into an 
 	 * ElevatorRequest object with all parameters being correct
 	 * @throws ParseException
@@ -66,7 +79,7 @@ public class ParserTest {
 	 */
 	@Test
 	public void testTimestamp() throws IOException, ParseException {
-		assertEquals(ElevatorRequest.stringToTimestamp("07:01:15.000"), elevatorRequestList.get(0).getTimestamp());
+		assertEquals(ElevatorRequest.stringToTimestamp("00:08:32.000"), elevatorRequestList.get(0).getTimestamp());
 	}
 	
 	/**
@@ -88,7 +101,7 @@ public class ParserTest {
 	 */
 	@Test
 	public void testSourceFloor() {
-		assertEquals(Integer.valueOf(2), elevatorRequestList.get(0).getSourceFloor());
+		assertEquals(Integer.valueOf(7), elevatorRequestList.get(0).getSourceFloor());
 	}
 	
 	/**
@@ -106,7 +119,7 @@ public class ParserTest {
 	 */
 	@Test
 	public void testDirectionDown() {
-		assertEquals(Direction.DOWN, elevatorRequestList.get(1).getDirection());
+		assertEquals(Direction.DOWN, elevatorRequestList.get(4).getDirection());
 	}
 	
 	/**
@@ -115,7 +128,7 @@ public class ParserTest {
 	 */
 	@Test
 	public void testDestinationFloor() {
-		assertEquals(Integer.valueOf(6), elevatorRequestList.get(0).getDestinationFloor());
+		assertEquals(Integer.valueOf(10), elevatorRequestList.get(0).getDestinationFloor());
 	}
 
 }

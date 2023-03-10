@@ -116,6 +116,27 @@ public class Parser {
     }
 	
 	/**
+	 * sortListByTimestamp sort a list of ElevatorRequest from smallest to biggest based on their timestamp
+	 * @param requestList is an arraylist of ElevatorRequest objects
+	 */
+	public void sortListByTimestamp(ArrayList<ElevatorRequest> requestList){
+		
+		int length = requestList.size();  
+		ElevatorRequest temp = null; 
+        
+        for(int i = 0; i < length; i++){  
+            for(int j=1; j < (length-i); j++){ 
+            	
+            	if(requestList.get(j-1).getTimestamp().compareTo(requestList.get(j).getTimestamp()) > 0) {
+            		temp = requestList.get(j-1);
+            		requestList.set(j-1, requestList.get(j));
+            		requestList.set(j, temp);
+            	}
+            }
+        }
+	}
+	
+	/**
 	 * RequestParser is responsible for parsing the text file and 
 	 * storing the extracted information in ElevatorRequest object.
 	 * @return ArrayList, containing ElevatorRequest object
@@ -124,7 +145,6 @@ public class Parser {
 	public ArrayList<ElevatorRequest> requestParser() throws IOException {
 		
 		int lineNumber = 0;
-		boolean parsingSuccess = true;
 		ElevatorRequest request = null;
 		
 		while ((lineEntry = reader.readLine()) != null) {
@@ -133,7 +153,6 @@ public class Parser {
 		    lineNumber++;
 		    
 		    try {
-		    	parsingSuccess = true;
 		    	Timestamp currentTime = new Timestamp(System.currentTimeMillis());
 		    	
 		    	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
@@ -153,28 +172,17 @@ public class Parser {
 		    	
 		    } catch (ParseException e) {
 			    	logger.severe(String.format("%s on line %d", e.getMessage(), lineNumber));
-			    	parsingSuccess = false;
 		    } catch(ElevatorReqParamException e) {
 		    		logger.severe(String.format("%s on line %d", e.getMessage(), lineNumber));
-			    	parsingSuccess = false;
 		    } catch (NumberFormatException e) {
 		    		logger.severe(String.format("%s on line %d", e.getMessage(), lineNumber));
-			    	parsingSuccess = false;
 		    } catch (IllegalArgumentException e) {
 		    		logger.severe(String.format("%s on line %d", e.getMessage(), lineNumber));
-			    	parsingSuccess = false;
-		    } finally {			   
-			    	if(parsingSuccess) {
-            /*
-			    		logger.info(String.format("Request %s %s %s %s added to the list \n",
-			    				request.getTimestamp(), 
-			    				request.getSourceFloor(), 
-			    				request.getDirection(), 
-			    				request.getDestinationFloor()));
-			    				*/
-			    	}
-		    }
+		    } 
+		    
 		}
+		
+		sortListByTimestamp(elevatorRequestList);
 		return elevatorRequestList;	
 	}
 
