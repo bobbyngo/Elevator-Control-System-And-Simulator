@@ -126,12 +126,11 @@ public class Parser {
         
         for(int i = 0; i < length; i++){  
             for(int j=1; j < (length-i); j++){ 
-            	
-            	if(requestList.get(j-1).getTimestamp().compareTo(requestList.get(j).getTimestamp()) > 0) {
-            		temp = requestList.get(j-1);
-            		requestList.set(j-1, requestList.get(j));
-            		requestList.set(j, temp);
-            	}
+	            	if(requestList.get(j-1).getTimestamp().compareTo(requestList.get(j).getTimestamp()) > 0) {
+	            		temp = requestList.get(j-1);
+	            		requestList.set(j-1, requestList.get(j));
+	            		requestList.set(j, temp);
+	            	}
             }
         }
 	}
@@ -178,8 +177,7 @@ public class Parser {
 		    		logger.severe(String.format("%s on line %d", e.getMessage(), lineNumber));
 		    } catch (IllegalArgumentException e) {
 		    		logger.severe(String.format("%s on line %d", e.getMessage(), lineNumber));
-		    } 
-		    
+		    } 		    
 		}
 		
 		sortListByTimestamp(elevatorRequestList);
