@@ -14,6 +14,10 @@ public class Main {
 	 * Main method for program execution.
 	 * @param args	String[], default parameters 
 	 */
+	
+	// Elevator components need the access
+	public static final int NUM_OF_FLOORS = 10;
+	
 	public static void main(String[] args) {
 		
 		Scheduler scheduler;
@@ -21,7 +25,6 @@ public class Main {
 		ArrayList<Elevator> elevatorsArr;
 		ArrayList<Floor> floorsArr;
 		final int NUM_OF_ELEVATORS = 3;
-		final int NUM_OF_FLOORS = 10;
 
 		scheduler = new Scheduler();
 		elevatorsArr = new ArrayList<>();
