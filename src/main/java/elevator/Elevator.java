@@ -30,7 +30,7 @@ public class Elevator implements Runnable {
 	private ElevatorState elevatorState;
 	private Scheduler scheduler;
 	private RPC rpc;
-
+	private ElevatorComponents elevatorComponents;
 	
 	/**
 	 * Main method for the Elevator class.
@@ -53,6 +53,8 @@ public class Elevator implements Runnable {
 		logger.setLevel(Level.INFO);
 		// Start of the program, the elevator should be in floor 1
 		scheduler.registerElevatorLocation(id, 1);
+		// init elevator component, motor is false, doorOpen is false 
+		elevatorComponents = new ElevatorComponents(false, false);
 	}
 
 	/**
