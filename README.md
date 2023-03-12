@@ -81,22 +81,22 @@ ELEVATOR-CONTROL-SYSTEM-AND-SIMULATOR
 |   README.txt
 |
 +---documentation
-|       P2-UML-class.drawio.pdf
-|       P2-UML-class.drawio.png
-|       P2-UML-elevatorState.drawio.pdf
-|       P2-UML-elevatorState.drawio.png
-|       P2-UML-schedulerState.drawio.pdf
-|       P2-UML-schedulerState.drawio.png
-|       P2-UML-sequence.drawio.pdf
-|       P2-UML-sequence.drawio.png
-|       P2-UML.drawio
-|       P2G7-Responsibilities.docx
-|       P2G7-Responsibilities.pdf
+|       P3-UML-class.drawio.pdf
+|       P3-UML-class.drawio.png
+|       P3-UML-elevatorState.drawio.pdf
+|       P3-UML-schedulerState.drawio.pdf
+|       P3-UML-sequence.drawio.pdf
+|       P3-UML-sequence.drawio.png
+|       P3-UML.drawio
+|       P3G7-Responsibilities.docx
+|       P3G7-Responsibilities.pdf
 |
 \---src
     |   module-info.java
     |
     +---main
+    |   |   .gitignore
+    |   |
     |   +---java
     |   |   |   Main.java
     |   |   |   package-info.java
@@ -105,6 +105,7 @@ ELEVATOR-CONTROL-SYSTEM-AND-SIMULATOR
     |   |   |       Direction.java
     |   |   |       ElevatorRequest.java
     |   |   |       package-info.java
+    |   |   |       RPC.java
     |   |   |
     |   |   +---elevator
     |   |   |       Elevator.java
@@ -157,6 +158,7 @@ ELEVATOR-CONTROL-SYSTEM-AND-SIMULATOR
         |   \---scheduler
         |           package-info.java
         |           SchedulerStateTest.java
+        |           SchedulerTest.java
         |
         \---resources
                 incorrectInput.txt
@@ -169,6 +171,7 @@ ELEVATOR-CONTROL-SYSTEM-AND-SIMULATOR
 `dto:` Location for enums, shared resource buffer classes:
 * ElevatorRequest.java: A class storing all the relevant information regarding passenger's elevator requests
 * Direction.java: A class that storing the moving direction of the elevator in enum 
+* RPC.java: A class that is reponsible for the remote procedure call comminucation using UDP
 
 `scheduler:` Package for classes related to scheduler subsystem
 * SchedulerState.java: Enum class provides the available states of the Scheduler subsystem
