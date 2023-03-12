@@ -22,9 +22,9 @@ import main.java.floor.parser.Parser;
  */
 public class Floor implements Runnable {
 	
+	private static final int FLOOR_PORT = 23;
 	private final Logger logger = Logger.getLogger(this.getClass().getName());
 	private final File file = new File("/src/main/resources/input.txt");
-	private static final int FLOOR_PORT = 23;
 	
 	private int floorNumber;
 	private Parser parser;
@@ -76,6 +76,15 @@ public class Floor implements Runnable {
 	}
 	
 	/**
+	 * Get the floor number.
+	 * @return int, floor number
+	 */
+	public int getFloorNumber() {
+		return this.floorNumber;
+	}
+	
+	
+	/**
 	 * Sends the series of elevator requests to the Scheduler.
 	 * @param elevatorRequests
 	 */
@@ -110,15 +119,7 @@ public class Floor implements Runnable {
 		message = os.toByteArray();
 		return message;
 	}
-	
-	/**
-	 * Get the floor number.
-	 * @return int, floor number
-	 */
-	public int getFloorNumber() {
-		return this.floorNumber;
-	}
-	
+
 	/**
 	 * Parse user requests.
 	 * @return elevatorRequests ArrayList<>, a list of elevator requests

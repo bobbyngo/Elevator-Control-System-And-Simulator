@@ -301,7 +301,7 @@ public class RPC {
 	 * Receive data from Scheduler.
 	 * @return DatagramPacket, elevator requested from Scheduler
 	 */
-	public DatagramPacket elevatorReceiveData() {
+	private DatagramPacket elevatorReceiveData() {
 		byte[] data = new byte[100];
 		DatagramPacket replyPacket = new DatagramPacket(data, data.length);
 		try {
@@ -319,7 +319,7 @@ public class RPC {
 	 * Send acknowledge to Scheduler.
 	 * @param receiveHostPacket DatagramPacket, data packet received from request
 	 */
-	public void elevatorSendAck(DatagramPacket replyPacket) {
+	private void elevatorSendAck(DatagramPacket replyPacket) {
 		DatagramPacket ackPacket = new DatagramPacket(
 				replyPacket.getData(), 
 				replyPacket.getLength(), 
@@ -337,7 +337,7 @@ public class RPC {
 	/**
 	 * Receive reply to acknowledge from Scheduler.
 	 */
-	public void elevatorReceiveAck() {
+	private void elevatorReceiveAck() {
 		byte[] data = new byte[100];
 		DatagramPacket ackPacket = new DatagramPacket(data, data.length);
 		try {

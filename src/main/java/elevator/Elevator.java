@@ -136,6 +136,22 @@ public class Elevator implements Runnable {
 	}
 	
 	/**
+	 * Get the elevator id.
+	 * @return int, elevator id
+	 */
+	public int getElevatorId() {
+		return this.id;
+	}
+	
+	/**
+	 * Get current elevator state
+	 * @return elevatorState, current elevator state
+	 */
+	public ElevatorState getElevatorState() {
+		return elevatorState;
+	}
+	
+	/**
 	 * Decodes byte[] data into an ElevatorRequest object.
 	 * @param message byte[], the encoded elevatorRequest
 	 * @return elevatorRequest, ElevatorRequest obj
@@ -164,22 +180,6 @@ public class Elevator implements Runnable {
 	    		e.printStackTrace();
 	    }
 	    return elevatorRequest;
-	}
-	
-	/**
-	 * Get the elevator id.
-	 * @return int, elevator id
-	 */
-	public int getElevatorId() {
-		return this.id;
-	}
-	
-	/**
-	 * Get current elevator state
-	 * @return elevatorState, current elevator state
-	 */
-	public ElevatorState getElevatorState() {
-		return elevatorState;
 	}
 
 }

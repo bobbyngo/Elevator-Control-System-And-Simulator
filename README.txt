@@ -6,8 +6,10 @@ Department of Systems and Computer Engineering
 SYSC 3303A Real-Time Concurrent Systems Winter 2023 
 Iteration 1 - Establish Connections between the three subsystems.
 Iteration 2 - Adding the Scheduler and Elevator Subsystems.
+Iteration 3 – Multiple Cars and System Distribution.
 @version 1.0, 02/04/23
 @version 2.0, 02/27/23
+@version 3.0, 03/11/23
 ```
 
 ## Group 7 Members:
@@ -24,15 +26,15 @@ The work distribution is divided into tasks and displayed in this JIRA link:
 
 The work breakdown responsibility of the project for the iteration is located:
 
-* documentation/P2G7-Responsibilities.pdf
+* documentation/P3G7-Responsibilities.pdf
 
 ## Documentation
 
 The UML class diagram and the UML sequence diagram of the system is contained in
 the documentation folder labeled: 
 
-* documentation/P2-UML-class.drawio.pdf
-* documentation/P2-UML-sequence.drawio.pdf
+* documentation/P3-UML-class.drawio.pdf
+* documentation/P3-UML-sequence.drawio.pdf
 
 ## Requirements & Dependencies
 
@@ -45,19 +47,27 @@ No other external dependencies required.
 
 Note that this application was built on Eclipse IDE release version 4.26.0. using Window 10 OS.
 
+The program can be compiled and executed via Command Prompt. Note that each program requires its own 
+terminal. In other words, it must be able to run multiple main programs 
+(projects) concurrently.
+
+```console
+> cd C:\..\..\src\				// Navigate to the src directory	
+> javac *.java					// Compile the source code
+> cd 							// Change directory to .class files
+> java -cp . Scheduler			// Set classpath to run application
+> java -cp . Floor				// Set classpath to run application
+> java -cp . Elevator			// Set classpath to run application
+```
+
 1. Download and extract the .zip file.
 2. Import the source code and run the program in local IDE. 
-3. Navigate to src/main/java/Main.java
-4. Right click and select to "Run As" Java Application.
-
-Note that each program requires its own terminal. In other words, it must be able to 
-run multiple main programs (projects) concurrently.
-
-Navigate to `/src/main/Main.java` and run the `main` method.
+3. Right click and select to "Run As" Java Application.
+4. Run Scheduler, Floor, Elevator in this sequence.
 
 ## UML Diagrams
-![UML-class](/documentation/P2-UML-class.drawio.png)
-![UML-sequence](/documentation/P2-UML-sequence.drawio.png)
+![UML-class](/documentation/P3-UML-class.drawio.png)
+![UML-sequence](/documentation/P3-UML-sequence.drawio.png)
 
 # Iteration 1
 Set up an application for 3 subsystems: Floor, Scheduler, and Elevator. 
@@ -67,6 +77,11 @@ The ElevatorRequest as a shared object that is used for threads to communicate.
 
 # Iteration 2
 Adding State Machine functionality for the Scheduler subsystem and Elevator subsystem. Demonstrating the state changes of subsystems when there is an action or event that trigger it
+
+# Iteration 3
+Split up system to separate programs that can be run on three separate computers and communicate with each other using UDP using Remote Procedure Calls.
+The Scheduler will now be used to coordinate the movement of cars such that each car carries roughly the same number of passengers as all of the others and so that the waiting time for passengers at floors is minimized.
+The state machines for each car should execute independently of each other, but they will all have to share their position with the scheduler. The scheduler will choose which elevator will be used to service a given request.
 
 ## Project structure:
 
@@ -81,22 +96,22 @@ ELEVATOR-CONTROL-SYSTEM-AND-SIMULATOR
 |   README.txt
 |
 +---documentation
-|       P2-UML-class.drawio.pdf
-|       P2-UML-class.drawio.png
-|       P2-UML-elevatorState.drawio.pdf
-|       P2-UML-elevatorState.drawio.png
-|       P2-UML-schedulerState.drawio.pdf
-|       P2-UML-schedulerState.drawio.png
-|       P2-UML-sequence.drawio.pdf
-|       P2-UML-sequence.drawio.png
-|       P2-UML.drawio
-|       P2G7-Responsibilities.docx
-|       P2G7-Responsibilities.pdf
+|       P3-UML-class.drawio.pdf
+|       P3-UML-class.drawio.png
+|       P3-UML-elevatorState.drawio.pdf
+|       P3-UML-schedulerState.drawio.pdf
+|       P3-UML-sequence.drawio.pdf
+|       P3-UML-sequence.drawio.png
+|       P3-UML.drawio
+|       P3G7-Responsibilities.docx
+|       P3G7-Responsibilities.pdf
 |
 \---src
     |   module-info.java
     |
     +---main
+    |   |   .gitignore
+    |   |
     |   +---java
     |   |   |   Main.java
     |   |   |   package-info.java
@@ -105,6 +120,7 @@ ELEVATOR-CONTROL-SYSTEM-AND-SIMULATOR
     |   |   |       Direction.java
     |   |   |       ElevatorRequest.java
     |   |   |       package-info.java
+    |   |   |       RPC.java
     |   |   |
     |   |   +---elevator
     |   |   |       Elevator.java
@@ -157,6 +173,7 @@ ELEVATOR-CONTROL-SYSTEM-AND-SIMULATOR
         |   \---scheduler
         |           package-info.java
         |           SchedulerStateTest.java
+        |           SchedulerTest.java
         |
         \---resources
                 incorrectInput.txt
@@ -169,6 +186,7 @@ ELEVATOR-CONTROL-SYSTEM-AND-SIMULATOR
 `dto:` Location for enums, shared resource buffer classes:
 * ElevatorRequest.java: A class storing all the relevant information regarding passenger's elevator requests
 * Direction.java: A class that storing the moving direction of the elevator in enum 
+* RPC.java: A class that is responsible for the remote procedure call communication using UDP
 
 `scheduler:` Package for classes related to scheduler subsystem
 * SchedulerState.java: Enum class provides the available states of the Scheduler subsystem
@@ -178,11 +196,13 @@ ELEVATOR-CONTROL-SYSTEM-AND-SIMULATOR
 * ElevatorReqParamException.java: Custom exception for elevator request error
 
 `elevator:` Package for classes related to elevator subsystem
+* ElevatorComponents.java: A class containing elevator components that will be used in the UI integration with Static Model of Domain
 * ElevatorState.java: Enum class provides the available states of the Elevator subsystem
 * Elevator.java: A consumer class dispatches requests of the scheduler after finishing the request
 
 `floor:` Package for classes related to floor subsystem
 * Floor.java: A producer class initiates requests to the scheduler for users wanting to travel up or down
+* FloorComponenets.java: A class containing floor components that will be used in the UI integration with Static Model of Domain
 
 `parser:` Package for classes related to parser 
 * Parser.java: The parser that reads through a standard text file and exports the information in a specified format
@@ -191,7 +211,7 @@ ELEVATOR-CONTROL-SYSTEM-AND-SIMULATOR
 `test:` Unit test package
 * ParserTest.java: Test class for Parser class
 * ElevatorRequestTest.java: Test class for ElevatorRequest class
-* SystemTest.java: Test class for the behaviours of the system
+* SystemTest.java: Test class for the behaviors of the system
 * FloorTest.java: Test class for the floor system
 * SchedulerStateTest.java: Test class for Scheduler state subsystem
 * ElevatorStateTest.java: Test class for Elevator state subsystem
