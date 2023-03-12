@@ -6,8 +6,10 @@ Department of Systems and Computer Engineering
 SYSC 3303A Real-Time Concurrent Systems Winter 2023 
 Iteration 1 - Establish Connections between the three subsystems.
 Iteration 2 - Adding the Scheduler and Elevator Subsystems.
+Iteration 3 – Multiple Cars and System Distribution.
 @version 1.0, 02/04/23
 @version 2.0, 02/27/23
+@version 3.0, 03/11/23
 ```
 
 ## Group 7 Members:
@@ -24,7 +26,7 @@ The work distribution is divided into tasks and displayed in this JIRA link:
 
 The work breakdown responsibility of the project for the iteration is located:
 
-* documentation/P2G7-Responsibilities.pdf
+* documentation/P3G7-Responsibilities.pdf
 
 ## Documentation
 
@@ -67,6 +69,11 @@ The ElevatorRequest as a shared object that is used for threads to communicate.
 
 # Iteration 2
 Adding State Machine functionality for the Scheduler subsystem and Elevator subsystem. Demonstrating the state changes of subsystems when there is an action or event that trigger it
+
+# Iteration 3
+Split up system to seperate programs that can be run on three separate computers and communicate with each other using UDP using Remote Procedure Calls.
+The Scheduler will now be used to coordinate the movement of cars such that each car carries roughly the same number of passengers as all of the others and so that the waiting time for passengers at floors is minimized.
+The state machines for each car should execute independently of each other, but they will all have to share their position with the scheduler. The scheduler will choose which elevator will be used to service a given request.
 
 ## Project structure:
 
@@ -181,11 +188,13 @@ ELEVATOR-CONTROL-SYSTEM-AND-SIMULATOR
 * ElevatorReqParamException.java: Custom exception for elevator request error
 
 `elevator:` Package for classes related to elevator subsystem
+* ElevatorComponents.java: A class containing elevator components that will be used in the UI integration with Static Model of Domain
 * ElevatorState.java: Enum class provides the available states of the Elevator subsystem
 * Elevator.java: A consumer class dispatches requests of the scheduler after finishing the request
 
 `floor:` Package for classes related to floor subsystem
 * Floor.java: A producer class initiates requests to the scheduler for users wanting to travel up or down
+* FloorComponenets.java: A class containing floor components that will be used in the UI integration with Static Model of Domain
 
 `parser:` Package for classes related to parser 
 * Parser.java: The parser that reads through a standard text file and exports the information in a specified format

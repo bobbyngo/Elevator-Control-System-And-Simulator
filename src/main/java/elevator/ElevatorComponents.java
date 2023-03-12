@@ -79,7 +79,7 @@ public class ElevatorComponents {
 	}
 	
 	/**
-	 * Flipping motor state
+	 * Switching motor state
 	 */
 	public void updateMotor() {
 		this.motor = !motor;
@@ -94,7 +94,7 @@ public class ElevatorComponents {
 	}
 
 	/**
-	 * Flipping door status
+	 * Switching door status
 	 */
 	public void updateDoorOpen() {
 		this.isDoorOpen = !isDoorOpen;
