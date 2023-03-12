@@ -31,8 +31,8 @@ The work breakdown responsibility of the project for the iteration is located:
 The UML class diagram and the UML sequence diagram of the system is contained in
 the documentation folder labeled: 
 
-* documentation/P2-UML-class.drawio.pdf
-* documentation/P2-UML-sequence.drawio.pdf
+* documentation/P3-UML-class.drawio.pdf
+* documentation/P3-UML-sequence.drawio.pdf
 
 ## Requirements & Dependencies
 
@@ -56,8 +56,8 @@ run multiple main programs (projects) concurrently.
 Navigate to `/src/main/Main.java` and run the `main` method.
 
 ## UML Diagrams
-![UML-class](/documentation/P2-UML-class.drawio.png)
-![UML-sequence](/documentation/P2-UML-sequence.drawio.png)
+![UML-class](/documentation/P3-UML-class.drawio.png)
+![UML-sequence](/documentation/P3-UML-sequence.drawio.png)
 
 # Iteration 1
 Set up an application for 3 subsystems: Floor, Scheduler, and Elevator. 
@@ -67,9 +67,6 @@ The ElevatorRequest as a shared object that is used for threads to communicate.
 
 # Iteration 2
 Adding State Machine functionality for the Scheduler subsystem and Elevator subsystem. Demonstrating the state changes of subsystems when there is an action or event that trigger it
-<br/>
-![Scheduler-State](/documentation/P2-UML-schedulerState.drawio.png)
-![Elevator-State](/documentation/P2-UML-elevatorState.drawio.png)
 
 ## Project structure:
 
