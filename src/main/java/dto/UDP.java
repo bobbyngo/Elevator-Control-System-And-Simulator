@@ -57,39 +57,30 @@ public class UDP {
 	}
 	
 	/**
-	 * Send and receive remote procedure call for Floor.
-	 * @param data byte[], data sent
-	 * @param port int, Floor port number
-	 * @return DatagramPacket, reply message
+	 * Sends a data packet then receives a response data packet
+	 * @param data byte[], the data of the packet to send
+	 * @param port int, the port that the packet will be sent to
+	 * @return DatagramPacket, the packet of the response received 
 	 */
-	public DatagramPacket floorSendReceive(byte[] data, int port) {
-		floorSendData(data, port);
-		return floorReceive();
+	public DatagramPacket sendReceivePacket(byte[] data, int port) {
+		sendPacket(data, port);
+		return receivePacket();
 	}
 	
 	/**
-	 * Send and receive remote procedure call for Elevator.
-	 * @param port int, Elevator port number
-	 * @return DatagramPacket, reply message
+	 * Sends a packet to a destination port. Typically used to make a request for data (floor requests)
+	 * or to send data (floor requests)
+	 * @param data the byte[] of the data to send
 	 */
-	public DatagramPacket elevatorSendReceive(int port) {
-		elevatorSend(port);
-		return elevatorReceiveData();
-	}
-	
-	/**
-	 * Send data to destination port.
-	 * @param data byte[], parsed floor requests
-	 */
-	private void floorSendData(byte[] data, int port) {
+	private void sendPacket(byte[] dataByteArr, int port) {
 		try {
 			DatagramPacket dataPacket = new DatagramPacket(
-					data, 
-					data.length, 
+					dataByteArr, 
+					dataByteArr.length, 
 					InetAddress.getLocalHost(), 
 					port);
 			dataSocket.send(dataPacket);
-			printPacketContent(dataPacket, "send(:request) -> Scheduler");
+			printPacketContent(dataPacket, "Sending packet");
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -97,17 +88,17 @@ public class UDP {
 	}
 	
 	/**
-	 * Receive reply from sender.
+	 * Receive and return a reply packet from a sender.
 	 * @return DatagramPacket, message received from sender
 	 */
-	private DatagramPacket floorReceive() {
+	private DatagramPacket receivePacket() {
 		byte[] data = new byte[100];
 		DatagramPacket replyPacket = null;
 		try {
 			replyPacket = new DatagramPacket(data, data.length);
 			System.out.println("Waiting...\n");
 			dataSocket.receive(replyPacket);
-			printPacketContent(replyPacket, "reply() <- Scheduler");
+			printPacketContent(replyPacket, "Received reply packet from sender");
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -166,43 +157,6 @@ public class UDP {
 			System.exit(1);
 		}
 	}
-	
-	/**
-	 * Send request for data to Scheduler.
-	 */
-	private void elevatorSend(int port) {
-		byte[] data = ("Waiting for request...").getBytes();
-		try {
-			DatagramPacket sendPacket = new DatagramPacket(
-					data, 
-					data.length, 
-					InetAddress.getLocalHost(), 
-					port);
-			dataSocket.send(sendPacket);
-			printPacketContent(sendPacket, "Scheduler <- send()");
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-	}
-	
-	/**
-	 * Receive data from Scheduler.
-	 * @return DatagramPacket, elevator requested from Scheduler
-	 */
-	private DatagramPacket elevatorReceiveData() {
-		byte[] data = new byte[100];
-		DatagramPacket replyPacket = new DatagramPacket(data, data.length);
-		try {
-			System.out.println("Waiting...\n");
-			dataSocket.receive(replyPacket);
-			printPacketContent(replyPacket, "Scheduler -> reply(:request)");
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-		return replyPacket;
-	}	
 	
 	/**
 	 * Prints out the information it has put in the packet 

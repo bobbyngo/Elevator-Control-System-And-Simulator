@@ -94,7 +94,7 @@ public class Floor implements Runnable {
 			// Sends all the request for Floors at serially
 			for (ElevatorRequest req : elevatorRequests) {
 				byte[] data = encodeData(req);
-				DatagramPacket reply = udp.floorSendReceive(data, FLOOR_PORT);
+				DatagramPacket reply = udp.sendReceivePacket(data, FLOOR_PORT);
 				System.out.println("--------------------------------------");
 			}
 		}

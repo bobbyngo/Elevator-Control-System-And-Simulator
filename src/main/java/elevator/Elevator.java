@@ -80,7 +80,7 @@ public class Elevator implements Runnable {
 					}
 					case AwaitRequest: {
 						System.out.println(elevatorStateStr + " ------------------------------------------ \n");
-						reply = udp.elevatorSendReceive(ELEVATOR_PORT);
+						reply = udp.sendReceivePacket("Waiting...".getBytes(), ELEVATOR_PORT);
 						request = decodeData(reply);
 						// TODO: Add request to elevator working queue
 						Thread.sleep(100);
