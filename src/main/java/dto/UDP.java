@@ -12,7 +12,7 @@ import java.net.InetAddress;
  * @since 1.0, 03/11/23
  */
 public class UDP {
-	private DatagramSocket dataSocket; // Each elevator and floor gets a data socket to communicate with the scheduler  
+	private DatagramSocket dataSocket;  
 	
 	/**
 	 * Opens a DatatgramSocket.
