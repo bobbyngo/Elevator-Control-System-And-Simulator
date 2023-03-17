@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 
 import main.java.dto.Direction;
 import main.java.dto.ElevatorRequest;
-import main.java.dto.RPC;
+import main.java.dto.UDP;
 import main.java.scheduler.Scheduler;
 
 /**
@@ -29,7 +29,7 @@ public class Elevator implements Runnable {
 	private int id;
 	private ElevatorState elevatorState;
 	private Scheduler scheduler;
-	private RPC rpc;
+	private UDP udp;
 	private ElevatorComponents elevatorComponents;
 	
 	/**
@@ -48,7 +48,7 @@ public class Elevator implements Runnable {
 	public Elevator(int id, Scheduler scheduler) {
 		this.id = id;
 		this.scheduler = scheduler;
-		rpc = new RPC();
+		udp = new UDP();
 		elevatorState = ElevatorState.Idle;
 		logger.setLevel(Level.INFO);
 		// Start of the program, the elevator should be in floor 1
@@ -68,7 +68,7 @@ public class Elevator implements Runnable {
 			DatagramPacket reply = null;
 			ElevatorRequest request = null;
 			String elevatorStateStr;
-			rpc.openSocket();
+			udp.openSocket();
 			Thread.sleep(1000);
 			while (true) {
 				elevatorStateStr = elevatorState.displayCurrentState(getElevatorId(), request);
@@ -80,7 +80,7 @@ public class Elevator implements Runnable {
 					}
 					case AwaitRequest: {
 						System.out.println(elevatorStateStr + " ------------------------------------------ \n");
-						reply = rpc.elevatorSendReceive(ELEVATOR_PORT);
+						reply = udp.elevatorSendReceive(ELEVATOR_PORT);
 						request = decodeData(reply);
 						// TODO: Add request to elevator working queue
 						Thread.sleep(100);
@@ -105,8 +105,7 @@ public class Elevator implements Runnable {
 						break;
 					}
 					case Stop: {
-						System.out.println(elevatorStateStr + "\n");							
-						rpc.elevatorAck(reply);
+						System.out.println(elevatorStateStr + "\n");
 						Thread.sleep(100);
 						elevatorState = elevatorState.nextState();
 						break;
@@ -130,7 +129,7 @@ public class Elevator implements Runnable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			rpc.closeSocket();
+			udp.closeSocket();
 			logger.info("Program terminated.");
 		}
 	}

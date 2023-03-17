@@ -10,7 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import main.java.dto.ElevatorRequest;
-import main.java.dto.RPC;
+import main.java.dto.UDP;
 import main.java.floor.parser.Parser;
 
 /**
@@ -28,7 +28,7 @@ public class Floor implements Runnable {
 	
 	private int floorNumber;
 	private Parser parser;
-	private RPC rpc;
+	private UDP udp;
 	
 	/**
 	 * Main method for the Floor class.
@@ -43,7 +43,7 @@ public class Floor implements Runnable {
 	 */
 	public Floor(int floorNumber) {
 		this.floorNumber = floorNumber;
-		rpc = new RPC();
+		udp = new UDP();
 		logger.setLevel(Level.INFO);
 		try {
 			// Filename before compilation
@@ -64,13 +64,13 @@ public class Floor implements Runnable {
 	@Override
 	public void run() {
 		try {
-			rpc.openSocket();
+			udp.openSocket();
 			ArrayList<ElevatorRequest> elevatorRequests = getElevatorRequests();
 			addRequestToQueue(elevatorRequests);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			rpc.closeSocket();
+			udp.closeSocket();
 			logger.info("Program terminated.");
 		}
 	}
@@ -94,8 +94,7 @@ public class Floor implements Runnable {
 			// Sends all the request for Floors at serially
 			for (ElevatorRequest req : elevatorRequests) {
 				byte[] data = encodeData(req);
-				DatagramPacket reply = rpc.floorSendReceive(data, FLOOR_PORT);
-				rpc.floorAck(reply);
+				DatagramPacket reply = udp.floorSendReceive(data, FLOOR_PORT);
 				System.out.println("--------------------------------------");
 			}
 		}

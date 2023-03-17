@@ -16,7 +16,7 @@ import java.util.Map;
 
 import main.java.dto.Direction;
 import main.java.dto.ElevatorRequest;
-import main.java.dto.RPC;
+import main.java.dto.UDP;
 
 /**
  * Responsible for accepting input from all of the sensors, and
@@ -35,7 +35,7 @@ public class Scheduler implements Runnable {
 	private List<ElevatorRequest> completedQueue;
 	private Map<Integer, Integer> elevatorLocation;
 	private SchedulerState schedulerState;
-	private RPC rpc;
+	private UDP udp;
 	
 	/**
 	 * Main method for the Scheduler class.
@@ -52,7 +52,7 @@ public class Scheduler implements Runnable {
 		requestsQueue = Collections.synchronizedList(new ArrayList<>());
 		completedQueue = Collections.synchronizedList(new ArrayList<>());
 		elevatorLocation = Collections.synchronizedMap(new HashMap<>());
-		rpc = new RPC();
+		udp = new UDP();
 		schedulerState = SchedulerState.Idle;
 		logger.setLevel(Level.INFO);
 	}
@@ -64,7 +64,7 @@ public class Scheduler implements Runnable {
 	@Override
 	public void run() {
 		try {
-			rpc.openSchedulerSocket();
+			udp.openSchedulerSocket();
 			Thread.sleep(0);
 			while (true) {
 				switch (schedulerState) {
@@ -73,23 +73,24 @@ public class Scheduler implements Runnable {
 					break;
 				}
 				case Ready: {;
-					DatagramPacket reply = rpc.replyFloor();
+					DatagramPacket reply = udp.replyFloor();
 					ElevatorRequest elevatorRequest = decodeData(reply);
 					putRequest(elevatorRequest);
 					// TODO: Scanning algorithm to the queue should happen here
 					elevatorRequest = dispatchRequest();
 					byte[] data = encodeData(elevatorRequest);
-					rpc.replyElevator(data);
+					udp.replyElevator(data);
 					schedulerState = schedulerState.nextState();
 					break;
 				}
 				case InService: {
-					DatagramPacket ack = rpc.ackElevator();
-					ElevatorRequest elevatorRequest = decodeData(ack);
-					putCompletedRequest(elevatorRequest);
-					elevatorRequest = getCompletedRequest();
-					byte[] data = encodeData(elevatorRequest);
-					rpc.ackFloor(data);
+					// TODO: implement a new method to send completed requests 
+					// DatagramPacket ack = udp.ackElevator();
+					// ElevatorRequest elevatorRequest = decodeData(ack);
+					// putCompletedRequest(elevatorRequest);
+					// elevatorRequest = getCompletedRequest();
+					// byte[] data = encodeData(elevatorRequest);
+					// udp.ackFloor(data);
 					schedulerState = schedulerState.nextState();
 					System.out.println("--------------------------------------");
 					break;
@@ -101,7 +102,7 @@ public class Scheduler implements Runnable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			rpc.closeSchedulerSocket();
+			udp.closeSchedulerSocket();
 			logger.info("Program terminated.");
 		}
 	}

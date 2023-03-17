@@ -6,12 +6,12 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 
 /**
- * This class contains methods used for remote procedure calls using UDP.
- * @author Trong Nguyen
- * @version 1.0, 03/11/23
+ * This class contains methods for UDP communication between the subsystems.
+ * @author Trong Nguyen, Hussein Elmokdad
+ * @version 1.1, 03/17/23
  * @since 1.0, 03/11/23
  */
-public class RPC {
+public class UDP {
 	
 	private static final int FLOOR_PORT = 23;
 	private static final int ELEVATOR_PORT = 69;
@@ -69,15 +69,6 @@ public class RPC {
 	}
 	
 	/**
-	 * Acknowledge Floor remote procedure call.
-	 * @param replyPacket DatagramPacket, reply message
-	 */
-	public void floorAck(DatagramPacket replyPacket) {
-		floorSendAck(replyPacket);
-		floorReceiveAck();
-	}
-	
-	/**
 	 * Send and receive remote procedure call for Elevator.
 	 * @param port int, Elevator port number
 	 * @return DatagramPacket, reply message
@@ -85,15 +76,6 @@ public class RPC {
 	public DatagramPacket elevatorSendReceive(int port) {
 		elevatorSend(port);
 		return elevatorReceiveData();
-	}
-	
-	/**
-	 * Acknowledge Elevator remote procedure call.
-	 * @param replyPacket DatagramPacket, reply message
-	 */
-	public void elevatorAck(DatagramPacket replyPacket) {
-		elevatorSendAck(replyPacket);
-		elevatorReceiveAck();
 	}
 	
 	/**
@@ -132,42 +114,6 @@ public class RPC {
 			System.exit(1);
 		}
 		return replyPacket;
-	}
-	
-	/**
-	 * Request acknowledge from Scheduler.
-	 * @param replyPacket DatagramPacket, message containing request for ack
-	 */
-	private void floorSendAck(DatagramPacket replyPacket) {
-		byte[] data = ("Waiting for ack").getBytes();
-		try {
-			DatagramPacket ackPacket = new DatagramPacket(
-					data, 
-					data.length, 
-					replyPacket.getAddress(), 
-					replyPacket.getPort());
-			ackSocket.send(ackPacket);
-			printPacketContent(ackPacket, "send() -> Scheduler");
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-	}
-	
-	/**
-	 * Receive acknowledge request from Scheduler.
-	 */
-	private void floorReceiveAck() {
-		byte[] data = new byte[100];
-		DatagramPacket ackPacket = new DatagramPacket(data, data.length);
-		try {
-			System.out.println("Waiting...\n");
-			ackSocket.receive(ackPacket);
-			printPacketContent(ackPacket, "reply(:ack) <- Scheduler");
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
 	}
 	
 	/**
@@ -220,35 +166,6 @@ public class RPC {
 			e.printStackTrace();
 			System.exit(1);
 		}
-	}
-	
-	/**
-	 * Acknowledge Elevator request.
-	 * @return DatagramPacket, ack packet containing data from Elevator
-	 */
-	public DatagramPacket ackElevator() {
-		byte[] data = new byte[100];
-		DatagramPacket ackReceivePacket = null;
-		try {
-			ackReceivePacket = new DatagramPacket(data, data.length);
-			System.out.println("Waiting...\n");
-			elevatorSocket.receive(ackReceivePacket);
-			printPacketContent(ackReceivePacket, "send(:request) <- Elevator");
-			
-			DatagramSocket ackSocket = new DatagramSocket();
-			DatagramPacket ackReplyPacket = new DatagramPacket(
-					ackReceivePacket.getData(),
-					ackReceivePacket.getLength(), 
-					ackReceivePacket.getAddress(), 
-					ackReceivePacket.getPort());
-			ackSocket.send(ackReplyPacket);
-			printPacketContent(ackReplyPacket, "reply() -> Elevator");
-			ackSocket.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-		return ackReceivePacket;
 	}
 	
 	/**
@@ -314,41 +231,6 @@ public class RPC {
 		}
 		return replyPacket;
 	}	
-	
-	/**
-	 * Send acknowledge to Scheduler.
-	 * @param receiveHostPacket DatagramPacket, data packet received from request
-	 */
-	private void elevatorSendAck(DatagramPacket replyPacket) {
-		DatagramPacket ackPacket = new DatagramPacket(
-				replyPacket.getData(), 
-				replyPacket.getLength(), 
-				replyPacket.getAddress(), 
-				replyPacket.getPort());
-		try {
-			ackSocket.send(ackPacket);
-			printPacketContent(ackPacket, "Scheduler <- send(:ack)");
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-	}
-	
-	/**
-	 * Receive reply to acknowledge from Scheduler.
-	 */
-	private void elevatorReceiveAck() {
-		byte[] data = new byte[100];
-		DatagramPacket ackPacket = new DatagramPacket(data, data.length);
-		try {
-			System.out.println("Waiting...\n");
-			ackSocket.receive(ackPacket);
-			printPacketContent(ackPacket, "Scheduler -> reply()");
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-	}
 	
 	/**
 	 * Prints out the information it has put in the packet 
