@@ -12,14 +12,10 @@ import java.net.InetAddress;
  * @since 1.0, 03/11/23
  */
 public class UDP {
-	
-	private static final int FLOOR_PORT = 23; // Designated port for receiving floor requests
-	private static final int ELEVATOR_PORT = 69; // Designated port for receiving elevator requests
-	private DatagramSocket dataSocket; // Each elevator and floor gets a data socket to communicate with the scheduler 
-	private DatagramSocket schedulerSocketE, schedulerSocketF ; // schedulerSocketE: receives requests from the elevators. schedulerSocketF: receives requests from the floors 
+	private DatagramSocket dataSocket; // Each elevator and floor gets a data socket to communicate with the scheduler  
 	
 	/**
-	 * Open DatatgramSockets.
+	 * Opens a DatatgramSocket.
 	 */
 	public void openSocket() {
 		try {
@@ -30,12 +26,12 @@ public class UDP {
 	}
 	
 	/**
-	 * Open DatagramSockets for Scheduler.
+	 * Opens a DatatgramSocket on a specified port.
+	 * @param port the int of the port to open the socket on
 	 */
-	public void openSchedulerSocket() {
+	public void openSocket(int port) {
 		try {
-			schedulerSocketF = new DatagramSocket(FLOOR_PORT);
-			schedulerSocketE = new DatagramSocket(ELEVATOR_PORT);
+			dataSocket = new DatagramSocket(port);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -46,14 +42,6 @@ public class UDP {
 	 */
 	public void closeSocket() {
 		dataSocket.close();
-	}
-	
-	/**
-	 * Close DatagramSockets for Scheduler.
-	 */
-	public void closeSchedulerSocket() {
-		schedulerSocketF.close();
-		schedulerSocketE.close();
 	}
 	
 	/**
@@ -68,11 +56,10 @@ public class UDP {
 	}
 	
 	/**
-	 * Sends a packet to a destination port. Typically used to make a request for data (floor requests)
-	 * or to send data (floor requests)
+	 * Sends a packet to a destination port.
 	 * @param data the byte[] of the data to send
 	 */
-	private void sendPacket(byte[] dataByteArr, int port) {
+	public void sendPacket(byte[] dataByteArr, int port) {
 		try {
 			DatagramPacket dataPacket = new DatagramPacket(
 					dataByteArr, 
@@ -91,7 +78,7 @@ public class UDP {
 	 * Receive and return a reply packet from a sender.
 	 * @return DatagramPacket, message received from sender
 	 */
-	private DatagramPacket receivePacket() {
+	public DatagramPacket receivePacket() {
 		byte[] data = new byte[100];
 		DatagramPacket replyPacket = null;
 		try {
@@ -104,58 +91,6 @@ public class UDP {
 			System.exit(1);
 		}
 		return replyPacket;
-	}
-	
-	/**
-	 * Reply to Floor.
-	 * @return DatagramPacket, containing the same message received
-	 */
-	public DatagramPacket replyFloor() {
-		byte[] data = new byte[100];
-		DatagramPacket receivePacket = null;
-		try {
-			receivePacket = new DatagramPacket(data, data.length);
-			System.out.println("Waiting...\n");
-			schedulerSocketF.receive(receivePacket);
-			printPacketContent(receivePacket, "Floor -> send(:request)");
-			
-			DatagramPacket replyClientPacket = new DatagramPacket(
-					receivePacket.getData(), 
-					receivePacket.getLength(), 
-					receivePacket.getAddress(), 
-					receivePacket.getPort());
-			schedulerSocketF.send(replyClientPacket);
-			printPacketContent(replyClientPacket, "Floor <- reply()");
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-		return receivePacket;
-	}
-	
-	/**
-	 * Reply to Elevator with request.
-	 * @param DatagramPacket, containing the request from Floor
-	 */
-	public void replyElevator(byte[] reply) {
-		byte[] data = new byte[100];
-		try {
-			DatagramPacket receivePacket = new DatagramPacket(data, data.length);
-			System.out.println("Waiting...\n");
-			schedulerSocketE.receive(receivePacket);
-			printPacketContent(receivePacket, "send() <- Elevator");
-			
-			DatagramPacket replyPacket = new DatagramPacket(
-					reply,
-					reply.length, 
-					receivePacket.getAddress(), 
-					receivePacket.getPort());
-			schedulerSocketE.send(replyPacket);
-			printPacketContent(replyPacket, "reply(:request) -> Elevator");
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
 	}
 	
 	/**
