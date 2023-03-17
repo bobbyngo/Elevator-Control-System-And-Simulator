@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 
 import main.java.dto.Direction;
 import main.java.dto.ElevatorRequest;
+import main.java.dto.EncodeDecode;
 import main.java.dto.UDP;
 import main.java.scheduler.Scheduler;
 
@@ -37,7 +38,9 @@ public class Elevator implements Runnable {
 	 * @param args, default parameters
 	 */
 	public static void main(String[] args) {
-		new Thread(new Elevator(1, new Scheduler())).start();
+		Scheduler scheduler = new Scheduler();
+		new Thread(new Elevator(1, scheduler)).start();
+		// new Thread(new Elevator(2, scheduler)).start();
 	}
 	
 	/**
@@ -81,7 +84,7 @@ public class Elevator implements Runnable {
 					case AwaitRequest: {
 						System.out.println(elevatorStateStr + " ------------------------------------------ \n");
 						reply = udp.sendReceivePacket("Waiting...".getBytes(), ELEVATOR_PORT);
-						request = decodeData(reply);
+						request = EncodeDecode.decodeData(reply);
 						// TODO: Add request to elevator working queue
 						Thread.sleep(100);
 						elevatorState = elevatorState.nextState();
@@ -149,36 +152,4 @@ public class Elevator implements Runnable {
 	public ElevatorState getElevatorState() {
 		return elevatorState;
 	}
-	
-	/**
-	 * Decodes byte[] data into an ElevatorRequest object.
-	 * @param message byte[], the encoded elevatorRequest
-	 * @return elevatorRequest, ElevatorRequest obj
-	 * @throws IOException
-	 */
-	private ElevatorRequest decodeData(DatagramPacket packet) {
-		ElevatorRequest elevatorRequest = null;
-		Timestamp timestamp = null;
-	    String[] line = new String(packet.getData(), 0, packet.getLength()).split(" ");
-		
-	    try {
-	    		Timestamp currentTime = new Timestamp(System.currentTimeMillis());
-	    		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
-	    		Date parsedDate = dateFormat.parse(currentTime.toString().split(" ")[0] + " " + line[0]);
-	        timestamp = new Timestamp(parsedDate.getTime());
-	    	
-	        elevatorRequest = new ElevatorRequest(timestamp, 
-	    			Integer.valueOf(line[1]), 
-		    		Direction.valueOf(line[2]), 
-		    		Integer.valueOf(line[3]));
-	    } catch (NullPointerException npe) {
-	    		return null;
-	    } catch (ParseException pe) {
-    			return null;
-	    } catch (Exception e) {
-	    		e.printStackTrace();
-	    }
-	    return elevatorRequest;
-	}
-
 }

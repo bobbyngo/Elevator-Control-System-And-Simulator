@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import main.java.dto.ElevatorRequest;
+import main.java.dto.EncodeDecode;
 import main.java.dto.UDP;
 import main.java.floor.parser.Parser;
 
@@ -93,30 +94,11 @@ public class Floor implements Runnable {
 			// TODO: Send request as per time stamp logic potential added here
 			// Sends all the request for Floors at serially
 			for (ElevatorRequest req : elevatorRequests) {
-				byte[] data = encodeData(req);
+				byte[] data = EncodeDecode.encodeData(req);
 				DatagramPacket reply = udp.sendReceivePacket(data, FLOOR_PORT);
 				System.out.println("--------------------------------------");
 			}
 		}
-	}
-	
-	/**
-	 * Encodes an elevator request object into a byte[] data.
-	 * @param elevatorRequest, ElevatorRequest obj
-	 * @return message byte[], the encoded elevatorRequest
-	 * @throws IOException
-	 */
-	private byte[] encodeData(ElevatorRequest elevatorRequest) {
-		ByteArrayOutputStream os = new ByteArrayOutputStream();
-		byte[] message = null;
-		try {
-			os.write(elevatorRequest.toString().getBytes());
-			os.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		message = os.toByteArray();
-		return message;
 	}
 
 	/**

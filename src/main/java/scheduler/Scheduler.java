@@ -16,6 +16,7 @@ import java.util.Map;
 
 import main.java.dto.Direction;
 import main.java.dto.ElevatorRequest;
+import main.java.dto.EncodeDecode;
 import main.java.dto.UDP;
 
 /**
@@ -80,11 +81,11 @@ public class Scheduler implements Runnable {
 				case Ready: {
 					DatagramPacket receivedFloorRequest = udpF.receivePacket();
 					udpF.sendPacket(receivedFloorRequest.getData(), receivedFloorRequest.getPort()); // Echos the request back to the floor
-					ElevatorRequest elevatorRequest = decodeData(receivedFloorRequest);
+					ElevatorRequest elevatorRequest = EncodeDecode.decodeData(receivedFloorRequest);
 					putRequest(elevatorRequest);
 					// TODO: Scanning algorithm to the queue should happen here
 					elevatorRequest = dispatchRequest();
-					byte[] data = encodeData(elevatorRequest);
+					byte[] data = EncodeDecode.encodeData(elevatorRequest);
 					DatagramPacket receivedElevatorRequest = udpE.receivePacket();
 					udpE.sendPacket(data, receivedElevatorRequest.getPort());
 					schedulerState = schedulerState.nextState();
@@ -113,56 +114,6 @@ public class Scheduler implements Runnable {
 			udpF.closeSocket();
 			logger.info("Program terminated.");
 		}
-	}
-	
-	/**
-	 * Encodes an elevator request object into a byte[] data.
-	 * @param elevatorRequest, ElevatorRequest obj
-	 * @return message byte[], the encoded elevatorRequest
-	 * @throws IOException
-	 */
-	private byte[] encodeData(ElevatorRequest elevatorRequest) {
-		ByteArrayOutputStream os = new ByteArrayOutputStream();
-		byte[] message = null;
-		try {
-			os.write(elevatorRequest.toString().getBytes());
-			os.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		message = os.toByteArray();
-		return message;
-	}
-	
-	/**
-	 * Decodes byte[] data into an ElevatorRequest object.
-	 * @param message byte[], the encoded elevatorRequest
-	 * @return elevatorRequest, ElevatorRequest obj
-	 * @throws IOException
-	 */
-	private ElevatorRequest decodeData(DatagramPacket packet) {
-		ElevatorRequest elevatorRequest = null;
-		Timestamp timestamp = null;
-	    String[] line = new String(packet.getData(), 0, packet.getLength()).split(" ");
-		
-	    try {
-	    		Timestamp currentTime = new Timestamp(System.currentTimeMillis());
-	    		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
-	    		Date parsedDate = dateFormat.parse(currentTime.toString().split(" ")[0] + " " + line[0]);
-	        timestamp = new Timestamp(parsedDate.getTime());
-	    	
-	        elevatorRequest = new ElevatorRequest(timestamp, 
-	    			Integer.valueOf(line[1]), 
-		    		Direction.valueOf(line[2]), 
-		    		Integer.valueOf(line[3]));
-	    } catch (NullPointerException npe) {
-	    		return null;
-	    } catch (ParseException pe) {
-			return null;
-	    } catch (Exception e) {
-	    		e.printStackTrace();
-	    }
-	    return elevatorRequest;
 	}
 	
 	/**
