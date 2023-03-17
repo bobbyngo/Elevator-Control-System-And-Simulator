@@ -13,9 +13,10 @@ import java.net.InetAddress;
  */
 public class UDP {
 	
-	private static final int FLOOR_PORT = 23;
-	private static final int ELEVATOR_PORT = 69;
-	private DatagramSocket dataSocket, ackSocket, floorSocket, elevatorSocket;
+	private static final int FLOOR_PORT = 23; // Designated port for receiving floor requests
+	private static final int ELEVATOR_PORT = 69; // Designated port for receiving elevator requests
+	private DatagramSocket dataSocket; // Each elevator and floor gets a data socket to communicate with the scheduler 
+	private DatagramSocket schedulerSocketE, schedulerSocketF ; // schedulerSocketE: receives requests from the elevators. schedulerSocketF: receives requests from the floors 
 	
 	/**
 	 * Open DatatgramSockets.
@@ -23,7 +24,6 @@ public class UDP {
 	public void openSocket() {
 		try {
 			dataSocket = new DatagramSocket();
-			ackSocket = new DatagramSocket();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -34,8 +34,8 @@ public class UDP {
 	 */
 	public void openSchedulerSocket() {
 		try {
-			floorSocket = new DatagramSocket(FLOOR_PORT);
-			elevatorSocket = new DatagramSocket(ELEVATOR_PORT);
+			schedulerSocketF = new DatagramSocket(FLOOR_PORT);
+			schedulerSocketE = new DatagramSocket(ELEVATOR_PORT);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -46,15 +46,14 @@ public class UDP {
 	 */
 	public void closeSocket() {
 		dataSocket.close();
-		ackSocket.close();
 	}
 	
 	/**
 	 * Close DatagramSockets for Scheduler.
 	 */
 	public void closeSchedulerSocket() {
-		floorSocket.close();
-		elevatorSocket.close();
+		schedulerSocketF.close();
+		schedulerSocketE.close();
 	}
 	
 	/**
@@ -126,7 +125,7 @@ public class UDP {
 		try {
 			receivePacket = new DatagramPacket(data, data.length);
 			System.out.println("Waiting...\n");
-			floorSocket.receive(receivePacket);
+			schedulerSocketF.receive(receivePacket);
 			printPacketContent(receivePacket, "Floor -> send(:request)");
 			
 			DatagramPacket replyClientPacket = new DatagramPacket(
@@ -134,7 +133,7 @@ public class UDP {
 					receivePacket.getLength(), 
 					receivePacket.getAddress(), 
 					receivePacket.getPort());
-			floorSocket.send(replyClientPacket);
+			schedulerSocketF.send(replyClientPacket);
 			printPacketContent(replyClientPacket, "Floor <- reply()");
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -152,7 +151,7 @@ public class UDP {
 		try {
 			DatagramPacket receivePacket = new DatagramPacket(data, data.length);
 			System.out.println("Waiting...\n");
-			elevatorSocket.receive(receivePacket);
+			schedulerSocketE.receive(receivePacket);
 			printPacketContent(receivePacket, "send() <- Elevator");
 			
 			DatagramPacket replyPacket = new DatagramPacket(
@@ -160,35 +159,8 @@ public class UDP {
 					reply.length, 
 					receivePacket.getAddress(), 
 					receivePacket.getPort());
-			elevatorSocket.send(replyPacket);
+			schedulerSocketE.send(replyPacket);
 			printPacketContent(replyPacket, "reply(:request) -> Elevator");
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-	}
-	
-	/**
-	 * Acknowledge Floor request.
-	 * @param ack DatagramPacket, ack packet containing data from Server
-	 */
-	public void ackFloor(byte[] ack) {
-		byte[] data = new byte[100];
-		try {
-			DatagramPacket receiveAckPacket = new DatagramPacket(data, data.length);
-			System.out.println("Waiting...\n");
-			floorSocket.receive(receiveAckPacket);
-			printPacketContent(receiveAckPacket, "Floor -> send()");
-			
-			DatagramSocket ackSocket = new DatagramSocket();
-			DatagramPacket replyAckPacket = new DatagramPacket(
-					ack, 
-					ack.length, 
-					receiveAckPacket.getAddress(), 
-					receiveAckPacket.getPort());
-			ackSocket.send(replyAckPacket);
-			printPacketContent(replyAckPacket, "Floor <- reply(:ack)");
-			ackSocket.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
