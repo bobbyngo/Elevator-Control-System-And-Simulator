@@ -87,7 +87,7 @@ public class Scheduler implements Runnable {
 					// TODO: Scanning algorithm to the queue should happen here
 					elevatorRequest = dispatchRequest();
 					byte[] data = EncodeDecode.encodeData(elevatorRequest);
-					udpE.sendPacket(data, ElevatorSubsystem.elevatorPorts[0]);
+					udpE.sendPacket(data, ElevatorSubsystem.elevatorPorts[(int) (Math.random() * 2)]); // Hardcoded for now
 					schedulerState = schedulerState.nextState();
 					break;
 				}
@@ -112,7 +112,7 @@ public class Scheduler implements Runnable {
 		} finally {
 			udpE.closeSocket();
 			udpF.closeSocket();
-			logger.info("Program terminated.");
+			System.out.println("--------- Program terminated ---------");
 		}
 	}
 	

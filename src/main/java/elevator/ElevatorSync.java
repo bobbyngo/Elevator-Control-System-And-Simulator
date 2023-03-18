@@ -44,6 +44,13 @@ public class ElevatorSync {
 	 * @return the ElevatorRequest object
 	 */
 	public synchronized ElevatorRequest getElevatorRequest() {
+		while (elevatorRequestsArr.size() == 0) {
+			try {
+				wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 		ElevatorRequest elevatorRequest = elevatorRequestsArr.remove(0);
 		String loggerStr = String.format("Servicing request %s from Elevator %d's requests queue. Queue size: %d", elevatorRequest.toString(), elevatorId, elevatorRequestsArr.size());
 		logger.info(loggerStr);

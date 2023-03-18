@@ -35,11 +35,18 @@ public class ElevatorListener implements Runnable{
 
 	@Override
 	public void run() {
-		while (true) {
-			DatagramPacket elevatorRequestPacket = udp.receivePacket();
-			ElevatorRequest elevatorRequest = EncodeDecode.decodeData(elevatorRequestPacket);
-			elevatorSync.addElevatorRequest(elevatorRequest);
+		try {
+			while (true) {
+				DatagramPacket elevatorRequestPacket = udp.receivePacket();
+				ElevatorRequest elevatorRequest = EncodeDecode.decodeData(elevatorRequestPacket);
+				elevatorSync.addElevatorRequest(elevatorRequest);
+			}
 		}
+		catch (Exception e) {
+			e.printStackTrace();	
+		}
+		finally {
+			System.out.println("--------- Program terminated ---------");
+		}		
 	}
-	
 }

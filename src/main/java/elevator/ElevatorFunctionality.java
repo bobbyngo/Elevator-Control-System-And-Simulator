@@ -35,7 +35,7 @@ public class ElevatorFunctionality implements Runnable {
 	 * Constructor for the ElevatorFunctionality class.
 	 * @param id the int of the elevator id
 	 * @param scheduler	Scheduler, scheduler object referenced by Elevator
-	 * 
+	 * @param elevatorSync the ElevatorSync object to synchronize on
 	 */
 	public ElevatorFunctionality(int id, Scheduler scheduler, ElevatorSync elevatorSync) {
 		this.id = id;
@@ -43,11 +43,14 @@ public class ElevatorFunctionality implements Runnable {
 		this.elevatorSync = elevatorSync;
 		udp = new UDP();
 		elevatorState = ElevatorState.Idle;
-		logger.setLevel(Level.INFO);
+		
 		// Start of the program, the elevator should be in floor 1
 		scheduler.registerElevatorLocation(id, 1);
+		
 		// init elevator component, motor is false, doorOpen is false 
 		elevatorComponents = new ElevatorComponents(false, false);
+		
+		logger.setLevel(Level.INFO);
 	}
 	
 	/**
@@ -78,20 +81,18 @@ public class ElevatorFunctionality implements Runnable {
 	}
 
 	/**
-	 * Elevator class run() implementation.
-	 * Serves requests from the Scheduler until all requests have been served.
-	 * java.lang.Runnable#run()
+	 * ElevatorFunctionality's run() implementation.
+	 * Serves requests from the elevator requests queue in ElevatorSync
 	 */
 	@Override
 	public void run() {
 		try {
-			DatagramPacket reply = null;
-			ElevatorRequest request = null;
 			String elevatorStateStr;
 			udp.openSocket();
+			ElevatorRequest elevatorRequest = null;
 			Thread.sleep(1000);
 			while (true) {
-				elevatorStateStr = elevatorState.displayCurrentState(getElevatorId(), request);
+				elevatorStateStr = elevatorState.displayCurrentState(getElevatorId(), elevatorRequest);
 				switch (elevatorState) {
 					case Idle: {
 						System.out.println(elevatorStateStr);
@@ -100,26 +101,22 @@ public class ElevatorFunctionality implements Runnable {
 					}
 					case AwaitRequest: {
 						System.out.println(elevatorStateStr + " ------------------------------------------ \n");
-						reply = udp.sendReceivePacket("Waiting...".getBytes(), ELEVATOR_PORT);
-						request = EncodeDecode.decodeData(reply);
-						// TODO: Add request to elevator working queue
+						elevatorRequest = elevatorSync.getElevatorRequest();
 						Thread.sleep(100);
 						elevatorState = elevatorState.nextState();
 						break;
 					}
 					case Moving: {
 						System.out.println(elevatorStateStr);
-						// Note: Elevator needs to move to the floor that the users request the elevator
-						// to pick up the users then move the the floor they want
-						
-						// Move from the current floor to the floor that request the elevator
-						if (scheduler.displayElevatorLocation(id) != request.getSourceFloor()) {
-							logger.info(String.format("Elevator %d is moving to floor %d to pick up the users", id , request.getSourceFloor()));
-							moveToDestination(id, scheduler.displayElevatorLocation(id), request.getSourceFloor());
+						// Move from the current floor to the floor that requested the elevator
+						if (scheduler.displayElevatorLocation(id) != elevatorRequest.getSourceFloor()) {
+							logger.info(String.format("Elevator %d is moving to floor %d to pick up the users", id , elevatorRequest.getSourceFloor()));
+							moveToDestination(id, scheduler.displayElevatorLocation(id), elevatorRequest.getSourceFloor());
 							Thread.sleep(100);						
 						}
+						
 						// Move from the picked up floor to the floor users want 
-						moveToDestination(id, scheduler.displayElevatorLocation(id), request.getDestinationFloor());
+						moveToDestination(id, scheduler.displayElevatorLocation(id), elevatorRequest.getDestinationFloor());
 						Thread.sleep(100);
 						elevatorState = elevatorState.nextState();
 						break;
@@ -131,13 +128,13 @@ public class ElevatorFunctionality implements Runnable {
 						break;
 					}
 					case DoorsOpen: {
-						System.out.println(elevatorState.displayCurrentState(getElevatorId(), request));
+						System.out.println(elevatorState.displayCurrentState(getElevatorId(), elevatorRequest));
 						Thread.sleep(100);
 						elevatorState = elevatorState.nextState();
 						break;
 					}
 					case DoorsClose: {
-						System.out.println(elevatorState.displayCurrentState(getElevatorId(), request));
+						System.out.println(elevatorState.displayCurrentState(getElevatorId(), elevatorRequest));
 						Thread.sleep(100);
 						elevatorState = elevatorState.nextState();
 						break;
@@ -150,7 +147,7 @@ public class ElevatorFunctionality implements Runnable {
 			e.printStackTrace();
 		} finally {
 			udp.closeSocket();
-			logger.info("Program terminated.");
+			System.out.println("--------- Program terminated ---------");
 		}
 	}
 	
