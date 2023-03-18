@@ -3,6 +3,7 @@ package main.java.elevator;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
+import main.java.dto.Direction;
 import main.java.dto.ElevatorRequest;
 
 /**
@@ -40,6 +41,18 @@ public class ElevatorSync {
 	}
 	
 	/**
+	 * Removes all elevator requests that contain the specified destination floor from the queue
+	 * @param destinationFloor the int of the destination floor
+	 */
+	public synchronized void removeElevatorRequests(int destinationFloor) {
+		ArrayList<ElevatorRequest> requestsToRemove = new ArrayList<>();
+		for (ElevatorRequest elevatorRequest : elevatorRequestsArr) {
+			if (elevatorRequest.getDestinationFloor() == destinationFloor) requestsToRemove.add(elevatorRequest);
+		}
+		elevatorRequestsArr.removeAll(requestsToRemove);
+	}
+
+	/**
 	 * Gets an elevator request from the requests queue
 	 * @return the ElevatorRequest object
 	 */
@@ -51,9 +64,34 @@ public class ElevatorSync {
 				e.printStackTrace();
 			}
 		}
-		ElevatorRequest elevatorRequest = elevatorRequestsArr.remove(0);
+		ElevatorRequest elevatorRequest = elevatorRequestsArr.get(0);
 		String loggerStr = String.format("Servicing request %s from Elevator %d's requests queue. Queue size: %d", elevatorRequest.toString(), elevatorId, elevatorRequestsArr.size());
 		logger.info(loggerStr);
 		return elevatorRequest;
+	}
+	
+	/**
+	 * Checks if the elevator served all the requests heading in the same direction it's heading. If
+	 * it did, it can start servicing requests that are heading in the opposite direction
+	 * @param direction the Direction enum of the elevator
+	 * @param currentFloor the int of the floor the elevator is currently on
+	 * @return the boolean of whether all the requests heading in the same direction were serviced (true if there's some left, false otherwise)
+	 */
+	public synchronized boolean checkForSameDirectionReqs(Direction direction, int currentFloor) {
+		for (ElevatorRequest elevatorRequest : elevatorRequestsArr) {
+			if ((direction == Direction.UP && elevatorRequest.getDestinationFloor() > currentFloor) 
+				 || (direction == Direction.DOWN && elevatorRequest.getDestinationFloor() < currentFloor)) {
+				return true; // There's still some requests heading in the same direction left
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Gets the elevator requests queue
+	 * @return ArrayList<Integer> of all the elevator requests
+	 */
+	public synchronized ArrayList<ElevatorRequest> getRequestsQueue() {
+		return elevatorRequestsArr;
 	}
 }

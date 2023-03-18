@@ -13,7 +13,7 @@ import main.java.scheduler.Scheduler;
  */
 public class ElevatorSubsystem {
 	
-	public final static int[] elevatorPorts = {5069, 5070}; // Ports for all the elevator listener threads
+	public final static int[] elevatorPorts = {5069}; // Ports for all the elevator listener threads
 	
 	/**
 	 * Main method for the ElevatorSubsystem class.

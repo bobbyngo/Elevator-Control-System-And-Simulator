@@ -87,7 +87,8 @@ public class Scheduler implements Runnable {
 					// TODO: Scanning algorithm to the queue should happen here
 					elevatorRequest = dispatchRequest();
 					byte[] data = EncodeDecode.encodeData(elevatorRequest);
-					udpE.sendPacket(data, ElevatorSubsystem.elevatorPorts[(int) (Math.random() * 2)]); // Hardcoded for now
+					//udpE.sendPacket(data, ElevatorSubsystem.elevatorPorts[(int) (Math.random() * 2)]); // Hardcoded for now
+					udpE.sendPacket(data, ElevatorSubsystem.elevatorPorts[0]); // Hardcoded for now
 					schedulerState = schedulerState.nextState();
 					break;
 				}

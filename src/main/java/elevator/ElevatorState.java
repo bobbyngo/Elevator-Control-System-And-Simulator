@@ -13,13 +13,27 @@ public enum ElevatorState {
 	Idle {
 		@Override
 		public ElevatorState nextState() {
-			return AwaitRequest;
+			return MovingToSource;
 		}
 
 		@Override
 		public String displayCurrentState(int id, ElevatorRequest request) {
 			return String.format("Elevator# %d State: %s", id, this);
 		}
+	},
+	
+	MovingToSource {
+		@Override
+		public ElevatorState nextState() {
+			return Moving;
+		}
+
+		
+		@Override
+		public String displayCurrentState(int id, ElevatorRequest request) {
+			return String.format("Elevator# %d State: %s", id, this);
+		}
+		
 	},
 	
 	AwaitRequest {
