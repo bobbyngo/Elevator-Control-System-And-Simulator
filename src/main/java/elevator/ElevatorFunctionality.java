@@ -1,27 +1,24 @@
+/**
+ * 
+ */
 package main.java.elevator;
 
-import java.io.IOException;
 import java.net.DatagramPacket;
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import main.java.dto.Direction;
 import main.java.dto.ElevatorRequest;
 import main.java.dto.EncodeDecode;
 import main.java.dto.UDP;
 import main.java.scheduler.Scheduler;
 
 /**
- * Elevator class serves elevator requests from the Scheduler and stores in internal queue.
+ * The class that controls the elevator functionality (moving, opening doors, etc.)
  * @author Trong Nguyen
  * @since 1.0, 02/04/23
  * @version 2.0, 02/27/23
  */
-public class Elevator implements Runnable {
+public class ElevatorFunctionality implements Runnable {
 	
 	private final Logger logger = Logger.getLogger(this.getClass().getName());
 	
@@ -29,28 +26,21 @@ public class Elevator implements Runnable {
 	
 	private int id;
 	private ElevatorState elevatorState;
+	private ElevatorSync elevatorSync;
 	private Scheduler scheduler;
 	private UDP udp;
 	private ElevatorComponents elevatorComponents;
 	
 	/**
-	 * Main method for the Elevator class.
-	 * @param args, default parameters
-	 */
-	public static void main(String[] args) {
-		Scheduler scheduler = new Scheduler();
-		new Thread(new Elevator(1, scheduler)).start();
-		// new Thread(new Elevator(2, scheduler)).start();
-	}
-	
-	/**
-	 * Constructor for Elevator class.
-	 * @param id int, elevator id
+	 * Constructor for the ElevatorFunctionality class.
+	 * @param id the int of the elevator id
 	 * @param scheduler	Scheduler, scheduler object referenced by Elevator
+	 * 
 	 */
-	public Elevator(int id, Scheduler scheduler) {
+	public ElevatorFunctionality(int id, Scheduler scheduler, ElevatorSync elevatorSync) {
 		this.id = id;
 		this.scheduler = scheduler;
+		this.elevatorSync = elevatorSync;
 		udp = new UDP();
 		elevatorState = ElevatorState.Idle;
 		logger.setLevel(Level.INFO);
@@ -58,6 +48,33 @@ public class Elevator implements Runnable {
 		scheduler.registerElevatorLocation(id, 1);
 		// init elevator component, motor is false, doorOpen is false 
 		elevatorComponents = new ElevatorComponents(false, false);
+	}
+	
+	/**
+	 * Moves the elevator to the provided floor and registers its new location
+	 * @author Bobby Ngo
+	 * @param currentFloor the int of the current elevator floor
+	 * @param destinationFloor the int of the destination floor
+	 */
+	public void moveToDestination(int id, int currentFloor, int destinationFloor) {
+		while (currentFloor != destinationFloor) {
+			try {
+				Thread.sleep(200);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			String loggerStr = String.format("Moving from floor %d -> floor %d \n", currentFloor, destinationFloor);
+			logger.info(loggerStr);
+			
+			if (currentFloor < destinationFloor) {
+				currentFloor += 1;
+			} else {
+				currentFloor -= 1;
+			}
+			// After the elevator goes to a different floor, update the floor location immediately
+			scheduler.registerElevatorLocation(id, currentFloor);
+		}
+		logger.info(String.format("Arrived at destination floor %d", destinationFloor));
 	}
 
 	/**
@@ -98,11 +115,11 @@ public class Elevator implements Runnable {
 						// Move from the current floor to the floor that request the elevator
 						if (scheduler.displayElevatorLocation(id) != request.getSourceFloor()) {
 							logger.info(String.format("Elevator %d is moving to floor %d to pick up the users", id , request.getSourceFloor()));
-							scheduler.movingTo(id, scheduler.displayElevatorLocation(id), request.getSourceFloor());
+							moveToDestination(id, scheduler.displayElevatorLocation(id), request.getSourceFloor());
 							Thread.sleep(100);						
 						}
 						// Move from the picked up floor to the floor users want 
-						scheduler.movingTo(id, scheduler.displayElevatorLocation(id), request.getDestinationFloor());
+						moveToDestination(id, scheduler.displayElevatorLocation(id), request.getDestinationFloor());
 						Thread.sleep(100);
 						elevatorState = elevatorState.nextState();
 						break;
@@ -153,3 +170,4 @@ public class Elevator implements Runnable {
 		return elevatorState;
 	}
 }
+

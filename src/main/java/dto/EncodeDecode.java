@@ -15,7 +15,10 @@ import java.util.Date;
  * 
  * Contains the encoder and decoder methods for the transmission
  * of elevator requests
- *
+ * 
+ * @author Trong Nguyen
+ * @version 1.0, 03/17/23
+ * @since 1.0, 03/17/23
  */
 public class EncodeDecode {
 	

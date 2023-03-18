@@ -18,6 +18,7 @@ import main.java.dto.Direction;
 import main.java.dto.ElevatorRequest;
 import main.java.dto.EncodeDecode;
 import main.java.dto.UDP;
+import main.java.elevator.ElevatorSubsystem;
 
 /**
  * Responsible for accepting input from all of the sensors, and
@@ -86,8 +87,7 @@ public class Scheduler implements Runnable {
 					// TODO: Scanning algorithm to the queue should happen here
 					elevatorRequest = dispatchRequest();
 					byte[] data = EncodeDecode.encodeData(elevatorRequest);
-					DatagramPacket receivedElevatorRequest = udpE.receivePacket();
-					udpE.sendPacket(data, receivedElevatorRequest.getPort());
+					udpE.sendPacket(data, ElevatorSubsystem.elevatorPorts[0]);
 					schedulerState = schedulerState.nextState();
 					break;
 				}
@@ -203,35 +203,6 @@ public class Scheduler implements Runnable {
 		reply = completedQueue.remove(0);
 		notifyAll();
 		return reply;
-	}
-	
-	/**
-	 * Scheduler signals the elevator to move to the given location and register its new location
-	 * @author Bobby Ngo
-	 * @param currentFloor of the elevator
-	 * @param destinationFloor the new floor its need to go
-	 * @return int, the new floor that the scheduler reached
-	 */
-	public int movingTo(int id, int currentFloor, int destinationFloor) {
-		while (currentFloor != destinationFloor) {
-			try {
-				Thread.sleep(200);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			String loggerStr = String.format("Moving from floor %d -> floor %d \n", currentFloor, destinationFloor);
-			logger.info(loggerStr);
-			
-			if (currentFloor < destinationFloor) {
-				currentFloor += 1;
-			} else {
-				currentFloor -= 1;
-			}
-			// After the elevator goes to a different floor, update the floor location immediately
-			this.registerElevatorLocation(id, currentFloor);
-		}
-		logger.info(String.format("Arrived at destination floor %d, current floor is %d\n", destinationFloor,  currentFloor));
-		return currentFloor;
 	}
 	
 	/**
