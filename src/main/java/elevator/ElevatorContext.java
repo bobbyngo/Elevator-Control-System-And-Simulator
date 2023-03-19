@@ -8,6 +8,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import main.java.SimulatorConfiguration;
+import main.java.dto.ElevatorRequest;
 import main.java.elevator.state.ElevatorState;
 import main.java.elevator.state.TimeoutEvent;
 
@@ -17,28 +18,32 @@ import main.java.elevator.state.TimeoutEvent;
  */
 public class ElevatorContext {
 	private int id;
-	//private ArrayList<ElevatorRequest> externalRequests;
-	//private ArrayList<ElevatorRequest> internalRequests;
+	private ArrayList<ElevatorRequest> externalRequests;
+	private ArrayList<ElevatorRequest> internalRequests;
 	private ElevatorState currentState;
 	private int currentFloor;
 	private Motor motor;
 	private Direction direction;
 	private Door door;
-	//private ElevatorLamps lamps;
-	//private ElevatorButtons buttons;
+	private boolean[] buttonLamps;
+	private boolean[] buttons;
 	private Timer timer;
 	
 	private ElevatorSubsystem elevatorSubsystem;
 	
 	public ElevatorContext(ElevatorSubsystem subsystem, int id) {
-		this.id = id;
-		currentFloor = 1;
 		elevatorSubsystem = subsystem;
 		
 		// Initialize context
+		this.id = id;
+		currentFloor = 1;
+		externalRequests = new ArrayList<>();
+		internalRequests = new ArrayList<>();
 		setDoors(Door.OPEN);
 		setDirection(Direction.IDLE);
 		setMotor(Motor.IDLE);
+		buttonLamps = new boolean[subsystem.getConfig().NUM_FLOORS];
+		buttons = new boolean[subsystem.getConfig().NUM_FLOORS];
 		
 		// notify position & start state machine in another func
 	}
@@ -50,28 +55,47 @@ public class ElevatorContext {
 		// notify starting position
 	}
 	
+	public void addExternalRequest(ElevatorRequest request) {
+		externalRequests.add(request);
+		onRequestReceived();
+	}
+	
 	public void onRequestReceived() {
 		synchronized (currentState) {
-			System.out.println("Event: Request Received");
+			System.out.println(String.format("Elevator#%d Event: Request Received", id));
 			currentState = currentState.handleRequestReceived();
 			System.out.println(this);
+			// update view...
 		}
 	}
 	
 	public void onTimeout(TimeoutEvent event) {
 		synchronized (currentState) {
-			System.out.println(event);
+			System.out.println(String.format("Elevator#%d %s", id, event));
 			currentState = currentState.handleTimeout();
 			System.out.println(this);
+			// update view...
 		}
 	}
 	
 	public void loadPassengers() {
+		// when passengers are loaded, press button
 		return;
 	}
 	
 	public void unloadPassengers() {
+		// clear button at current floor
 		return;
+	}
+	
+	private void pressElevatorButton(int floor) {
+		buttons[floor-1] = true;
+		buttonLamps[floor-1] = true;
+	}
+	
+	private void clearElevatorButton(int floor) {
+		buttons[floor-1] = false;
+		buttonLamps[floor-1] = false;
 	}
 	
 	public void setTimer(TimerTask task, int delay) {
