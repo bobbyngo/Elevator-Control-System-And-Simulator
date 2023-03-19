@@ -19,6 +19,7 @@ import main.java.dto.ElevatorRequest;
 import main.java.dto.EncodeDecode;
 import main.java.dto.UDP;
 import main.java.elevator.ElevatorSubsystem;
+import main.java.scheduler.SchedulerSubsystem.SchedulerType;
 
 /**
  * Responsible for accepting input from all of the sensors, and
@@ -37,28 +38,23 @@ public class Scheduler implements Runnable {
 	private List<ElevatorRequest> completedQueue;
 	private Map<Integer, Integer> elevatorLocation;
 	private SchedulerState schedulerState;
+	private SchedulerType schedulerType;
 	private UDP udpE; // Contains the socket for receiving packets from the elevators 
 	private UDP udpF; // Contains the socket for receiving packets from the floors
 	private static final int FLOOR_PORT = 23; // Designated port for receiving floor requests
 	private static final int ELEVATOR_PORT = 69; // Designated port for receiving elevator requests
 	
 	/**
-	 * Main method for the Scheduler class.
-	 * @param args, default parameters
-	 */
-	public static void main(String[] args) {
-		new Thread(new Scheduler()).start();
-	}
-	
-	/**
 	 * Constructor for the Scheduler.
+	 * @param schedulerType the SchedulerType enum that determines what the scheduler will listen to
 	 */
-	public Scheduler() {
+	public Scheduler(SchedulerType schedulerType) {
+		this.schedulerType = schedulerType;
 		requestsQueue = Collections.synchronizedList(new ArrayList<>());
 		completedQueue = Collections.synchronizedList(new ArrayList<>());
 		elevatorLocation = Collections.synchronizedMap(new HashMap<>());
-		udpE = new UDP();
-		udpF = new UDP();
+		if (schedulerType == SchedulerType.FloorListener) udpF = new UDP();
+		else if (schedulerType == SchedulerType.ElevatorListener) udpE = new UDP();
 		schedulerState = SchedulerState.Idle;
 		logger.setLevel(Level.INFO);
 	}
@@ -70,8 +66,8 @@ public class Scheduler implements Runnable {
 	@Override
 	public void run() {
 		try {
-			udpE.openSocket(ELEVATOR_PORT);
-			udpF.openSocket(FLOOR_PORT);
+			if (schedulerType == SchedulerType.FloorListener) udpF.openSocket(FLOOR_PORT);
+			else if (schedulerType == SchedulerType.ElevatorListener) udpE.openSocket(ELEVATOR_PORT);
 			Thread.sleep(0);
 			while (true) {
 				switch (schedulerState) {
@@ -80,16 +76,20 @@ public class Scheduler implements Runnable {
 					break;
 				}
 				case Ready: {
-					DatagramPacket receivedFloorRequest = udpF.receivePacket();
-					udpF.sendPacket(receivedFloorRequest.getData(), receivedFloorRequest.getPort()); // Echos the request back to the floor
-					ElevatorRequest elevatorRequest = EncodeDecode.decodeData(receivedFloorRequest);
-					putRequest(elevatorRequest);
-					// TODO: Scanning algorithm to the queue should happen here
-					elevatorRequest = dispatchRequest();
-					byte[] data = EncodeDecode.encodeData(elevatorRequest);
-					//udpE.sendPacket(data, ElevatorSubsystem.elevatorPorts[(int) (Math.random() * 2)]); // Hardcoded for now
-					udpE.sendPacket(data, ElevatorSubsystem.elevatorPorts[0]); // Hardcoded for now
-					schedulerState = schedulerState.nextState();
+					if (schedulerType == SchedulerType.FloorListener) {
+						DatagramPacket receivedFloorRequest = udpF.receivePacket();
+						SchedulerSubsystem.floorPortNumber = receivedFloorRequest.getPort();
+						ElevatorRequest elevatorRequest = EncodeDecode.decodeData(receivedFloorRequest);
+						byte[] data = EncodeDecode.encodeData(elevatorRequest);
+						// TODO: Scanning algorithm to determine which elevator receives the request should go here
+						udpF.sendPacket(data, ElevatorSubsystem.elevatorPorts[0]); // Hardcoded for now
+						schedulerState = schedulerState.nextState();
+					}
+					else if (schedulerType == SchedulerType.ElevatorListener) {
+						DatagramPacket receivedCompletedElevatorRequest = udpE.receivePacket();
+						udpE.sendPacket(receivedCompletedElevatorRequest.getData(), SchedulerSubsystem.floorPortNumber); // Sends completed request back to the floor
+						schedulerState = schedulerState.nextState();
+					}
 					break;
 				}
 				case InService: {
@@ -111,8 +111,8 @@ public class Scheduler implements Runnable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			udpE.closeSocket();
-			udpF.closeSocket();
+			if (schedulerType == SchedulerType.FloorListener) udpF.closeSocket();
+			else if (schedulerType == SchedulerType.ElevatorListener) udpE.closeSocket();
 			System.out.println("--------- Program terminated ---------");
 		}
 	}

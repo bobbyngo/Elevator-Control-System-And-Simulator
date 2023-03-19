@@ -20,10 +20,9 @@ public class ElevatorSubsystem {
 	 * @param args, default parameters
 	 */
 	public static void main(String[] args) {
-		Scheduler scheduler = new Scheduler();
 		for (int i = 0; i < elevatorPorts.length; i++) {
 			ElevatorSync elevatorSync = new ElevatorSync(i + 1);
-			ElevatorFunctionality elevatorFunctionality = new ElevatorFunctionality(i + 1, scheduler, elevatorSync);
+			ElevatorFunctionality elevatorFunctionality = new ElevatorFunctionality(i + 1, elevatorSync);
 			ElevatorListener elevatorListener = new ElevatorListener(elevatorSync, elevatorPorts[i]);
 			Thread elevatorFuncThread = new Thread(elevatorFunctionality);
 			Thread elevatorListThread = new Thread(elevatorListener);

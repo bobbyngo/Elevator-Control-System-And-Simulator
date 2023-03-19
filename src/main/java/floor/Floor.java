@@ -68,6 +68,7 @@ public class Floor implements Runnable {
 			udp.openSocket();
 			ArrayList<ElevatorRequest> elevatorRequests = getElevatorRequests();
 			addRequestToQueue(elevatorRequests);
+			receiveCompletedRequests(elevatorRequests);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -75,7 +76,7 @@ public class Floor implements Runnable {
 			logger.info("Program terminated.");
 		}
 	}
-	
+
 	/**
 	 * Get the floor number.
 	 * @return int, floor number
@@ -87,7 +88,7 @@ public class Floor implements Runnable {
 	
 	/**
 	 * Sends the series of elevator requests to the Scheduler.
-	 * @param elevatorRequests
+	 * @param elevatorRequests the ElevatorRequest array list
 	 */
 	private void addRequestToQueue(ArrayList<ElevatorRequest> elevatorRequests) {
 		if (!elevatorRequests.isEmpty()) {
@@ -95,9 +96,21 @@ public class Floor implements Runnable {
 			// Sends all the request for Floors at serially
 			for (ElevatorRequest req : elevatorRequests) {
 				byte[] data = EncodeDecode.encodeData(req);
-				DatagramPacket reply = udp.sendReceivePacket(data, FLOOR_PORT);
+				udp.sendPacket(data, FLOOR_PORT);
 				System.out.println("--------------------------------------");
 			}
+		}
+	}
+	
+	/**
+	 * Receives the completed requests from the scheduler
+	 * @param elevatorRequests the ElevatorRequest array list
+	 */
+	private void receiveCompletedRequests(ArrayList<ElevatorRequest> elevatorRequests) {
+		for (ElevatorRequest req : elevatorRequests) {
+			System.out.println("Receiving completed request:");
+			udp.receivePacket();
+			System.out.println("--------------------------------------");
 		}
 	}
 

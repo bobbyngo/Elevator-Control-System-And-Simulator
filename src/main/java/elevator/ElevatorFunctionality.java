@@ -13,6 +13,7 @@ import main.java.dto.ElevatorRequest;
 import main.java.dto.EncodeDecode;
 import main.java.dto.UDP;
 import main.java.scheduler.Scheduler;
+import main.java.scheduler.SchedulerSubsystem;
 
 /**
  * The class that controls the elevator functionality (moving, opening doors, etc.)
@@ -38,12 +39,11 @@ public class ElevatorFunctionality implements Runnable {
 	/**
 	 * Constructor for the ElevatorFunctionality class.
 	 * @param id the int of the elevator id
-	 * @param scheduler	Scheduler, scheduler object referenced by Elevator
 	 * @param elevatorSync the ElevatorSync object to synchronize on
 	 */
-	public ElevatorFunctionality(int id, Scheduler scheduler, ElevatorSync elevatorSync) {
+	public ElevatorFunctionality(int id, ElevatorSync elevatorSync) {
 		this.id = id;
-		this.scheduler = scheduler;
+		this.scheduler = new Scheduler(SchedulerSubsystem.SchedulerType.ElevatorListener); // Temporary fix. We need to figure out a way to send the scheduler object over UDP
 		this.elevatorSync = elevatorSync;
 		udp = new UDP();
 		elevatorState = ElevatorState.Idle;
@@ -168,8 +168,11 @@ public class ElevatorFunctionality implements Runnable {
 						
 						if (checkIfDestinationFloor(elevatorSync.getRequestsQueue())) {
 							// TODO Send completed requests to scheduler
-							elevatorSync.removeElevatorRequests(currentFloor);
-							System.out.println("######################### COMPLETED REQUEST AT FLOOR ######################### " + currentFloor);
+							ArrayList<ElevatorRequest> completedRequests = elevatorSync.removeElevatorRequests(currentFloor);
+							for (ElevatorRequest completedElevatorRequest : completedRequests) {
+								udp.sendPacket(EncodeDecode.encodeData(completedElevatorRequest), ELEVATOR_PORT);
+							}
+							System.out.println("######################### COMPLETED REQUEST(S) AT FLOOR ######################### " + currentFloor);
 						}
 						
 						if (checkIfSourceFloor(elevatorSync.getRequestsQueue())) {

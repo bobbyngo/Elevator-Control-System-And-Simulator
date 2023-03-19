@@ -41,15 +41,18 @@ public class ElevatorSync {
 	}
 	
 	/**
-	 * Removes all elevator requests that contain the specified destination floor from the queue
+	 * Removes all the completed elevator requests that contain the specified destination floor from the 
+	 * requests queue and returns the list of completed requests 
 	 * @param destinationFloor the int of the destination floor
+	 * @return the ArrayList<ElevatorRequest> of the completed elevator requests
 	 */
-	public synchronized void removeElevatorRequests(int destinationFloor) {
-		ArrayList<ElevatorRequest> requestsToRemove = new ArrayList<>();
+	public synchronized ArrayList<ElevatorRequest> removeElevatorRequests(int destinationFloor) {
+		ArrayList<ElevatorRequest> completedRequests = new ArrayList<>();
 		for (ElevatorRequest elevatorRequest : elevatorRequestsArr) {
-			if (elevatorRequest.getDestinationFloor() == destinationFloor) requestsToRemove.add(elevatorRequest);
+			if (elevatorRequest.getDestinationFloor() == destinationFloor) completedRequests.add(elevatorRequest);
 		}
-		elevatorRequestsArr.removeAll(requestsToRemove);
+		elevatorRequestsArr.removeAll(completedRequests);
+		return completedRequests;
 	}
 
 	/**
