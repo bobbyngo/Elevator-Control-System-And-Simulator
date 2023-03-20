@@ -37,12 +37,15 @@ public class Scheduler implements Runnable {
 	private List<ElevatorRequest> requestsQueue;
 	private List<ElevatorRequest> completedQueue;
 	private Map<Integer, Integer> elevatorLocation;
+	private Map<Integer, Direction> elevatorDirection;
 	private SchedulerState schedulerState;
 	private SchedulerType schedulerType;
 	private UDP udpE; // Contains the socket for receiving packets from the elevators 
 	private UDP udpF; // Contains the socket for receiving packets from the floors
+	private UDP udpED; // Contains the socket for receiving packets from the elevators
 	private static final int FLOOR_PORT = 23; // Designated port for receiving floor requests
 	private static final int ELEVATOR_PORT = 69; // Designated port for receiving elevator requests
+	private static final int ELEVATOR_DATA_PORT = 70; // Designated port for receiving elevator data (floor number, state, direction)
 	
 	/**
 	 * Constructor for the Scheduler.
@@ -53,8 +56,10 @@ public class Scheduler implements Runnable {
 		requestsQueue = Collections.synchronizedList(new ArrayList<>());
 		completedQueue = Collections.synchronizedList(new ArrayList<>());
 		elevatorLocation = Collections.synchronizedMap(new HashMap<>());
+		elevatorDirection = Collections.synchronizedMap(new HashMap<>());
 		if (schedulerType == SchedulerType.FloorListener) udpF = new UDP();
 		else if (schedulerType == SchedulerType.ElevatorListener) udpE = new UDP();
+		else if (schedulerType == SchedulerType.ElevatorDataListener) udpED = new UDP();
 		schedulerState = SchedulerState.Idle;
 		logger.setLevel(Level.INFO);
 	}
@@ -68,6 +73,7 @@ public class Scheduler implements Runnable {
 		try {
 			if (schedulerType == SchedulerType.FloorListener) udpF.openSocket(FLOOR_PORT);
 			else if (schedulerType == SchedulerType.ElevatorListener) udpE.openSocket(ELEVATOR_PORT);
+			else if (schedulerType == SchedulerType.ElevatorDataListener) udpED.openSocket(ELEVATOR_DATA_PORT);
 			Thread.sleep(0);
 			while (true) {
 				switch (schedulerState) {
@@ -82,12 +88,27 @@ public class Scheduler implements Runnable {
 						ElevatorRequest elevatorRequest = EncodeDecode.decodeData(receivedFloorRequest);
 						byte[] data = EncodeDecode.encodeData(elevatorRequest);
 						// TODO: Scanning algorithm to determine which elevator receives the request should go here
-						udpF.sendPacket(data, ElevatorSubsystem.elevatorPorts[0]); // Hardcoded for now
+						udpF.sendPacket(data, ElevatorSubsystem.elevatorListenerPorts[0]); // Hardcoded for now
 						schedulerState = schedulerState.nextState();
 					}
 					else if (schedulerType == SchedulerType.ElevatorListener) {
 						DatagramPacket receivedCompletedElevatorRequest = udpE.receivePacket();
 						udpE.sendPacket(receivedCompletedElevatorRequest.getData(), SchedulerSubsystem.floorPortNumber); // Sends completed request back to the floor
+						schedulerState = schedulerState.nextState();
+					}
+					else if (schedulerType == SchedulerType.ElevatorDataListener) {
+						DatagramPacket receivedElevatorData = udpED.receivePacket();
+						String[] elevatorDataArr = new String(receivedElevatorData.getData()).split(" ");
+						elevatorLocation.put(receivedElevatorData.getPort(), Integer.valueOf(elevatorDataArr[0]));
+						elevatorDirection.put(receivedElevatorData.getPort(), Direction.valueOf(elevatorDataArr[1]));
+						// For the purpose of viewing the contents of the elevatorLocation/Direction maps. Could delete ------------
+						for (Integer elevatorFuncPort : elevatorLocation.keySet()) {
+							System.out.println(elevatorFuncPort + " " + elevatorLocation.get(elevatorFuncPort));
+						}
+						for (Integer elevatorFuncPort : elevatorDirection.keySet()) {
+							System.out.println(elevatorFuncPort + " " + elevatorDirection.get(elevatorFuncPort));
+						}
+						// ---------------------------------------------------------------------------------------------------------
 						schedulerState = schedulerState.nextState();
 					}
 					break;
@@ -113,6 +134,7 @@ public class Scheduler implements Runnable {
 		} finally {
 			if (schedulerType == SchedulerType.FloorListener) udpF.closeSocket();
 			else if (schedulerType == SchedulerType.ElevatorListener) udpE.closeSocket();
+			else if (schedulerType == SchedulerType.ElevatorDataListener) udpED.closeSocket();
 			System.out.println("--------- Program terminated ---------");
 		}
 	}
@@ -204,17 +226,6 @@ public class Scheduler implements Runnable {
 		reply = completedQueue.remove(0);
 		notifyAll();
 		return reply;
-	}
-	
-	/**
-	 * This method stores the elevator's current floor number together with its id.
-	 * @param id Integer, the id of the elevator
-	 * @param floorNumber, Integer, the floor number
-	 * @author Patrick Liu
-	 */
-	public synchronized void registerElevatorLocation(Integer id, Integer floorNumber) {
-		elevatorLocation.put(id, floorNumber);
-		System.out.println(String.format("Scheduler: Elevator# %s current location: Floor %s", id, displayElevatorLocation(id)));
 	}
 	
 	/**

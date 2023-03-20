@@ -25,9 +25,11 @@ public class ElevatorFunctionality implements Runnable {
 	
 	private final Logger logger = Logger.getLogger(this.getClass().getName());
 	
-	public static final int ELEVATOR_PORT = 69;
+	public static final int ELEVATOR_PORT = 69; // Port that the scheduler receiving the completed requests is listening on
+	public static final int ELEVATOR_DATA_PORT = 70; // Port that the scheduler receiving the elevator data is listening on
 	
 	private int id;
+	private int port;
 	private ElevatorState elevatorState;
 	private ElevatorSync elevatorSync;
 	private Direction elevatorDirection;
@@ -41,16 +43,17 @@ public class ElevatorFunctionality implements Runnable {
 	 * @param id the int of the elevator id
 	 * @param elevatorSync the ElevatorSync object to synchronize on
 	 */
-	public ElevatorFunctionality(int id, ElevatorSync elevatorSync) {
+	public ElevatorFunctionality(int id, ElevatorSync elevatorSync, int port) {
 		this.id = id;
 		this.scheduler = new Scheduler(SchedulerSubsystem.SchedulerType.ElevatorListener); // Temporary fix. We need to figure out a way to send the scheduler object over UDP
 		this.elevatorSync = elevatorSync;
+		this.port = port;
 		udp = new UDP();
 		elevatorState = ElevatorState.Idle;
+		elevatorDirection = Direction.NONE;
 		
 		// Start of the program, the elevator should be in floor 1
 		currentFloor = 1;
-		scheduler.registerElevatorLocation(id, 1);
 		
 		// init elevator component, motor is false, doorOpen is false 
 		elevatorComponents = new ElevatorComponents(false, false);
@@ -79,8 +82,8 @@ public class ElevatorFunctionality implements Runnable {
 		} else {
 			currentFloor -= 1;
 		}
-		// After the elevator goes to a different floor, update the floor location immediately
-		scheduler.registerElevatorLocation(id, currentFloor);
+
+		registerElevatorData(currentFloor, elevatorDirection);
 		
 		logger.info(String.format("Arrived at floor %d", currentFloor));
 	}
@@ -106,8 +109,8 @@ public class ElevatorFunctionality implements Runnable {
 			} else {
 				currentFloor -= 1;
 			}
-			// After the elevator goes to a different floor, update the floor location immediately
-			scheduler.registerElevatorLocation(id, currentFloor);
+
+			registerElevatorData(currentFloor, elevatorDirection);
 		}
 		logger.info(String.format("Arrived at source floor %d \n", currentFloor));
 	}
@@ -122,7 +125,7 @@ public class ElevatorFunctionality implements Runnable {
 	public void run() {
 		try {
 			String elevatorStateStr;
-			udp.openSocket();
+			udp.openSocket(port);
 			ElevatorRequest elevatorRequest = null;
 			Thread.sleep(1000);
 			while (true) {
@@ -131,8 +134,11 @@ public class ElevatorFunctionality implements Runnable {
 					case Idle: {
 						System.out.println("######################### IN IDLE #########################");
 						System.out.println(elevatorStateStr);
+						elevatorDirection = Direction.NONE;
+						registerElevatorData(currentFloor, elevatorDirection);
 						elevatorRequest = elevatorSync.getElevatorRequest(); // Waits for a request\
 						elevatorDirection = elevatorRequest.getDirection();
+						registerElevatorData(currentFloor, elevatorDirection);
 						elevatorState = elevatorState.nextState();
 						break;
 					}
@@ -236,6 +242,18 @@ public class ElevatorFunctionality implements Runnable {
 			udp.closeSocket();
 			System.out.println("--------- Program terminated ---------");
 		}
+	}
+		
+	/**
+	 * Sends a datagram packet to the scheduler that contains info about the elevator floor, direction, and state
+	 * @param currentFloor the int of the current floor that the elevator is on
+	 * @param elevatorDirection the ElevatorDirection enum that stores the direction that the elevator's traveling in
+	 * @author Hussein Elmokdad
+	 */
+	public void registerElevatorData(int currentFloor, Direction elevatorDirection) {
+		// Do not remove the " " at the end of the string; otherwise, the empty bits in the received packet will be included after the .split(" ")
+		String elevatorDataStr = String.valueOf(currentFloor) + " " + elevatorDirection + " "; 
+		udp.sendPacket(elevatorDataStr.getBytes(), ELEVATOR_DATA_PORT);
 	}
 	
 	/**
