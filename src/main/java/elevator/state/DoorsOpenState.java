@@ -18,6 +18,8 @@ public class DoorsOpenState extends IdleMotorState {
 		ctx.setTimer(stt, ctx.getConfig().LOADING_TIME);
 		ctx.setDoors(Door.OPEN);
 		// TODO: load/unload passengers
+		ctx.unloadPassengers();
+		ctx.loadPassengers();
 	}
 
 	@Override
@@ -29,7 +31,9 @@ public class DoorsOpenState extends IdleMotorState {
 	public ElevatorState handleTimeout() {
 		ElevatorContext ctx = this.getContext();
 		ctx.killTimer();
-		// TODO: add conditionals
+		if (ctx.getInternalRequests().isEmpty() && ctx.getExternalRequests().isEmpty()) {
+			return new IdleState(ctx);
+		}
 		return new DoorsClosedState(ctx);
 	}
 

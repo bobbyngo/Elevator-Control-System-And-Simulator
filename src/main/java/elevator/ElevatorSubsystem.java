@@ -9,6 +9,7 @@ import main.java.SimulatorConfiguration;
 import main.java.dto.AssignedElevatorRequest;
 import main.java.dto.ElevatorRequest;
 
+// FIXME: remove @author automatically generated
 /**
  * Controller. Routes requests to respective elevators.
  * Handles communication aspect.
@@ -16,9 +17,10 @@ import main.java.dto.ElevatorRequest;
  *
  */
 public class ElevatorSubsystem {
+	// TODO: change to hashmap to not deal with indexing issues
 	private ArrayList<ElevatorContext> elevators;
 	private SimulatorConfiguration simulatorConfiguration;
-	private Thread requestReceiverThread;
+	private Thread requestListenerThread;
 	//private UDPClient udpClient;
 	
 	public ElevatorSubsystem(SimulatorConfiguration config) {
@@ -36,8 +38,8 @@ public class ElevatorSubsystem {
 		}
 		
 		// Start request fetching
-		requestReceiverThread = new Thread(new RequestReceiverTask(this));
-		requestReceiverThread.start();
+		requestListenerThread = new Thread(new RequestListenerTask(this));
+		requestListenerThread.start();
 	}
 	
 	public SimulatorConfiguration getConfig() {
@@ -46,7 +48,8 @@ public class ElevatorSubsystem {
 	
 	public void receiveElevatorRequest() {
 		// get elevator request: called by request receiver task
-		
+		//udp.send()
+		//udp.receive()
 		routeElevatorRequest(null);
 		return;
 	}
@@ -60,7 +63,7 @@ public class ElevatorSubsystem {
 		ctx.addExternalRequest(request);
 	}
 	
-	public void sendCompletedElevatorRequest() {
+	public void sendCompletedElevatorRequest(ElevatorRequest request) {
 		// send elevator request: called by context
 	}
 	

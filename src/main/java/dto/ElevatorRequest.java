@@ -4,6 +4,8 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
+import main.java.elevator.Direction;
+
 /**
  * The ElevatorRequest class is responsible for storing all the
  * relevant information regarding passenger's elevator requests.

@@ -6,26 +6,26 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-import main.java.scheduler.Scheduler;
-import main.java.scheduler.SchedulerState;
+import main.java.scheduler.SchedulerOld;
+import main.java.scheduler.SchedulerStateOld;
 
 /**
- * SchedulerStateTest tests and validates the methods for the SchedulerState class.
+ * SchedulerStateTest tests and validates the methods for the SchedulerStateOld class.
  * @author Trong Nguyen
  * @since 2.0, 02/27/23
  */
 public class SchedulerStateTest {
 	
-	private SchedulerState schedulerState;
-	private Scheduler scheduler;
+	private SchedulerStateOld schedulerState;
+	private SchedulerOld scheduler;
 	
 	/**
 	 * Set up the testing environment.
 	 */
 	@Before
 	public void setUp() {
-		scheduler = new Scheduler();
-		schedulerState = SchedulerState.Idle;
+		scheduler = new SchedulerOld();
+		schedulerState = SchedulerStateOld.Idle;
 	}
 	
 	/**
@@ -33,7 +33,7 @@ public class SchedulerStateTest {
 	 */
 	@Test
 	public void testElevatorStateInstance() {
-		assertTrue(scheduler.getSchedulerState() instanceof SchedulerState);
+		assertTrue(scheduler.getSchedulerState() instanceof SchedulerStateOld);
 	}
 	
 	/**
@@ -41,19 +41,19 @@ public class SchedulerStateTest {
 	 */
 	@Test
 	public void testElevatorConstructorState() {
-		assertEquals(scheduler.getSchedulerState(), SchedulerState.Idle);
+		assertEquals(scheduler.getSchedulerState(), SchedulerStateOld.Idle);
 	}
 	
 	/**
-	 * Test SchedulerState next state.
+	 * Test SchedulerStateOld next state.
 	 */
 	@Test
 	public void testNextState() {
-		assertEquals(schedulerState, SchedulerState.Idle);
+		assertEquals(schedulerState, SchedulerStateOld.Idle);
 		schedulerState = schedulerState.nextState();
-		assertEquals(schedulerState, SchedulerState.Ready);
+		assertEquals(schedulerState, SchedulerStateOld.Ready);
 		schedulerState = schedulerState.nextState();
-		assertEquals(schedulerState, SchedulerState.InService);
+		assertEquals(schedulerState, SchedulerStateOld.InService);
 		schedulerState = schedulerState.nextState();
 	}
 	

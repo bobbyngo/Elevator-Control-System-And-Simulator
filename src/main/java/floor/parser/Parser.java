@@ -14,8 +14,8 @@ import java.util.Date;
 import java.sql.Timestamp;
 
 import main.java.dto.ElevatorRequest;
+import main.java.elevator.Direction;
 import main.java.exception.*;
-import main.java.dto.Direction;
 
 /**
  * The Parser class reads through a standard text file 

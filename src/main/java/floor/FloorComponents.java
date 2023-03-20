@@ -2,7 +2,7 @@ package main.java.floor;
 
 import java.util.HashMap;
 
-import main.java.dto.Direction;
+import main.java.elevator.Direction;
 /**
  * An wrapper class containing all the information of components of the floor
  * @author Bobby Ngo

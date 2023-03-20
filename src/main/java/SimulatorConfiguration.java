@@ -23,7 +23,7 @@ public class SimulatorConfiguration {
 	public final int LOADING_TIME;
 	public final int MOVING_TIME;
 	
-	// Scheduler config
+	// SchedulerOld config
 	public final String SCHEDULER_HOST;
 	public final int SCHEDULER_PENDING_REQ_PORT;
 	public final int SCHEDULER_COMPLETED_REQ_PORT;

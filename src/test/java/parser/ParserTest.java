@@ -10,8 +10,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import main.java.dto.ElevatorRequest;
+import main.java.elevator.Direction;
 import main.java.floor.parser.Parser;
-import main.java.dto.Direction;
 
 /**
  * ParserTest tests and validates methods for Parser

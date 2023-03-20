@@ -5,22 +5,22 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-import main.java.scheduler.Scheduler;
+import main.java.scheduler.SchedulerOld;
 
 /**
- * SchedulerTest tests and validates the methods for the Scheduler class.
+ * SchedulerTest tests and validates the methods for the SchedulerOld class.
  * @author Bobby Ngo
  * @since 2.0, 03/04/23
  */
 public class SchedulerTest {
-private Scheduler scheduler;
+private SchedulerOld scheduler;
 	
 	/**
 	 * Set up the testing environment.
 	 */
 	@Before
 	public void setUp() {
-		scheduler = new Scheduler();
+		scheduler = new SchedulerOld();
 	}
 	
 	/**

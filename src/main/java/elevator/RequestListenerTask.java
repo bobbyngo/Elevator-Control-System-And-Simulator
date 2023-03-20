@@ -7,10 +7,10 @@ package main.java.elevator;
  * @author Zakaria Ismail
  *
  */
-public class RequestReceiverTask implements Runnable  {
+public class RequestListenerTask implements Runnable  {
 	private ElevatorSubsystem elevatorSubsystem;
 	
-	public RequestReceiverTask(ElevatorSubsystem es) {
+	public RequestListenerTask(ElevatorSubsystem es) {
 		elevatorSubsystem = es;
 	}
 

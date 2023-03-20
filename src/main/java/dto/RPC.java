@@ -30,7 +30,7 @@ public class RPC {
 	}
 	
 	/**
-	 * Open DatagramSockets for Scheduler.
+	 * Open DatagramSockets for SchedulerOld.
 	 */
 	public void openSchedulerSocket() {
 		try {
@@ -50,7 +50,7 @@ public class RPC {
 	}
 	
 	/**
-	 * Close DatagramSockets for Scheduler.
+	 * Close DatagramSockets for SchedulerOld.
 	 */
 	public void closeSchedulerSocket() {
 		floorSocket.close();
@@ -108,7 +108,7 @@ public class RPC {
 					InetAddress.getLocalHost(), 
 					port);
 			dataSocket.send(dataPacket);
-			printPacketContent(dataPacket, "send(:request) -> Scheduler");
+			printPacketContent(dataPacket, "send(:request) -> SchedulerOld");
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -126,7 +126,7 @@ public class RPC {
 			replyPacket = new DatagramPacket(data, data.length);
 			System.out.println("Waiting...\n");
 			dataSocket.receive(replyPacket);
-			printPacketContent(replyPacket, "reply() <- Scheduler");
+			printPacketContent(replyPacket, "reply() <- SchedulerOld");
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -135,7 +135,7 @@ public class RPC {
 	}
 	
 	/**
-	 * Request acknowledge from Scheduler.
+	 * Request acknowledge from SchedulerOld.
 	 * @param replyPacket DatagramPacket, message containing request for ack
 	 */
 	private void floorSendAck(DatagramPacket replyPacket) {
@@ -147,7 +147,7 @@ public class RPC {
 					replyPacket.getAddress(), 
 					replyPacket.getPort());
 			ackSocket.send(ackPacket);
-			printPacketContent(ackPacket, "send() -> Scheduler");
+			printPacketContent(ackPacket, "send() -> SchedulerOld");
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -155,7 +155,7 @@ public class RPC {
 	}
 	
 	/**
-	 * Receive acknowledge request from Scheduler.
+	 * Receive acknowledge request from SchedulerOld.
 	 */
 	private void floorReceiveAck() {
 		byte[] data = new byte[100];
@@ -163,7 +163,7 @@ public class RPC {
 		try {
 			System.out.println("Waiting...\n");
 			ackSocket.receive(ackPacket);
-			printPacketContent(ackPacket, "reply(:ack) <- Scheduler");
+			printPacketContent(ackPacket, "reply(:ack) <- SchedulerOld");
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -279,7 +279,7 @@ public class RPC {
 	}
 	
 	/**
-	 * Send request for data to Scheduler.
+	 * Send request for data to SchedulerOld.
 	 */
 	private void elevatorSend(int port) {
 		byte[] data = ("Waiting for request...").getBytes();
@@ -290,7 +290,7 @@ public class RPC {
 					InetAddress.getLocalHost(), 
 					port);
 			dataSocket.send(sendPacket);
-			printPacketContent(sendPacket, "Scheduler <- send()");
+			printPacketContent(sendPacket, "SchedulerOld <- send()");
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -298,8 +298,8 @@ public class RPC {
 	}
 	
 	/**
-	 * Receive data from Scheduler.
-	 * @return DatagramPacket, elevator requested from Scheduler
+	 * Receive data from SchedulerOld.
+	 * @return DatagramPacket, elevator requested from SchedulerOld
 	 */
 	private DatagramPacket elevatorReceiveData() {
 		byte[] data = new byte[100];
@@ -307,7 +307,7 @@ public class RPC {
 		try {
 			System.out.println("Waiting...\n");
 			dataSocket.receive(replyPacket);
-			printPacketContent(replyPacket, "Scheduler -> reply(:request)");
+			printPacketContent(replyPacket, "SchedulerOld -> reply(:request)");
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -316,7 +316,7 @@ public class RPC {
 	}	
 	
 	/**
-	 * Send acknowledge to Scheduler.
+	 * Send acknowledge to SchedulerOld.
 	 * @param receiveHostPacket DatagramPacket, data packet received from request
 	 */
 	private void elevatorSendAck(DatagramPacket replyPacket) {
@@ -327,7 +327,7 @@ public class RPC {
 				replyPacket.getPort());
 		try {
 			ackSocket.send(ackPacket);
-			printPacketContent(ackPacket, "Scheduler <- send(:ack)");
+			printPacketContent(ackPacket, "SchedulerOld <- send(:ack)");
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -335,7 +335,7 @@ public class RPC {
 	}
 	
 	/**
-	 * Receive reply to acknowledge from Scheduler.
+	 * Receive reply to acknowledge from SchedulerOld.
 	 */
 	private void elevatorReceiveAck() {
 		byte[] data = new byte[100];
@@ -343,7 +343,7 @@ public class RPC {
 		try {
 			System.out.println("Waiting...\n");
 			ackSocket.receive(ackPacket);
-			printPacketContent(ackPacket, "Scheduler -> reply()");
+			printPacketContent(ackPacket, "SchedulerOld -> reply()");
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);

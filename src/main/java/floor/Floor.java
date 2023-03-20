@@ -85,7 +85,7 @@ public class Floor implements Runnable {
 	
 	
 	/**
-	 * Sends the series of elevator requests to the Scheduler.
+	 * Sends the series of elevator requests to the SchedulerOld.
 	 * @param elevatorRequests
 	 */
 	private void addRequestToQueue(ArrayList<ElevatorRequest> elevatorRequests) {
