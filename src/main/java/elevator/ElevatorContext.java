@@ -229,4 +229,8 @@ public class ElevatorContext {
 		// small visual test
 		ElevatorSubsystem s = new ElevatorSubsystem(new SimulatorConfiguration("./src/main/resources/config.properties"));
 	}
+
+	public int getCurrentFloor() {
+		return currentFloor;
+	}
 }
