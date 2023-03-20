@@ -16,7 +16,10 @@ import java.util.Map;
 
 import main.java.dto.Direction;
 import main.java.dto.ElevatorRequest;
-import main.java.dto.RPC;
+import main.java.dto.EncodeDecode;
+import main.java.dto.UDP;
+import main.java.elevator.ElevatorSubsystem;
+import main.java.scheduler.SchedulerSubsystem.SchedulerType;
 
 /**
  * Responsible for accepting input from all of the sensors, and
@@ -35,24 +38,23 @@ public class Scheduler implements Runnable {
 	private List<ElevatorRequest> completedQueue;
 	private Map<Integer, Integer> elevatorLocation;
 	private SchedulerState schedulerState;
-	private RPC rpc;
-	
-	/**
-	 * Main method for the Scheduler class.
-	 * @param args, default parameters
-	 */
-	public static void main(String[] args) {
-		new Thread(new Scheduler()).start();
-	}
+	private SchedulerType schedulerType;
+	private UDP udpE; // Contains the socket for receiving packets from the elevators 
+	private UDP udpF; // Contains the socket for receiving packets from the floors
+	private static final int FLOOR_PORT = 23; // Designated port for receiving floor requests
+	private static final int ELEVATOR_PORT = 69; // Designated port for receiving elevator requests
 	
 	/**
 	 * Constructor for the Scheduler.
+	 * @param schedulerType the SchedulerType enum that determines what the scheduler will listen to
 	 */
-	public Scheduler() {
+	public Scheduler(SchedulerType schedulerType) {
+		this.schedulerType = schedulerType;
 		requestsQueue = Collections.synchronizedList(new ArrayList<>());
 		completedQueue = Collections.synchronizedList(new ArrayList<>());
 		elevatorLocation = Collections.synchronizedMap(new HashMap<>());
-		rpc = new RPC();
+		if (schedulerType == SchedulerType.FloorListener) udpF = new UDP();
+		else if (schedulerType == SchedulerType.ElevatorListener) udpE = new UDP();
 		schedulerState = SchedulerState.Idle;
 		logger.setLevel(Level.INFO);
 	}
@@ -64,7 +66,8 @@ public class Scheduler implements Runnable {
 	@Override
 	public void run() {
 		try {
-			rpc.openSchedulerSocket();
+			if (schedulerType == SchedulerType.FloorListener) udpF.openSocket(FLOOR_PORT);
+			else if (schedulerType == SchedulerType.ElevatorListener) udpE.openSocket(ELEVATOR_PORT);
 			Thread.sleep(0);
 			while (true) {
 				switch (schedulerState) {
@@ -72,24 +75,31 @@ public class Scheduler implements Runnable {
 					schedulerState = schedulerState.nextState();
 					break;
 				}
-				case Ready: {;
-					DatagramPacket reply = rpc.replyFloor();
-					ElevatorRequest elevatorRequest = decodeData(reply);
-					putRequest(elevatorRequest);
-					// TODO: Scanning algorithm to the queue should happen here
-					elevatorRequest = dispatchRequest();
-					byte[] data = encodeData(elevatorRequest);
-					rpc.replyElevator(data);
-					schedulerState = schedulerState.nextState();
+				case Ready: {
+					if (schedulerType == SchedulerType.FloorListener) {
+						DatagramPacket receivedFloorRequest = udpF.receivePacket();
+						SchedulerSubsystem.floorPortNumber = receivedFloorRequest.getPort();
+						ElevatorRequest elevatorRequest = EncodeDecode.decodeData(receivedFloorRequest);
+						byte[] data = EncodeDecode.encodeData(elevatorRequest);
+						// TODO: Scanning algorithm to determine which elevator receives the request should go here
+						udpF.sendPacket(data, ElevatorSubsystem.elevatorPorts[0]); // Hardcoded for now
+						schedulerState = schedulerState.nextState();
+					}
+					else if (schedulerType == SchedulerType.ElevatorListener) {
+						DatagramPacket receivedCompletedElevatorRequest = udpE.receivePacket();
+						udpE.sendPacket(receivedCompletedElevatorRequest.getData(), SchedulerSubsystem.floorPortNumber); // Sends completed request back to the floor
+						schedulerState = schedulerState.nextState();
+					}
 					break;
 				}
 				case InService: {
-					DatagramPacket ack = rpc.ackElevator();
-					ElevatorRequest elevatorRequest = decodeData(ack);
-					putCompletedRequest(elevatorRequest);
-					elevatorRequest = getCompletedRequest();
-					byte[] data = encodeData(elevatorRequest);
-					rpc.ackFloor(data);
+					// TODO: implement a new method to send completed requests 
+					// DatagramPacket ack = udp.ackElevator();
+					// ElevatorRequest elevatorRequest = decodeData(ack);
+					// putCompletedRequest(elevatorRequest);
+					// elevatorRequest = getCompletedRequest();
+					// byte[] data = encodeData(elevatorRequest);
+					// udp.ackFloor(data);
 					schedulerState = schedulerState.nextState();
 					System.out.println("--------------------------------------");
 					break;
@@ -101,59 +111,10 @@ public class Scheduler implements Runnable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			rpc.closeSchedulerSocket();
-			logger.info("Program terminated.");
+			if (schedulerType == SchedulerType.FloorListener) udpF.closeSocket();
+			else if (schedulerType == SchedulerType.ElevatorListener) udpE.closeSocket();
+			System.out.println("--------- Program terminated ---------");
 		}
-	}
-	
-	/**
-	 * Encodes an elevator request object into a byte[] data.
-	 * @param elevatorRequest, ElevatorRequest obj
-	 * @return message byte[], the encoded elevatorRequest
-	 * @throws IOException
-	 */
-	private byte[] encodeData(ElevatorRequest elevatorRequest) {
-		ByteArrayOutputStream os = new ByteArrayOutputStream();
-		byte[] message = null;
-		try {
-			os.write(elevatorRequest.toString().getBytes());
-			os.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		message = os.toByteArray();
-		return message;
-	}
-	
-	/**
-	 * Decodes byte[] data into an ElevatorRequest object.
-	 * @param message byte[], the encoded elevatorRequest
-	 * @return elevatorRequest, ElevatorRequest obj
-	 * @throws IOException
-	 */
-	private ElevatorRequest decodeData(DatagramPacket packet) {
-		ElevatorRequest elevatorRequest = null;
-		Timestamp timestamp = null;
-	    String[] line = new String(packet.getData(), 0, packet.getLength()).split(" ");
-		
-	    try {
-	    		Timestamp currentTime = new Timestamp(System.currentTimeMillis());
-	    		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
-	    		Date parsedDate = dateFormat.parse(currentTime.toString().split(" ")[0] + " " + line[0]);
-	        timestamp = new Timestamp(parsedDate.getTime());
-	    	
-	        elevatorRequest = new ElevatorRequest(timestamp, 
-	    			Integer.valueOf(line[1]), 
-		    		Direction.valueOf(line[2]), 
-		    		Integer.valueOf(line[3]));
-	    } catch (NullPointerException npe) {
-	    		return null;
-	    } catch (ParseException pe) {
-			return null;
-	    } catch (Exception e) {
-	    		e.printStackTrace();
-	    }
-	    return elevatorRequest;
 	}
 	
 	/**
@@ -243,35 +204,6 @@ public class Scheduler implements Runnable {
 		reply = completedQueue.remove(0);
 		notifyAll();
 		return reply;
-	}
-	
-	/**
-	 * Scheduler signals the elevator to move to the given location and register its new location
-	 * @author Bobby Ngo
-	 * @param currentFloor of the elevator
-	 * @param destinationFloor the new floor its need to go
-	 * @return int, the new floor that the scheduler reached
-	 */
-	public int movingTo(int id, int currentFloor, int destinationFloor) {
-		while (currentFloor != destinationFloor) {
-			try {
-				Thread.sleep(200);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			String loggerStr = String.format("Moving from floor %d -> floor %d \n", currentFloor, destinationFloor);
-			logger.info(loggerStr);
-			
-			if (currentFloor < destinationFloor) {
-				currentFloor += 1;
-			} else {
-				currentFloor -= 1;
-			}
-			// After the elevator goes to a different floor, update the floor location immediately
-			this.registerElevatorLocation(id, currentFloor);
-		}
-		logger.info(String.format("Arrived at destination floor %d, current floor is %d\n", destinationFloor,  currentFloor));
-		return currentFloor;
 	}
 	
 	/**

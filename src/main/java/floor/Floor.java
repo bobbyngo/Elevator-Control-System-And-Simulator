@@ -10,7 +10,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import main.java.dto.ElevatorRequest;
-import main.java.dto.RPC;
+import main.java.dto.EncodeDecode;
+import main.java.dto.UDP;
 import main.java.floor.parser.Parser;
 
 /**
@@ -28,7 +29,7 @@ public class Floor implements Runnable {
 	
 	private int floorNumber;
 	private Parser parser;
-	private RPC rpc;
+	private UDP udp;
 	
 	/**
 	 * Main method for the Floor class.
@@ -43,7 +44,7 @@ public class Floor implements Runnable {
 	 */
 	public Floor(int floorNumber) {
 		this.floorNumber = floorNumber;
-		rpc = new RPC();
+		udp = new UDP();
 		logger.setLevel(Level.INFO);
 		try {
 			// Filename before compilation
@@ -64,17 +65,18 @@ public class Floor implements Runnable {
 	@Override
 	public void run() {
 		try {
-			rpc.openSocket();
+			udp.openSocket();
 			ArrayList<ElevatorRequest> elevatorRequests = getElevatorRequests();
 			addRequestToQueue(elevatorRequests);
+			receiveCompletedRequests(elevatorRequests);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			rpc.closeSocket();
+			udp.closeSocket();
 			logger.info("Program terminated.");
 		}
 	}
-	
+
 	/**
 	 * Get the floor number.
 	 * @return int, floor number
@@ -86,38 +88,30 @@ public class Floor implements Runnable {
 	
 	/**
 	 * Sends the series of elevator requests to the Scheduler.
-	 * @param elevatorRequests
+	 * @param elevatorRequests the ElevatorRequest array list
 	 */
 	private void addRequestToQueue(ArrayList<ElevatorRequest> elevatorRequests) {
 		if (!elevatorRequests.isEmpty()) {
 			// TODO: Send request as per time stamp logic potential added here
 			// Sends all the request for Floors at serially
 			for (ElevatorRequest req : elevatorRequests) {
-				byte[] data = encodeData(req);
-				DatagramPacket reply = rpc.floorSendReceive(data, FLOOR_PORT);
-				rpc.floorAck(reply);
+				byte[] data = EncodeDecode.encodeData(req);
+				udp.sendPacket(data, FLOOR_PORT);
 				System.out.println("--------------------------------------");
 			}
 		}
 	}
 	
 	/**
-	 * Encodes an elevator request object into a byte[] data.
-	 * @param elevatorRequest, ElevatorRequest obj
-	 * @return message byte[], the encoded elevatorRequest
-	 * @throws IOException
+	 * Receives the completed requests from the scheduler
+	 * @param elevatorRequests the ElevatorRequest array list
 	 */
-	private byte[] encodeData(ElevatorRequest elevatorRequest) {
-		ByteArrayOutputStream os = new ByteArrayOutputStream();
-		byte[] message = null;
-		try {
-			os.write(elevatorRequest.toString().getBytes());
-			os.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
+	private void receiveCompletedRequests(ArrayList<ElevatorRequest> elevatorRequests) {
+		for (ElevatorRequest req : elevatorRequests) {
+			System.out.println("Receiving completed request:");
+			udp.receivePacket();
+			System.out.println("--------------------------------------");
 		}
-		message = os.toByteArray();
-		return message;
 	}
 
 	/**

@@ -28,6 +28,7 @@ public class ElevatorComponents {
 	 */
 	public ElevatorComponents(boolean motor, boolean isDoorOpen) {
 		// init elevator button and elevator lamp mapping
+		// We need a better way to retrieve the number of floors
 		for (int i = 1; i <= Main.NUM_OF_FLOORS; i ++) {
 			elevatorButtonBoard.put(i, false);
 		}
