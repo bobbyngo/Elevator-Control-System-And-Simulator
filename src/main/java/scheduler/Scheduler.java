@@ -85,7 +85,8 @@ public class Scheduler implements Runnable {
 						ElevatorRequest elevatorRequest = EncodeDecode.decodeData(receivedFloorRequest);
 						byte[] data = EncodeDecode.encodeData(elevatorRequest);
 						// TODO: Scanning algorithm to determine which elevator receives the request should go here
-						udpF.sendPacket(data, ElevatorSubsystem.elevatorListenerPorts[0]); // Hardcoded for now
+						int port = assignRequestToElevator(elevatorRequest.getSourceFloor(), elevatorRequest.getDirection());
+						udpF.sendPacket(data, port); // Hardcoded for now
 						schedulerState = schedulerState.nextState();
 					}
 					else if (schedulerType == SchedulerType.ElevatorListener) {
@@ -147,7 +148,7 @@ public class Scheduler implements Runnable {
 		return movingElevatorHashMap;
 	}
 	
-	private int assignRequestToMovingElevator(int newRequestSourceFloor, Direction newRequestDirection) {
+	private int assignRequestToElevator(int newRequestSourceFloor, Direction newRequestDirection) {
 		//Both elevatorLocation and elevatorDirection should have the same length?
 		if (elevatorDirection.size() != elevatorLocation.size() && elevatorDirection.size() > 0) {
 			// Something super weird is happening
