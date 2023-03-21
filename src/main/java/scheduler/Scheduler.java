@@ -1,18 +1,13 @@
 package main.java.scheduler;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.net.DatagramPacket;
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.logging.*;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import main.java.dto.Direction;
 import main.java.dto.ElevatorRequest;
@@ -36,7 +31,9 @@ public class Scheduler implements Runnable {
 		
 	private List<ElevatorRequest> requestsQueue;
 	private List<ElevatorRequest> completedQueue;
+	// Map the port of elevator to its current location (all the elevator)
 	private Map<Integer, Integer> elevatorLocation;
+	// Map the port of elevator to its current direction (all the elevator)
 	private Map<Integer, Direction> elevatorDirection;
 	private SchedulerState schedulerState;
 	private SchedulerType schedulerType;
@@ -137,6 +134,56 @@ public class Scheduler implements Runnable {
 			else if (schedulerType == SchedulerType.ElevatorDataListener) udpED.closeSocket();
 			System.out.println("--------- Program terminated ---------");
 		}
+	}
+	
+	private HashMap<Integer, Direction> getMovingElevators() {
+		HashMap<Integer, Direction> movingElevatorHashMap = new HashMap<>();
+		for (Integer port: elevatorDirection.keySet()) {
+			// comparing enum with == or equals are the same, but == is null safe
+			if (elevatorDirection.get(port) !=  Direction.NONE) {
+				movingElevatorHashMap.put(port, elevatorDirection.get(port));
+			}
+		}
+		return movingElevatorHashMap;
+	}
+	
+	private int assignRequestToMovingElevator(int newRequestSourceFloor, Direction newRequestDirection) {
+		//Both elevatorLocation and elevatorDirection should have the same length?
+		if (elevatorDirection.size() != elevatorLocation.size() && elevatorDirection.size() > 0) {
+			// Something super weird is happening
+			logger.severe("Elevator direction and elevator location mapping are not match");
+		}
+		// Find all the moving elevator
+		HashMap<Integer, Direction> movingElevatorHashMap = getMovingElevators(); 
+		
+		for (Integer port : movingElevatorHashMap.keySet()) {
+			Direction currentDirection = elevatorDirection.get(port);
+			int currentFloor = elevatorLocation.get(port);
+			// 1st priority: Elevator is moving up and current floor < new request source floor
+			// 2st priority: Elevator is moving down and current floor > new request source floor
+			if (currentDirection == newRequestDirection  && currentDirection == Direction.UP 
+					&& currentFloor < newRequestSourceFloor) {
+				return port;
+			} else if (currentDirection == newRequestDirection  && currentDirection == Direction.DOWN 
+					&& currentFloor > newRequestSourceFloor) {
+				return port;
+			}
+		}
+		// 3rd priority: get a first elevator that is idle in the list
+		for (Integer port : elevatorDirection.keySet())	{
+			if (elevatorDirection.get(port) !=  Direction.NONE) {
+				return port;
+			}		
+		}
+		
+		// Worst case return random elevator in the list
+		// if port is 0 must be the case, all the elevator are not moving at first which is the start of the program
+		// when length of hashmap is 0
+        int min = 0;
+        int range = elevatorDirection.size() - min + 1;
+		int rand = (int)(Math.random() * range);
+		Object[] elevatorDirectionKeys = elevatorDirection.keySet().toArray();
+		return (int) elevatorDirectionKeys[rand];
 	}
 	
 	/**
