@@ -30,6 +30,10 @@ public class MovingUpState extends MovingState {
 		// notify arrival sensor/scheduler???
 		// Q: what's an arrival sensor...
 		// TODO: add conditional code
+		
+		// if external request in current direction exists
+		// or internal request exists at current floor
+		
 		return new StoppedState(ctx);
 	}
 

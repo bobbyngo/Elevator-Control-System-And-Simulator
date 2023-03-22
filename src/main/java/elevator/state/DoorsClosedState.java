@@ -5,6 +5,7 @@ package main.java.elevator.state;
 
 import java.util.TimerTask;
 
+import main.java.elevator.Direction;
 import main.java.elevator.Door;
 import main.java.elevator.ElevatorContext;
 
@@ -30,9 +31,21 @@ public class DoorsClosedState extends IdleMotorState {
 	@Override
 	public ElevatorState handleTimeout() {
 		ElevatorContext ctx = this.getContext();
+		Direction nextDirection;
 		ctx.killTimer();
 		// TODO: perform some conditional checks
-		return new MovingUpState(ctx);
+		// consider current direction
+		nextDirection = ctx.calculateNextDirection();
+		ctx.setDirection(nextDirection);
+	
+		switch (ctx.getDirection()) {
+		case UP:
+			return new MovingUpState(ctx);
+		case DOWN:
+			return new MovingDownState(ctx);
+		default:
+			return new IdleState(ctx);
+		}
 	}
 
 	@Override

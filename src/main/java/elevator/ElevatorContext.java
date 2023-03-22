@@ -4,12 +4,15 @@
 package main.java.elevator;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import main.java.SimulatorConfiguration;
 import main.java.dto.ElevatorRequest;
+import main.java.dto.ElevatorStatus;
 import main.java.elevator.state.ElevatorState;
 import main.java.elevator.state.TimeoutEvent;
 
@@ -19,8 +22,8 @@ import main.java.elevator.state.TimeoutEvent;
  */
 public class ElevatorContext {
 	private int id;
-	private ArrayList<ElevatorRequest> externalRequests;
-	private ArrayList<ElevatorRequest> internalRequests;
+	private List<ElevatorRequest> externalRequests;
+	private List<ElevatorRequest> internalRequests;
 	private ElevatorState currentState;
 	private int currentFloor;
 	private Motor motor;
@@ -40,8 +43,8 @@ public class ElevatorContext {
 		// Initialize context
 		this.id = id;
 		currentFloor = 1;
-		externalRequests = new ArrayList<>();
-		internalRequests = new ArrayList<>();
+		externalRequests = Collections.synchronizedList(new ArrayList<ElevatorRequest>());
+		internalRequests = Collections.synchronizedList(new ArrayList<ElevatorRequest>());	// this is not needed, added anyways
 		setDoors(Door.OPEN);
 		setDirection(Direction.IDLE);
 		setMotor(Motor.IDLE);
@@ -56,10 +59,14 @@ public class ElevatorContext {
 	}
 	
 	public void startElevator() {
+		// XXX: make this a run() function? something to think about...
 		// MUST CALL THIS FUNCTION TO START STATE MACHINE
+		ElevatorStatus status;
+		
 		currentState = ElevatorState.start(this);
 		System.out.println(this);
 		// notify starting position
+		elevatorSubsystem.sendArrivalNotification(new ElevatorStatus(this));
 	}
 	
 	public void addExternalRequest(ElevatorRequest request) {
@@ -88,6 +95,15 @@ public class ElevatorContext {
 	public void loadPassengers() {
 		// when passengers are loaded, press button
 		// external requests @ current floor are moved to internal requests
+		synchronized (externalRequests) {
+			for (ElevatorRequest req : externalRequests) {
+				if (req.getSourceFloor() == currentFloor) {
+					externalRequests.remove(req);
+					internalRequests.add(req);
+					pressElevatorButton(req.getDestinationFloor());
+				}
+			}
+		}
 		return;
 	}
 	
@@ -95,19 +111,22 @@ public class ElevatorContext {
 		// clear button at current floor
 		// internal requests @ current floor are removed...
 		// removed internal requests are sent to scheduler as completed requests
-		
+		for (ElevatorRequest req : internalRequests) {
+			if (req.getDestinationFloor() == currentFloor) {
+				internalRequests.remove(req);
+				elevatorSubsystem.sendCompletedElevatorRequest(req);
+			}
+		}
 		clearElevatorButton(currentFloor);
 		return;
 	}
 	
 	private void pressElevatorButton(int floor) {
-		buttons[floor-1] = true;
-		buttonLamps[floor-1] = true;
+		elevatorButtonBoard.put(floor, true);
 	}
 	
 	private void clearElevatorButton(int floor) {
-		buttons[floor-1] = false;
-		buttonLamps[floor-1] = false;
+		elevatorButtonBoard.put(floor, false);
 	}
 	
 	public void setTimer(TimerTask task, int delay) {
@@ -175,11 +194,11 @@ public class ElevatorContext {
 		return internalRequests.size() + externalRequests.size();
 	}
 	
-	public ArrayList<ElevatorRequest> getExternalRequests() {
+	public List<ElevatorRequest> getExternalRequests() {
 		return externalRequests;
 	}
 	
-	public ArrayList<ElevatorRequest> getInternalRequests() {
+	public List<ElevatorRequest> getInternalRequests() {
 		return internalRequests;
 	}
 	
@@ -214,23 +233,93 @@ public class ElevatorContext {
 	 * Method that getting all the selected floors in the elevator
 	 * @return a hashmap containing the all the selected floors
 	 */
-	private HashMap<Integer, Boolean> getAllSelectedFloors(){
-		HashMap<Integer, Boolean> allSelectedFloors = new HashMap<>();
+	private ArrayList<Integer> getAllSelectedFloors(){
+		ArrayList<Integer> allSelectedFloors = new ArrayList<>();
 		for (Integer floorNumber : elevatorButtonBoard.keySet()) {
 			if (elevatorButtonBoard.get(floorNumber)) {
-				allSelectedFloors.put(floorNumber, elevatorButtonBoard.get(floorNumber));
+				allSelectedFloors.add(floorNumber);
 			}
 		}
 		// could return a null hashmap
 		return allSelectedFloors;
 	}
+
+	public int getCurrentFloor() {
+		return currentFloor;
+	}
+	
+	public Direction calculateNextDirection() {
+		// approach:
+		// if going up, you want to keep going up
+		//	stop going up when there are no more requests above you going UP
+		// if going down, you want to keep going down
+		//	stop going down when there are no more requests below you going DOWN
+		// if idle, ... TBD
+		Direction newDirection;
+		boolean continueSweepingUp, continueSweepingDown;
+		
+		continueSweepingUp = shouldContinueSweepingUp();
+		continueSweepingDown = shouldContinueSweepingDown();
+		
+		switch (direction) {
+		case UP:
+			if (continueSweepingUp) return Direction.UP;
+			if (continueSweepingDown) return Direction.DOWN;
+		case DOWN:
+			if (continueSweepingDown) return Direction.DOWN;
+			if (continueSweepingUp) return Direction.UP;
+		case IDLE:
+			// TODO: pick based on # of jobs? copying UP for now
+			if (continueSweepingUp) return Direction.UP;
+			if (continueSweepingDown) return Direction.DOWN;
+		default:
+			return Direction.IDLE;
+		}
+	}
+	
+	private boolean shouldContinueSweepingUp() {
+		// check internal (using button board) and external
+		ArrayList<Integer> selectedFloors = getAllSelectedFloors();
+		boolean continueSweeping = false;
+		
+		for (int selectedFloor : selectedFloors) {
+			if (selectedFloor > currentFloor) {
+				return true;
+			}
+		}
+		
+		synchronized (externalRequests) {
+			for (ElevatorRequest pendingReq : externalRequests) {
+				if (pendingReq.getSourceFloor() > currentFloor && pendingReq.getDirection() == Direction.UP) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	private boolean shouldContinueSweepingDown() {
+		ArrayList<Integer> selectedFloors = getAllSelectedFloors();
+		boolean continueSweeping = false;
+		
+		for (int selectedFloor : selectedFloors) {
+			if (selectedFloor < currentFloor) {
+				return true;
+			}
+		}
+		
+		synchronized (externalRequests) {
+			for (ElevatorRequest pendingReq : externalRequests) {
+				if (pendingReq.getSourceFloor() < currentFloor && pendingReq.getDirection() == Direction.DOWN) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 	
 	public static void main(String[] args) {
 		// small visual test
 		ElevatorSubsystem s = new ElevatorSubsystem(new SimulatorConfiguration("./src/main/resources/config.properties"));
-	}
-
-	public int getCurrentFloor() {
-		return currentFloor;
 	}
 }

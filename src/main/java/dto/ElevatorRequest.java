@@ -1,5 +1,6 @@
 package main.java.dto;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -12,7 +13,7 @@ import main.java.elevator.Direction;
  * @author Patrick Liu
  * @version 1.0, 02/04/23
  */
-public class ElevatorRequest {
+public class ElevatorRequest implements Serializable {
 	
 	private Timestamp timestamp;
 	private Integer sourceFloor;

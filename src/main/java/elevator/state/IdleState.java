@@ -24,6 +24,7 @@ public class IdleState extends IdleMotorState {
 	@Override
 	public ElevatorState handleRequestReceived() {
 		ElevatorContext ctx = this.getContext();
+		ctx.unloadPassengers();
 		ctx.loadPassengers();
 		return new DoorsClosedState(ctx);
 	}

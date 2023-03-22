@@ -3,11 +3,17 @@
  */
 package main.java.elevator;
 
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import main.java.SimulatorConfiguration;
+import main.java.UDPClient;
 import main.java.dto.AssignedElevatorRequest;
 import main.java.dto.ElevatorRequest;
+import main.java.dto.ElevatorStatus;
 
 // FIXME: remove @author automatically generated
 /**
@@ -18,26 +24,30 @@ import main.java.dto.ElevatorRequest;
  */
 public class ElevatorSubsystem {
 	// TODO: change to hashmap to not deal with indexing issues
-	private ArrayList<ElevatorContext> elevators;
+	private HashMap<Integer, ElevatorContext> elevators;
 	private SimulatorConfiguration simulatorConfiguration;
 	private Thread requestListenerThread;
+	private UDPClient udpRequestReceiver;
 	//private UDPClient udpClient;
 	
 	public ElevatorSubsystem(SimulatorConfiguration config) {
 		ElevatorContext elevator;
 		
-		elevators = new ArrayList<>();
+		elevators = new HashMap<>();
 		simulatorConfiguration = config;
+		udpRequestReceiver = new UDPClient(config.ELEVATOR_SUBSYSTEM_REQ_PORT);
 		
 		// 1-index elevator identification
 		// FIXME: change to concurrent initialization? (TBD)
 		for (int i=1; i<simulatorConfiguration.NUM_ELEVATORS; i++) {
 			elevator = new ElevatorContext(this, i);
 			elevator.startElevator();
-			elevators.add(elevator);
+			elevators.put(i, elevator);
+			
 		}
 		
 		// Start request fetching
+		// FIXME: start in startElevator()
 		requestListenerThread = new Thread(new RequestListenerTask(this));
 		requestListenerThread.start();
 	}
@@ -47,10 +57,19 @@ public class ElevatorSubsystem {
 	}
 	
 	public void receiveElevatorRequest() {
-		// get elevator request: called by request receiver task
-		//udp.send()
-		//udp.receive()
-		routeElevatorRequest(null);
+		DatagramPacket receivePacket;
+		AssignedElevatorRequest assignedRequest = null;	// TODO
+		
+		try {
+			// XXX: what do I put in the byte?
+			udpRequestReceiver.sendMessage(new byte[] {}, InetAddress.getByName(simulatorConfiguration.SCHEDULER_HOST), simulatorConfiguration.SCHEDULER_PENDING_REQ_PORT);
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+		receivePacket = udpRequestReceiver.receiveMessage();
+		
+		routeElevatorRequest(assignedRequest);
 		return;
 	}
 	
@@ -59,7 +78,7 @@ public class ElevatorSubsystem {
 		ElevatorContext ctx;
 		
 		elevatorId = request.getElevatorId();
-		ctx = elevators.get(elevatorId-1);
+		ctx = elevators.get(elevatorId);
 		ctx.addExternalRequest(request);
 	}
 	
@@ -67,7 +86,7 @@ public class ElevatorSubsystem {
 		// send elevator request: called by context
 	}
 	
-	public void sendArrivalNotification(ElevatorContext ctx) {
+	public void sendArrivalNotification(ElevatorStatus status) {
 		// send arrival notification: 
 	}
 	
