@@ -25,9 +25,11 @@ public class ElevatorFunctionality implements Runnable {
 	
 	private final Logger logger = Logger.getLogger(this.getClass().getName());
 	
-	public static final int ELEVATOR_PORT = 69;
+	public static final int ELEVATOR_PORT = 69; // Port that the scheduler receiving the completed requests is listening on
+	public static final int ELEVATOR_DATA_PORT = 70; // Port that the scheduler receiving the elevator data is listening on
 	
 	private int id;
+	private int port;
 	private ElevatorState elevatorState;
 	private ElevatorSync elevatorSync;
 	private Direction elevatorDirection;
@@ -41,16 +43,17 @@ public class ElevatorFunctionality implements Runnable {
 	 * @param id the int of the elevator id
 	 * @param elevatorSync the ElevatorSync object to synchronize on
 	 */
-	public ElevatorFunctionality(int id, ElevatorSync elevatorSync) {
+	public ElevatorFunctionality(int id, ElevatorSync elevatorSync, int port) {
 		this.id = id;
 		this.scheduler = new Scheduler(SchedulerSubsystem.SchedulerType.ElevatorListener); // Temporary fix. We need to figure out a way to send the scheduler object over UDP
 		this.elevatorSync = elevatorSync;
+		this.port = port;
 		udp = new UDP();
 		elevatorState = ElevatorState.Idle;
+		elevatorDirection = Direction.NONE;
 		
 		// Start of the program, the elevator should be in floor 1
 		currentFloor = 1;
-		scheduler.registerElevatorLocation(id, 1);
 		
 		// init elevator component, motor is false, doorOpen is false 
 		elevatorComponents = new ElevatorComponents(false, false);
@@ -67,11 +70,11 @@ public class ElevatorFunctionality implements Runnable {
 	public void moveInDirection(int id, Direction direction) {
 		
 		try {
-			Thread.sleep(200);
+			Thread.sleep(1000);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		String loggerStr = "Moving " + direction + " from floor " + currentFloor + "\n";
+		String loggerStr = "Elevator #" + id + ": Moving " + direction + " from floor " + currentFloor + "\n";
 		// logger.info(loggerStr);
 		
 		if (direction == Direction.UP) {
@@ -79,10 +82,10 @@ public class ElevatorFunctionality implements Runnable {
 		} else {
 			currentFloor -= 1;
 		}
-		// After the elevator goes to a different floor, update the floor location immediately
-		scheduler.registerElevatorLocation(id, currentFloor);
+
+		registerElevatorData(currentFloor, elevatorDirection);
 		
-		logger.info(String.format("Arrived at floor %d", currentFloor));
+		logger.info(String.format("Elevator #%d: Arrived at floor %d",id,  currentFloor));
 	}
 	
 	/**
@@ -94,11 +97,11 @@ public class ElevatorFunctionality implements Runnable {
 	public void movingToSourceFloor(int id, int sourceFloor) {
 		while (currentFloor != sourceFloor) {
 			try {
-				Thread.sleep(200);
+				Thread.sleep(1000);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			String loggerStr = String.format("Moving from floor %d -> floor %d \n", currentFloor, sourceFloor);
+			String loggerStr = String.format("Elevator #%d: Moving from floor %d -> floor %d \n", id, currentFloor, sourceFloor);
 			logger.info(loggerStr);
 			
 			if (currentFloor < sourceFloor) {
@@ -106,10 +109,10 @@ public class ElevatorFunctionality implements Runnable {
 			} else {
 				currentFloor -= 1;
 			}
-			// After the elevator goes to a different floor, update the floor location immediately
-			scheduler.registerElevatorLocation(id, currentFloor);
+
+			registerElevatorData(currentFloor, elevatorDirection);
 		}
-		logger.info(String.format("Arrived at source floor %d \n", currentFloor));
+		logger.info(String.format("Elevator #%d: Arrived at source floor %d \n", id, currentFloor));
 	}
 	
 	
@@ -122,17 +125,19 @@ public class ElevatorFunctionality implements Runnable {
 	public void run() {
 		try {
 			String elevatorStateStr;
-			udp.openSocket();
+			udp.openSocket(port);
 			ElevatorRequest elevatorRequest = null;
-			Thread.sleep(1000);
 			while (true) {
 				elevatorStateStr = elevatorState.displayCurrentState(getElevatorId(), elevatorRequest);
 				switch (elevatorState) {
 					case Idle: {
 						System.out.println("######################### IN IDLE #########################");
 						System.out.println(elevatorStateStr);
+						elevatorDirection = Direction.NONE;
+						registerElevatorData(currentFloor, elevatorDirection);
 						elevatorRequest = elevatorSync.getElevatorRequest(); // Waits for a request\
 						elevatorDirection = elevatorRequest.getDirection();
+						registerElevatorData(currentFloor, elevatorDirection);
 						elevatorState = elevatorState.nextState();
 						break;
 					}
@@ -167,33 +172,17 @@ public class ElevatorFunctionality implements Runnable {
 						}
 						
 						if (checkIfDestinationFloor(elevatorSync.getRequestsQueue())) {
-							// TODO Send completed requests to scheduler
 							ArrayList<ElevatorRequest> completedRequests = elevatorSync.removeElevatorRequests(currentFloor);
 							for (ElevatorRequest completedElevatorRequest : completedRequests) {
 								udp.sendPacket(EncodeDecode.encodeData(completedElevatorRequest), ELEVATOR_PORT);
 							}
-							System.out.println("######################### COMPLETED REQUEST(S) AT FLOOR ######################### " + currentFloor);
+							System.out.println("######################### COMPLETED REQUEST(S) AT FLOOR " + currentFloor + " #########################");
 						}
 						
 						if (checkIfSourceFloor(elevatorSync.getRequestsQueue())) {
 							// Let users in
-							System.out.println("######################### LETTING IN PEOPLE AT FLOOR ######################### " + currentFloor);
+							System.out.println("######################### LETTING IN PEOPLE AT FLOOR " + currentFloor + " #########################");
 						}
-						
-						
-
-						/*
-						if (scheduler.displayElevatorLocation(id) != elevatorRequest.getSourceFloor()) {
-							logger.info(String.format("Elevator %d is moving to floor %d to pick up the users", id , elevatorRequest.getSourceFloor()));
-							moveToDestination(id, scheduler.displayElevatorLocation(id), elevatorRequest.getSourceFloor());
-							Thread.sleep(100);						
-						}
-						
-						// Move from the picked up floor to the floor users want 
-						moveToDestination(id, scheduler.displayElevatorLocation(id), elevatorRequest.getDestinationFloor());
-						
-						elevatorState = elevatorState.nextState();
-						*/
 						break;
 					}
 					case Stop: {
@@ -206,7 +195,7 @@ public class ElevatorFunctionality implements Runnable {
 					case DoorsOpen: {
 						System.out.println("######################### IN DOORS OPEN #########################");
 						System.out.println(elevatorState.displayCurrentState(getElevatorId(), elevatorRequest));
-						Thread.sleep(100);
+						Thread.sleep(500);
 						elevatorState = elevatorState.nextState();
 						break;
 					}
@@ -222,7 +211,7 @@ public class ElevatorFunctionality implements Runnable {
 							elevatorState = ElevatorState.Idle; // hardcoded for now
 						}
 						System.out.println(elevatorState.displayCurrentState(getElevatorId(), elevatorRequest));
-						Thread.sleep(100);
+						Thread.sleep(500);
 						//elevatorState = elevatorState.nextState();
 						break;
 					}
@@ -236,6 +225,18 @@ public class ElevatorFunctionality implements Runnable {
 			udp.closeSocket();
 			System.out.println("--------- Program terminated ---------");
 		}
+	}
+		
+	/**
+	 * Sends a datagram packet to the scheduler that contains info about the elevator floor, direction, and state
+	 * @param currentFloor the int of the current floor that the elevator is on
+	 * @param elevatorDirection the ElevatorDirection enum that stores the direction that the elevator's traveling in
+	 * @author Hussein Elmokdad
+	 */
+	public void registerElevatorData(int currentFloor, Direction elevatorDirection) {
+		// Do not remove the " " at the end of the string; otherwise, the empty bits in the received packet will be included after the .split(" ")
+		String elevatorDataStr = String.valueOf(currentFloor) + " " + elevatorDirection + " "; 
+		udp.sendPacket(elevatorDataStr.getBytes(), ELEVATOR_DATA_PORT);
 	}
 	
 	/**

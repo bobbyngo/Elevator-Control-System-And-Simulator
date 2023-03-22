@@ -67,7 +67,7 @@ public class UDP {
 					InetAddress.getLocalHost(), 
 					port);
 			dataSocket.send(dataPacket);
-			printPacketContent(dataPacket, "Sending packet");
+			//printPacketContent(dataPacket, "Sending packet");
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);

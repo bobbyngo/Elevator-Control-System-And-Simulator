@@ -13,17 +13,19 @@ import main.java.scheduler.Scheduler;
  */
 public class ElevatorSubsystem {
 	
-	public final static int[] elevatorPorts = {5069}; // Ports for all the elevator listener threads
+	public final static int[] elevatorFuncPorts = {6069, 6070}; // Ports for all the elevator functionality threads
+	public final static int[] elevatorListenerPorts = {5069, 5070}; // Ports for all the elevator listener threads
+	public final static int numOfElevators = elevatorListenerPorts.length;
 	
 	/**
 	 * Main method for the ElevatorSubsystem class.
 	 * @param args, default parameters
 	 */
 	public static void main(String[] args) {
-		for (int i = 0; i < elevatorPorts.length; i++) {
+		for (int i = 0; i < numOfElevators; i++) {
 			ElevatorSync elevatorSync = new ElevatorSync(i + 1);
-			ElevatorFunctionality elevatorFunctionality = new ElevatorFunctionality(i + 1, elevatorSync);
-			ElevatorListener elevatorListener = new ElevatorListener(elevatorSync, elevatorPorts[i]);
+			ElevatorFunctionality elevatorFunctionality = new ElevatorFunctionality(i + 1, elevatorSync, elevatorFuncPorts[i]);
+			ElevatorListener elevatorListener = new ElevatorListener(elevatorSync, elevatorListenerPorts[i]);
 			Thread elevatorFuncThread = new Thread(elevatorFunctionality);
 			Thread elevatorListThread = new Thread(elevatorListener);
 			elevatorFuncThread.start();
