@@ -32,9 +32,9 @@ public class Scheduler implements Runnable {
 	private List<ElevatorRequest> requestsQueue;
 	private List<ElevatorRequest> completedQueue;
 	// Map the port of elevator to its current location (all the elevator)
-	private static Map<Integer, Integer> elevatorLocation;
+	
 	// Map the port of elevator to its current direction (all the elevator)
-	private static Map<Integer, Direction> elevatorDirection;
+	
 	private SchedulerState schedulerState;
 	private SchedulerType schedulerType;
 	private UDP udpE; // Contains the socket for receiving packets from the elevators 
@@ -52,8 +52,7 @@ public class Scheduler implements Runnable {
 		this.schedulerType = schedulerType;
 		requestsQueue = Collections.synchronizedList(new ArrayList<>());
 		completedQueue = Collections.synchronizedList(new ArrayList<>());
-		elevatorLocation = Collections.synchronizedMap(new HashMap<>());
-		elevatorDirection = Collections.synchronizedMap(new HashMap<>());
+
 		if (schedulerType == SchedulerType.FloorListener) udpF = new UDP();
 		else if (schedulerType == SchedulerType.ElevatorListener) udpE = new UDP();
 		else if (schedulerType == SchedulerType.ElevatorDataListener) udpED = new UDP();
@@ -100,17 +99,17 @@ public class Scheduler implements Runnable {
 						System.out.println("Data String: " + new String(receivedElevatorData.getData()));
 						
 						String[] elevatorDataArr = new String(receivedElevatorData.getData()).split(" ");
-						elevatorLocation.put(receivedElevatorData.getPort(), Integer.valueOf(elevatorDataArr[0]));
+						SchedulerSubsystem.elevatorLocation.put(receivedElevatorData.getPort(), Integer.valueOf(elevatorDataArr[0]));
 						
 						// Actually works!
-						elevatorDirection.put(receivedElevatorData.getPort(), Direction.valueOf(elevatorDataArr[1]));
+						SchedulerSubsystem.elevatorDirection.put(receivedElevatorData.getPort(), Direction.valueOf(elevatorDataArr[1]));
 						
 						// For the purpose of viewing the contents of the elevatorLocation/Direction maps. Could delete ------------
-						for (Integer elevatorFuncPort : elevatorLocation.keySet()) {
-							System.out.println(elevatorFuncPort + " " + elevatorLocation.get(elevatorFuncPort));
+						for (Integer elevatorFuncPort : SchedulerSubsystem.elevatorLocation.keySet()) {
+							System.out.println(elevatorFuncPort + " " + SchedulerSubsystem.elevatorLocation.get(elevatorFuncPort));
 						}
-						for (Integer elevatorFuncPort : elevatorDirection.keySet()) {
-							System.out.println(elevatorFuncPort + " " + elevatorDirection.get(elevatorFuncPort));
+						for (Integer elevatorFuncPort : SchedulerSubsystem.elevatorDirection.keySet()) {
+							System.out.println(elevatorFuncPort + " " + SchedulerSubsystem.elevatorDirection.get(elevatorFuncPort));
 						}
 						// ---------------------------------------------------------------------------------------------------------
 						schedulerState = schedulerState.nextState();
@@ -145,79 +144,64 @@ public class Scheduler implements Runnable {
 	
 	private HashMap<Integer, Direction> getMovingElevators() {
 		HashMap<Integer, Direction> movingElevatorHashMap = new HashMap<>();
-		for (Integer port: elevatorDirection.keySet()) {
+		for (Integer port: SchedulerSubsystem.elevatorDirection.keySet()) {
 			
 			System.out.println("elevatorDirection port: " + port);
 			
 			// comparing enum with == or equals are the same, but == is null safe
-			if (elevatorDirection.get(port) !=  Direction.NONE) {
-				movingElevatorHashMap.put(port, elevatorDirection.get(port));
+			if (SchedulerSubsystem.elevatorDirection.get(port) !=  Direction.NONE) {
+				movingElevatorHashMap.put(port, SchedulerSubsystem.elevatorDirection.get(port));
 			}
 		}
 		return movingElevatorHashMap;
 	}
 	
+	
 	private int assignRequestToElevator(int newRequestSourceFloor, Direction newRequestDirection) {
 		
-		System.out.println("elevatorDirection map size: " + elevatorDirection.size());
-		System.out.println("elevatorLocation map size: " + elevatorLocation.size());
+		System.out.println("elevatorDirection map size: " + SchedulerSubsystem.elevatorDirection.size());
+		System.out.println("elevatorLocation map size: " + SchedulerSubsystem.elevatorLocation.size());
 		
 		//Both elevatorLocation and elevatorDirection should have the same length?
-		if (elevatorDirection.size() != elevatorLocation.size() || elevatorDirection.size() == 0) {
-			if (elevatorDirection.size() == 0) {
+		if (SchedulerSubsystem.elevatorDirection.size() != SchedulerSubsystem.elevatorLocation.size() || SchedulerSubsystem.elevatorDirection.size() == 0) {
+			if (SchedulerSubsystem.elevatorDirection.size() == 0) {
 				System.out.println("elevatorDirection is empty");
 			}
 			// Something super weird is happening
 			logger.severe("Elevator direction and elevator location mapping are not match");
 		}
-		// Find all the moving elevator
-		HashMap<Integer, Direction> movingElevatorHashMap = getMovingElevators();
 		
-		for (Integer port : elevatorDirection.keySet())	{
-			if (elevatorDirection.get(port) !=  Direction.NONE) {
-				System.out.println("Elevator that is not moving getting selected");
+		// Send request to an elevator that is heading in the same direction and hasn't passed the source floor
+		for (Integer port: SchedulerSubsystem.elevatorDirection.keySet()) {
+			System.out.println("elevatorDirection port: " + port);
+			if (SchedulerSubsystem.elevatorDirection.get(port) == newRequestDirection  && SchedulerSubsystem.elevatorDirection.get(port) == Direction.UP 
+					&& SchedulerSubsystem.elevatorLocation.get(port) < newRequestSourceFloor) {
+				System.out.println("Elevator that is going UP will be selected");
+				return port;
+			} else if (SchedulerSubsystem.elevatorDirection.get(port) == newRequestDirection  && SchedulerSubsystem.elevatorDirection.get(port) == Direction.DOWN 
+					&& SchedulerSubsystem.elevatorLocation.get(port) > newRequestSourceFloor) {
+				System.out.println("Elevator that is going DOWN will be selected");
+				return port;
+			}
+		}
+		
+		// Send request to an idle elevator
+		for (Integer port : SchedulerSubsystem.elevatorDirection.keySet())	{
+			if (SchedulerSubsystem.elevatorDirection.get(port) == Direction.NONE) {
+				System.out.println("Elevator that is idle will be selected");
 				return port;
 			}		
 		}
 		
-		if (movingElevatorHashMap.size() != 0) {
-			for (Integer port : movingElevatorHashMap.keySet()) {
-				Direction currentDirection = elevatorDirection.get(port);
-				int currentFloor = elevatorLocation.get(port);
-				// 1st priority: Elevator is moving up and current floor < new request source floor
-				// 2st priority: Elevator is moving down and current floor > new request source floor
-				if (currentDirection == newRequestDirection  && currentDirection == Direction.UP 
-						&& currentFloor < newRequestSourceFloor) {
-					System.out.println("Elevator that is going UP getting selected");
-					return port;
-				} else if (currentDirection == newRequestDirection  && currentDirection == Direction.DOWN 
-						&& currentFloor > newRequestSourceFloor) {
-					System.out.println("Elevator that is going DOWN getting selected");
-					return port;
-				}
-			}
-			// 3rd priority: get a first elevator that is idle in the list
-			/*
-			for (Integer port : elevatorDirection.keySet())	{
-				if (elevatorDirection.get(port) !=  Direction.NONE) {
-					System.out.println("Elevator that is not moving getting selected");
-					return port;
-				}		
-			}
-			*/
+		// Send request to any elevator (we were not able to find an ideal elevator)
+		for (Integer port : SchedulerSubsystem.elevatorDirection.keySet())	{
+			return port;	
 		}
 		
-		// Worst case return random elevator in the list
-		// if port is 0 must be the case, all the elevator are not moving at first which is the start of the program
-		// when length of hashmap is 0
-        int min = 0;
-        int range = elevatorDirection.size() - min + 1;
-		int rand = (int)(Math.random() * range);
-		Object[] elevatorDirectionKeys = elevatorDirection.keySet().toArray();
-		//return (int) elevatorDirectionKeys[rand];
-		System.out.println("Elevator 1 getting selected default");
-		return 6069;
+		return -1; // There are no elevators in the system
 	}
+	
+	
 	
 	/**
 	 * Get the queue of the elevator request.
@@ -315,7 +299,7 @@ public class Scheduler implements Runnable {
 	 * @author Patrick Liu
 	 */
 	public synchronized Integer displayElevatorLocation(Integer id) {
-		return elevatorLocation.get(id);
+		return SchedulerSubsystem.elevatorLocation.get(id);
 	}
 	
 	

@@ -70,7 +70,7 @@ public class ElevatorFunctionality implements Runnable {
 	public void moveInDirection(int id, Direction direction) {
 		
 		try {
-			Thread.sleep(200);
+			Thread.sleep(100);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -97,7 +97,7 @@ public class ElevatorFunctionality implements Runnable {
 	public void movingToSourceFloor(int id, int sourceFloor) {
 		while (currentFloor != sourceFloor) {
 			try {
-				Thread.sleep(200);
+				Thread.sleep(100);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -127,7 +127,7 @@ public class ElevatorFunctionality implements Runnable {
 			String elevatorStateStr;
 			udp.openSocket(port);
 			ElevatorRequest elevatorRequest = null;
-			Thread.sleep(1000);
+			//Thread.sleep(1000);
 			while (true) {
 				elevatorStateStr = elevatorState.displayCurrentState(getElevatorId(), elevatorRequest);
 				switch (elevatorState) {
