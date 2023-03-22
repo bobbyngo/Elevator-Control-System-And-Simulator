@@ -98,7 +98,7 @@ public class Floor implements Runnable {
 				byte[] data = EncodeDecode.encodeData(req);
 				udp.sendPacket(data, FLOOR_PORT);
 				try {
-					Thread.sleep(1000);
+					Thread.sleep(5000);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
