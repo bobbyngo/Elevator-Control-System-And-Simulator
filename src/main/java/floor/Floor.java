@@ -1,10 +1,9 @@
 package main.java.floor;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.DatagramPacket;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,7 +29,8 @@ public class Floor implements Runnable {
 	private int floorNumber;
 	private Parser parser;
 	private UDP udp;
-	
+	private int eventCounter;
+
 	/**
 	 * Main method for the Floor class.
 	 * @param args, default parameters
@@ -46,6 +46,7 @@ public class Floor implements Runnable {
 		this.floorNumber = floorNumber;
 		udp = new UDP();
 		logger.setLevel(Level.INFO);
+		eventCounter = 0;
 		try {
 			// Filename before compilation
 			String FILENAME = System.getProperty("user.dir") + file.getPath();
@@ -91,19 +92,29 @@ public class Floor implements Runnable {
 	 * @param elevatorRequests the ElevatorRequest array list
 	 */
 	private void addRequestToQueue(ArrayList<ElevatorRequest> elevatorRequests) {
+		long offset;
 		if (!elevatorRequests.isEmpty()) {
-			// TODO: Send request as per time stamp logic potential added here
-			// Sends all the request for Floors at serially
-			for (ElevatorRequest req : elevatorRequests) {
+			// Send elevator request as per timestamp
+			for (int i = 0; i < elevatorRequests.size(); i++) {
+				ElevatorRequest req = elevatorRequests.get(i);
 				byte[] data = EncodeDecode.encodeData(req);
-				udp.sendPacket(data, FLOOR_PORT);
-				try {
-					Thread.sleep(5000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				if (i < elevatorRequests.size() - 1) {
+					Timestamp currentTime = elevatorRequests.get(i).getTimestamp();
+					Timestamp nextTime = elevatorRequests.get(i+1).getTimestamp();
+					offset = nextTime.getTime() - currentTime.getTime();
+					// Send elevator request as per offset from current timestamp and next timestamp
+					try {
+						Thread.sleep(offset);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					udp.sendPacket(data, FLOOR_PORT);
+					System.out.println(String.format("%s: Request for elevator sent %d", this.getClass().getSimpleName(), eventCounter++));
+				} else {
+					// Sends the last elevator request
+					udp.sendPacket(data, FLOOR_PORT);
+					System.out.println("All tasks has been completed!");
 				}
-				System.out.println("--------------------------------------");
 			}
 		}
 	}
@@ -113,7 +124,7 @@ public class Floor implements Runnable {
 	 * @param elevatorRequests the ElevatorRequest array list
 	 */
 	private void receiveCompletedRequests(ArrayList<ElevatorRequest> elevatorRequests) {
-		for (ElevatorRequest req : elevatorRequests) {
+		for (int i = 0; i < elevatorRequests.size(); i++) {
 			System.out.println("Receiving completed request:");
 			udp.receivePacket();
 			System.out.println("--------------------------------------");

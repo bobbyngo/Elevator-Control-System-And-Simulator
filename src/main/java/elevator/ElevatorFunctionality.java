@@ -1,9 +1,5 @@
-/**
- * 
- */
 package main.java.elevator;
 
-import java.net.DatagramPacket;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,9 +30,7 @@ public class ElevatorFunctionality implements Runnable {
 	private ElevatorSync elevatorSync;
 	private Direction elevatorDirection;
 	private int currentFloor;
-	private Scheduler scheduler;
 	private UDP udp;
-	private ElevatorComponents elevatorComponents;
 	
 	/**
 	 * Constructor for the ElevatorFunctionality class.
@@ -45,7 +39,7 @@ public class ElevatorFunctionality implements Runnable {
 	 */
 	public ElevatorFunctionality(int id, ElevatorSync elevatorSync, int port) {
 		this.id = id;
-		this.scheduler = new Scheduler(SchedulerSubsystem.SchedulerType.ElevatorListener); // Temporary fix. We need to figure out a way to send the scheduler object over UDP
+		new Scheduler(SchedulerSubsystem.SchedulerType.ElevatorListener);
 		this.elevatorSync = elevatorSync;
 		this.port = port;
 		udp = new UDP();
@@ -55,8 +49,7 @@ public class ElevatorFunctionality implements Runnable {
 		// Start of the program, the elevator should be in floor 1
 		currentFloor = 1;
 		
-		// init elevator component, motor is false, doorOpen is false 
-		elevatorComponents = new ElevatorComponents(false, false);
+		new ElevatorComponents(false, false);
 		
 		logger.setLevel(Level.INFO);
 	}
@@ -74,9 +67,6 @@ public class ElevatorFunctionality implements Runnable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		String loggerStr = "Elevator #" + id + ": Moving " + direction + " from floor " + currentFloor + "\n";
-		// logger.info(loggerStr);
-		
 		if (direction == Direction.UP) {
 			currentFloor += 1;
 		} else {
