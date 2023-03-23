@@ -2,14 +2,15 @@ package main.java.elevator;
 
 import java.util.HashMap;
 
-import main.java.Main;
-
 /**
  * An wrapper class containing all the information of components of the elevator
  * @author Bobby Ngo
  * @version 1.0, 03/06/23
  */
 public class ElevatorComponents {
+	
+	public static final int NUM_OF_FLOORS = 10;
+	
 	// For I5: make JButton that has text as floor number and status of the lamp
 	// Mapping the elevator button displaying floor number with the lamp, if the floor is selected, the lamp status is true
 	// TODO: Is this a good choice since hashmap is not ordered? another solution is 2 arraylist or array for floor button and lamp status
@@ -29,7 +30,7 @@ public class ElevatorComponents {
 	public ElevatorComponents(boolean motor, boolean isDoorOpen) {
 		// init elevator button and elevator lamp mapping
 		// We need a better way to retrieve the number of floors
-		for (int i = 1; i <= Main.NUM_OF_FLOORS; i ++) {
+		for (int i = 1; i <= NUM_OF_FLOORS; i ++) {
 			elevatorButtonBoard.put(i, false);
 		}
 		this.motor = motor;

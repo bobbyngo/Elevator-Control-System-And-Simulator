@@ -1,9 +1,4 @@
-/**
- * 
- */
 package main.java.elevator;
-
-import main.java.scheduler.Scheduler;
 
 /**
  * Sets up the elevator threads
