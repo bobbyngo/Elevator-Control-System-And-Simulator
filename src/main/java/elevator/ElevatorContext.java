@@ -3,14 +3,20 @@
  */
 package main.java.elevator;
 
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import main.java.SimulatorConfiguration;
+import main.java.UDPClient;
+import main.java.dto.AssignedElevatorRequest;
 import main.java.dto.ElevatorRequest;
 import main.java.dto.ElevatorStatus;
 import main.java.elevator.state.ElevatorState;
@@ -45,6 +51,8 @@ public class ElevatorContext {
 		currentFloor = 1;
 		externalRequests = Collections.synchronizedList(new ArrayList<ElevatorRequest>());
 		internalRequests = Collections.synchronizedList(new ArrayList<ElevatorRequest>());	// this is not needed, added anyways
+		//externalRequests = new ArrayList<ElevatorRequest>();
+		//internalRequests = new ArrayList<ElevatorRequest>();
 		setDoors(Door.OPEN);
 		setDirection(Direction.IDLE);
 		setMotor(Motor.IDLE);
@@ -70,7 +78,9 @@ public class ElevatorContext {
 	}
 	
 	public void addExternalRequest(ElevatorRequest request) {
-		externalRequests.add(request);
+		synchronized (externalRequests) {
+			externalRequests.add(request);
+		}
 		onRequestReceived();
 	}
 	
@@ -95,7 +105,7 @@ public class ElevatorContext {
 	public void loadPassengers() {
 		// when passengers are loaded, press button
 		// external requests @ current floor are moved to internal requests
-		synchronized (externalRequests) {
+		synchronized (externalRequests) {			
 			for (ElevatorRequest req : externalRequests) {
 				if (req.getSourceFloor() == currentFloor) {
 					externalRequests.remove(req);
@@ -163,11 +173,19 @@ public class ElevatorContext {
 		// if invalid floor?... the state machine should not
 		// allow transition to MOVING state if floor above
 		// doesn't exist...
+		ElevatorStatus status;
+		
 		currentFloor++;
+		status = new ElevatorStatus(this);
+		elevatorSubsystem.sendArrivalNotification(status);
 	}
 	
 	public void decrementCurrentFloor() {
+		ElevatorStatus status;
+
 		currentFloor--;
+		status = new ElevatorStatus(this);
+		elevatorSubsystem.sendArrivalNotification(status);
 	}
 	
 	public SimulatorConfiguration getConfig() {
@@ -202,30 +220,30 @@ public class ElevatorContext {
 		return internalRequests;
 	}
 	
-	/**
-	 * Update the Elevator Lamp Light status by flipping the current status of the floor lamp
-	 * @param floor the floor number that needs to update
-	 */
-	private void updateElevatorLampLight(Integer floor) {
-		boolean currentLampStatus;
-		if (elevatorButtonBoard.containsKey(floor)) {
-			currentLampStatus = elevatorButtonBoard.get(floor);
-			elevatorButtonBoard.put(floor, !currentLampStatus);
-		}
-	}
-	
-	private void updateElevatorLampLight(Integer floor, Boolean val) {
-		if (elevatorButtonBoard.containsKey(floor) ) {
-			elevatorButtonBoard.put(floor, val);
-		}
-	}
+//	/**
+//	 * Update the Elevator Lamp Light status by flipping the current status of the floor lamp
+//	 * @param floor the floor number that needs to update
+//	 */
+//	private void updateElevatorLampLight(Integer floor) {
+//		boolean currentLampStatus;
+//		if (elevatorButtonBoard.containsKey(floor)) {
+//			currentLampStatus = elevatorButtonBoard.get(floor);
+//			elevatorButtonBoard.put(floor, !currentLampStatus);
+//		}
+//	}
+//	
+//	private void updateElevatorLampLight(Integer floor, Boolean val) {
+//		if (elevatorButtonBoard.containsKey(floor) ) {
+//			elevatorButtonBoard.put(floor, val);
+//		}
+//	}
 	
 	/**
 	 * Get the Elevator Lamp Light status
 	 * @param floor the button number 
 	 * @return boolean, true when lamp is on, false when lamp is off
 	 */
-	public boolean getElevatorLampStatus(Integer floor) {
+	private boolean getElevatorLampStatus(Integer floor) {
 		return elevatorButtonBoard.get(floor);
 	}
 	
@@ -280,7 +298,6 @@ public class ElevatorContext {
 	private boolean shouldContinueSweepingUp() {
 		// check internal (using button board) and external
 		ArrayList<Integer> selectedFloors = getAllSelectedFloors();
-		boolean continueSweeping = false;
 		
 		for (int selectedFloor : selectedFloors) {
 			if (selectedFloor > currentFloor) {
@@ -300,7 +317,6 @@ public class ElevatorContext {
 	
 	private boolean shouldContinueSweepingDown() {
 		ArrayList<Integer> selectedFloors = getAllSelectedFloors();
-		boolean continueSweeping = false;
 		
 		for (int selectedFloor : selectedFloors) {
 			if (selectedFloor < currentFloor) {
@@ -318,8 +334,36 @@ public class ElevatorContext {
 		return false;
 	}
 	
-	public static void main(String[] args) {
+	public boolean shouldElevatorStop() {
+		// check that there exists internal request @ current floor
+		// or external request @ current floor and in current direction
+		if (getElevatorLampStatus(currentFloor)) {
+			return true;
+		}
+		
+		synchronized (externalRequests) {
+			for (ElevatorRequest pendingReq : externalRequests) {
+				if (pendingReq.getSourceFloor() == currentFloor && pendingReq.getDirection() == direction) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	public static void main(String[] args) throws ParseException, UnknownHostException, IOException, InterruptedException {
 		// small visual test
-		ElevatorSubsystem s = new ElevatorSubsystem(new SimulatorConfiguration("./src/main/resources/config.properties"));
+		System.out.println("--small little elevator context test");
+		SimulatorConfiguration sc = new SimulatorConfiguration("./src/main/resources/config.properties");
+		ElevatorSubsystem s = new ElevatorSubsystem(sc);
+		s.startElevatorSubsystem();
+		UDPClient testServer = new UDPClient();
+		AssignedElevatorRequest testRequest = null;
+		Thread.sleep(1000);
+		testRequest = new AssignedElevatorRequest(
+					1, "07:01:15.000", 3, Direction.UP, 5
+				);
+		testServer.sendMessage(testRequest.encode(), sc.ELEVATOR_SUBSYSTEM_HOST, sc.ELEVATOR_SUBSYSTEM_REQ_PORT);
+		
 	}
 }

@@ -3,9 +3,9 @@
  */
 package main.java.elevator;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -39,15 +39,15 @@ public class ElevatorSubsystem {
 		
 		// 1-index elevator identification
 		// FIXME: change to concurrent initialization? (TBD)
-		for (int i=1; i<simulatorConfiguration.NUM_ELEVATORS; i++) {
+		for (int i=1; i<=simulatorConfiguration.NUM_ELEVATORS; i++) {
 			elevator = new ElevatorContext(this, i);
 			elevator.startElevator();
-			elevators.put(i, elevator);
-			
+			elevators.put(i, elevator);	
 		}
-		
+	}
+	
+	public void startElevatorSubsystem() {
 		// Start request fetching
-		// FIXME: start in startElevator()
 		requestListenerThread = new Thread(new RequestListenerTask(this));
 		requestListenerThread.start();
 	}
@@ -56,19 +56,19 @@ public class ElevatorSubsystem {
 		return simulatorConfiguration;
 	}
 	
-	public void receiveElevatorRequest() {
+	public void receiveElevatorRequest() throws ClassNotFoundException, IOException {
+		// NOTE: this is only called by receiving listener thread
+		// raise all exceptions to the calling thread
 		DatagramPacket receivePacket;
-		AssignedElevatorRequest assignedRequest = null;	// TODO
-		
-		try {
+		AssignedElevatorRequest assignedRequest;	// TODO
+
 			// XXX: what do I put in the byte?
-			udpRequestReceiver.sendMessage(new byte[] {}, InetAddress.getByName(simulatorConfiguration.SCHEDULER_HOST), simulatorConfiguration.SCHEDULER_PENDING_REQ_PORT);
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-		receivePacket = udpRequestReceiver.receiveMessage();
-		
+		udpRequestReceiver.sendMessage(new byte[] {}, InetAddress.getByName(simulatorConfiguration.SCHEDULER_HOST), 
+				simulatorConfiguration.SCHEDULER_PENDING_REQ_PORT);
+		receivePacket = udpRequestReceiver.receiveMessage();	// TODO: add a timeout perhaps? this would allow any-order bootup
+		assignedRequest = AssignedElevatorRequest.decode(UDPClient.readPacketData(receivePacket));
+		System.out.println(receivePacket.getData());
+		System.out.println(assignedRequest);
 		routeElevatorRequest(assignedRequest);
 		return;
 	}

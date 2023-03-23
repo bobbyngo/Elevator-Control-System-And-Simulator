@@ -3,6 +3,8 @@
  */
 package main.java.elevator;
 
+import java.io.IOException;
+
 /**
  * @author Zakaria Ismail
  *
@@ -19,7 +21,12 @@ public class RequestListenerTask implements Runnable  {
 		while (true) {
 			// keep getting requests from scheduler and feeding to subsystem
 			// get elevator request
-			elevatorSubsystem.receiveElevatorRequest();
+			try {
+				elevatorSubsystem.receiveElevatorRequest();
+			} catch (ClassNotFoundException | IOException e) {
+				e.printStackTrace();
+				System.exit(1);
+			}
 		}
 	}
 	

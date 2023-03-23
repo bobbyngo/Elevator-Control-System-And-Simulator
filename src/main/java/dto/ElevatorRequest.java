@@ -15,6 +15,10 @@ import main.java.elevator.Direction;
  */
 public class ElevatorRequest implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Timestamp timestamp;
 	private Integer sourceFloor;
 	private Direction direction;

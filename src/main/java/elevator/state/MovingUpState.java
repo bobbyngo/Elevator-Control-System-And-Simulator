@@ -25,16 +25,16 @@ public class MovingUpState extends MovingState {
 	@Override
 	public ElevatorState handleTimeout() {
 		ElevatorContext ctx = this.getContext();
+		
 		ctx.killTimer();
-		ctx.incrementCurrentFloor();
-		// notify arrival sensor/scheduler???
-		// Q: what's an arrival sensor...
-		// TODO: add conditional code
+		ctx.incrementCurrentFloor();	// arrival notif is fired when increment is called
 		
 		// if external request in current direction exists
 		// or internal request exists at current floor
-		
-		return new StoppedState(ctx);
+		if (ctx.shouldElevatorStop()) {
+			return new StoppedState(ctx);
+		}
+		return new MovingUpState(ctx);
 	}
 
 	@Override
