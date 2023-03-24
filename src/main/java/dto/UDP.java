@@ -83,9 +83,10 @@ public class UDP {
 		DatagramPacket replyPacket = null;
 		try {
 			replyPacket = new DatagramPacket(data, data.length);
-			System.out.println("Waiting...\n");
+			// System.out.println("Waiting...\n");
 			dataSocket.receive(replyPacket);
-			printPacketContent(replyPacket, "Received reply packet from sender");
+			// printPacketContent(replyPacket, "Received reply packet from sender");
+			// System.out.println("Received new request: " + new String(replyPacket.getData(), 0, replyPacket.getLength()));
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);

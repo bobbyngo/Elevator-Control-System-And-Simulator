@@ -36,7 +36,8 @@ public class ElevatorSync {
 		if (elevatorRequest == null || elevatorRequestsArr.contains(elevatorRequest)) return;
 		elevatorRequestsArr.add(elevatorRequest);
 		String loggerStr = String.format("Adding request %s to Elevator %d's requests queue. Queue size: %d", elevatorRequest.toString(), elevatorId, elevatorRequestsArr.size());
-		logger.info(loggerStr);
+		System.out.println("Adding request " + elevatorRequest.toString() + " to Elevator " + elevatorId + "'s requests queue. Queue size: " + elevatorRequestsArr.size());
+		//logger.info(loggerStr);
 		notifyAll();
 	}
 	
@@ -69,7 +70,7 @@ public class ElevatorSync {
 		}
 		ElevatorRequest elevatorRequest = elevatorRequestsArr.get(0);
 		String loggerStr = String.format("Servicing request %s from Elevator %d's requests queue. Queue size: %d", elevatorRequest.toString(), elevatorId, elevatorRequestsArr.size());
-		logger.info(loggerStr);
+		// logger.info(loggerStr);
 		return elevatorRequest;
 	}
 	

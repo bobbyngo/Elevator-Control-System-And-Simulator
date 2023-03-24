@@ -63,7 +63,7 @@ public class ElevatorFunctionality implements Runnable {
 	public void moveInDirection(int id, Direction direction) {
 		
 		try {
-			Thread.sleep(1000);
+			Thread.sleep(2000);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -75,7 +75,8 @@ public class ElevatorFunctionality implements Runnable {
 
 		registerElevatorData(currentFloor, elevatorDirection);
 		
-		logger.info(String.format("Elevator #%d: Arrived at floor %d",id,  currentFloor));
+		// logger.info(String.format("Elevator #%d: Arrived at floor %d",id,  currentFloor));
+		System.out.println("Elevator #" + id + ": Arrived at floor " + currentFloor);
 	}
 	
 	/**
@@ -87,12 +88,13 @@ public class ElevatorFunctionality implements Runnable {
 	public void movingToSourceFloor(int id, int sourceFloor) {
 		while (currentFloor != sourceFloor) {
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(2000);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			String loggerStr = String.format("Elevator #%d: Moving from floor %d -> floor %d \n", id, currentFloor, sourceFloor);
-			logger.info(loggerStr);
+			System.out.println("Elevator #" + id + ": Moving to source floor (" + currentFloor + " to " + sourceFloor + ")");
+			// logger.info(loggerStr);
 			
 			if (currentFloor < sourceFloor) {
 				currentFloor += 1;
@@ -102,7 +104,8 @@ public class ElevatorFunctionality implements Runnable {
 
 			registerElevatorData(currentFloor, elevatorDirection);
 		}
-		logger.info(String.format("Elevator #%d: Arrived at source floor %d \n", id, currentFloor));
+		// logger.info(String.format("Elevator #%d: Arrived at source floor %d \n", id, currentFloor));
+		System.out.println("Elevator #" + id + ": Arrived at source floor " + currentFloor);
 	}
 	
 	
@@ -121,8 +124,8 @@ public class ElevatorFunctionality implements Runnable {
 				elevatorStateStr = elevatorState.displayCurrentState(getElevatorId(), elevatorRequest);
 				switch (elevatorState) {
 					case Idle: {
-						System.out.println("######################### IN IDLE #########################");
-						System.out.println(elevatorStateStr);
+						System.out.println("Elevator #" + id + " is idle");
+						// System.out.println(elevatorStateStr);
 						elevatorDirection = Direction.NONE;
 						registerElevatorData(currentFloor, elevatorDirection);
 						elevatorRequest = elevatorSync.getElevatorRequest(); // Waits for a request\
@@ -132,8 +135,8 @@ public class ElevatorFunctionality implements Runnable {
 						break;
 					}
 					case MovingToSource: {
-						System.out.println("######################### IN MOVING TO SOURCE #########################");
-						System.out.println(elevatorStateStr);
+						// System.out.println("######################### IN MOVING TO SOURCE #########################");
+						// System.out.println(elevatorStateStr);
 						movingToSourceFloor(id, elevatorRequest.getSourceFloor());
 						elevatorState = elevatorState.nextState();
 						break;
@@ -148,7 +151,7 @@ public class ElevatorFunctionality implements Runnable {
 						*/
 					}
 					case Moving: {
-						System.out.println("######################### IN MOVING #########################");
+						// System.out.println("######################### IN MOVING #########################");
 						// System.out.println(elevatorStateStr);
 						
 						moveInDirection(id, elevatorDirection);
@@ -166,31 +169,31 @@ public class ElevatorFunctionality implements Runnable {
 							for (ElevatorRequest completedElevatorRequest : completedRequests) {
 								udp.sendPacket(EncodeDecode.encodeData(completedElevatorRequest), ELEVATOR_PORT);
 							}
-							System.out.println("######################### COMPLETED REQUEST(S) AT FLOOR " + currentFloor + " #########################");
+							System.out.println("Elevator #" + id + " completed request(s) at floor " + currentFloor);
 						}
 						
 						if (checkIfSourceFloor(elevatorSync.getRequestsQueue())) {
 							// Let users in
-							System.out.println("######################### LETTING IN PEOPLE AT FLOOR " + currentFloor + " #########################");
+							System.out.println("Elevator #" + id + " letting in people at floor " + currentFloor);
 						}
 						break;
 					}
 					case Stop: {
-						System.out.println("######################### IN STOP #########################");
+						//System.out.println("######################### IN STOP #########################");
 						// System.out.println(elevatorStateStr + "\n");
 						Thread.sleep(100);
 						elevatorState = elevatorState.nextState();
 						break;
 					}
 					case DoorsOpen: {
-						System.out.println("######################### IN DOORS OPEN #########################");
-						System.out.println(elevatorState.displayCurrentState(getElevatorId(), elevatorRequest));
+						//System.out.println("######################### IN DOORS OPEN #########################");
+						// System.out.println(elevatorState.displayCurrentState(getElevatorId(), elevatorRequest));
 						Thread.sleep(500);
 						elevatorState = elevatorState.nextState();
 						break;
 					}
 					case DoorsClose: {
-						System.out.println("######################### IN DOORS CLOSE #########################");
+						// System.out.println("######################### IN DOORS CLOSE #########################");
 						// If there's requests heading in the same direction as the elevator left, service them and go back to moving
 						if (elevatorSync.checkForSameDirectionReqs(elevatorDirection, currentFloor)) {
 							elevatorState = ElevatorState.Moving; // hardcoded for now
@@ -200,7 +203,7 @@ public class ElevatorFunctionality implements Runnable {
 						else { 
 							elevatorState = ElevatorState.Idle; // hardcoded for now
 						}
-						System.out.println(elevatorState.displayCurrentState(getElevatorId(), elevatorRequest));
+						// System.out.println(elevatorState.displayCurrentState(getElevatorId(), elevatorRequest));
 						Thread.sleep(500);
 						//elevatorState = elevatorState.nextState();
 						break;
