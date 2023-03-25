@@ -127,7 +127,7 @@ public class UDPClient {
 		System.out.println("received message!");
 		System.out.println(new String(packet.getData()));
 		testObj2 = AssignedElevatorRequest.decode(UDPClient.readPacketData(packet));
-		
+		System.out.println(testObj2);
 		sender.close();
 		receiver.close();
 	}
