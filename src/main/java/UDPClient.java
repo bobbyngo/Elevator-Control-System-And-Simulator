@@ -18,6 +18,7 @@ import main.java.dto.AssignedElevatorRequest;
 import main.java.elevator.Direction;
 
 /**
+ * UDP Client class for sending and receiving requests between Elevator, Scheduler and Floor Subsystem
  * @author Zakaria Ismail
  *
  */
@@ -25,6 +26,9 @@ public class UDPClient {
 	private static final int BUF_SIZE = 1000;
 	private DatagramSocket socket;
 	
+	/**
+	 * Constructor for UDP Client class, for sending datagram socket
+	 */
 	public UDPClient() {
 		// no port specified
 		try {
@@ -35,6 +39,10 @@ public class UDPClient {
 		}
 	}
 	
+	/**
+	 * Constructor for UDP Client class, for receiving datagram socket
+	 * @param port
+	 */
 	public UDPClient(int port) {
 		try {
 			socket = new DatagramSocket(port);
@@ -44,10 +52,20 @@ public class UDPClient {
 		}
 	}
 	
+	/**
+	 * Closing socket method
+	 */
 	public void close() {
 		socket.close();
 	}
 	
+	/**
+	 * Method for sending the data
+	 * @param data
+	 * @param destAddr
+	 * @param destPort
+	 * @return
+	 */
 	public DatagramPacket sendMessage(byte[] data, InetAddress destAddr, int destPort) {
 		DatagramPacket sendPacket;
 		
@@ -61,6 +79,14 @@ public class UDPClient {
 		return sendPacket;
 	}
 	
+	/**
+	 * Method for converting the destAddr in String to InetAddress object then send the data
+	 * @param data
+	 * @param destAddr
+	 * @param destPort
+	 * @return
+	 * @throws UnknownHostException
+	 */
 	public DatagramPacket sendMessage(byte[] data, String destAddr, int destPort) throws UnknownHostException {
 		InetAddress hostAddr = InetAddress.getByName(destAddr);
 		DatagramPacket sendPacket;
@@ -68,6 +94,10 @@ public class UDPClient {
 		return sendPacket;
 	}
 	
+	/**
+	 * Method for receiving the data
+	 * @return DatagramPacket
+	 */
 	public DatagramPacket receiveMessage() {
 		DatagramPacket receivePacket;
 		byte[] receiveBuf = new byte[BUF_SIZE];
@@ -82,6 +112,11 @@ public class UDPClient {
 		return receivePacket;
 	}
 	
+	/**
+	 * Read datagram packet method
+	 * @param packet
+	 * @return
+	 */
 	public static byte[] readPacketData(DatagramPacket packet) {
 		byte[] receiveData;
 		receiveData = new byte[packet.getLength()];
@@ -89,6 +124,11 @@ public class UDPClient {
 		return receiveData;
 	}
 	
+	/**
+	 * Formating the datagram 
+	 * @param packet
+	 * @return
+	 */
 	public static String formatPacketData(DatagramPacket packet) {
 		byte[] data = UDPClient.readPacketData(packet);
 		data = new byte[packet.getLength()];

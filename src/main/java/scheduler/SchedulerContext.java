@@ -3,23 +3,22 @@
  */
 package main.java.scheduler;
 
-import java.net.Authenticator.RequestorType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import main.java.dto.AssignedElevatorRequest;
 import main.java.dto.ElevatorRequest;
+import main.java.dto.ElevatorStatus;
 import main.java.elevator.Direction;
-import main.java.elevator.ElevatorContext;
 import main.java.elevator.state.ElevatorStateEnum;
 import main.java.scheduler.state.IdleState;
 import main.java.scheduler.state.SchedulerState;
-import main.java.dto.ElevatorStatus;
 
 /**
- * @author Bobby Ngo
- *
+ * Responsible for routing each elevator to requested floors and coordinating elevators in such a way to minimize
+ * waiting times for people moving between floors (avoiding starvation).
+ * @author Bobby Ngo, Patrick Liu
  */
 
 public class SchedulerContext {
@@ -34,6 +33,10 @@ public class SchedulerContext {
 	// Elevator requests that completed
 	private List<ElevatorRequest> completedElevatorRequests;
 	
+	/**
+	 * Constructor for Scheduler Context
+	 * @param schedulerSubsystem
+	 */
 	public SchedulerContext(SchedulerSubsystem schedulerSubsystem) {
 		this.schedulerSubsystem = schedulerSubsystem;
 		
@@ -49,6 +52,12 @@ public class SchedulerContext {
 		}
 	}
 	
+	/**
+	 * Method for finding all the elevators that are available and fit with the input
+	 * @param direction
+	 * @param newRequestSourceFloor
+	 * @return Elevator Status
+	 */
 	private ElevatorStatus findTheAvailableElevator(Direction direction, int newRequestSourceFloor) {
 		// checked the available is empty already so no need to check again
 		ElevatorStatus chosenElevatorStatus = null;
@@ -73,7 +82,10 @@ public class SchedulerContext {
 		return chosenElevatorStatus;
 	}
 	
-	
+	/**
+	 * Method for finding the best elevator following by the priority
+	 * @return AssignedElevatorRequest
+	 */
 	public AssignedElevatorRequest findBestElevatorToAssignRequest() {
 		// following C convention or zak will be malding
 		AssignedElevatorRequest assignedElevatorRequest = null;
@@ -105,36 +117,65 @@ public class SchedulerContext {
 		return assignedElevatorRequest;
 	}
 	
-	public List<ElevatorStatus> getAvailableElevatorContexts() {
+	/**
+	 * Getter for availableElevatorStatus
+	 * @return all available elevators status
+	 */
+	public List<ElevatorStatus> getAvailableElevatorStatus() {
 		return availableElevatorStatus;
 	}
 	
-	public void addAvailableElevatorContexts(ElevatorStatus elevatorStatus) {
+	/**
+	 * Adding method for availableElevatorStatus list
+	 * @param elevatorStatus
+	 */
+	public void addAvailableElevatorStatus(ElevatorStatus elevatorStatus) {
 		synchronized(availableElevatorStatus) {
 			availableElevatorStatus.add(elevatorStatus);
 		}
 	}
 	
-	public void modifyAvailableElevatorContexts(int index, ElevatorStatus elevatorStatus) {
+	/**
+	 * Method for modifying the availableElevatorStatus list
+	 * @param index
+	 * @param elevatorStatus
+	 */
+	public void modifyAvailableElevatorStatus(int index, ElevatorStatus elevatorStatus) {
 		synchronized(availableElevatorStatus) {
 			availableElevatorStatus.set(index, elevatorStatus);
 		}
 	}
 
+	/**
+	 * Getter for pendingElevatorRequests
+	 * @return pendingElevatorRequests list
+	 */
 	public List<ElevatorRequest> getPendingElevatorRequests() {
 		return pendingElevatorRequests;
 	}
 	
+	/**
+	 * Adding method for pendingElevatorRequests list
+	 * @param elevatorRequest
+	 */
 	public void addPendingElevatorRequests(ElevatorRequest elevatorRequest) {
 		synchronized(pendingElevatorRequests) {
 			pendingElevatorRequests.add(elevatorRequest);
 		}
 	}
 
+	/**
+	 * Getter for completedElevatorRequests
+	 * @return elevator request
+	 */
 	public List<ElevatorRequest> getCompletedElevatorRequests() {
 		return completedElevatorRequests;
 	}
 	
+	/**
+	 * Adding method for completedElevatorRequests list
+	 * @param elevatorRequest
+	 */
 	public void addCompletedElevatorRequests(ElevatorRequest elevatorRequest) {
 		synchronized(completedElevatorRequests) {
 			completedElevatorRequests.add(elevatorRequest);

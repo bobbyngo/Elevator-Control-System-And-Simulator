@@ -21,7 +21,8 @@ import main.java.elevator.Direction;
 import main.java.elevator.ElevatorContext;
 
 /**
- * @author Bobby Ngo
+ * Representing the Scheduler Subsystem
+ * @author Bobby Ngo, Patrick Liu
  *
  */
 public class SchedulerSubsystem implements Runnable {
@@ -32,9 +33,6 @@ public class SchedulerSubsystem implements Runnable {
 	private UDPClient pendingRequestSocket;
 	private UDPClient arrivalRequestSocket;
 	private UDPClient completedRequestSocket;
-	
-	// Unsure about this
-	private UDPClient notifySocket;
 	
 	// private Thread floorRequestListenerThread;
 	private Thread pendingRequestListenerThread;
@@ -50,6 +48,9 @@ public class SchedulerSubsystem implements Runnable {
 		completedRequestSocket = new UDPClient(config.SCHEDULER_COMPLETED_REQ_PORT);
 	}
 	
+	/**
+	 * Starting threads with the followed steps
+	 */
 	public void run() {
 		pendingRequestListenerThread =  new Thread(new Runnable() {
 			
@@ -98,6 +99,11 @@ public class SchedulerSubsystem implements Runnable {
 		this.completedRequestListenerThread.start();
 	}
 	
+	/**
+	 * Receiving pending request from Floor method
+	 * @throws ClassNotFoundException
+	 * @throws IOException
+	 */
 	public void receivePendingRequest() throws ClassNotFoundException, IOException {
 		DatagramPacket packetFromFloor = pendingRequestSocket.receiveMessage();
 		byte[] floorRequestData = UDPClient.readPacketData(packetFromFloor);
@@ -106,6 +112,10 @@ public class SchedulerSubsystem implements Runnable {
 		schedulerContext.addPendingElevatorRequests(floorRequest);
 	}
 	
+	/**
+	 * Sending pending request to the elevator method
+	 * @throws IOException
+	 */
 	public void sendPendingRequest() throws IOException {
 		AssignedElevatorRequest request = schedulerContext.findBestElevatorToAssignRequest();
 		
@@ -118,15 +128,25 @@ public class SchedulerSubsystem implements Runnable {
 		}
 	}
 	
+	/**
+	 * Receiving arrival notification from elevator method
+	 * @throws ClassNotFoundException
+	 * @throws IOException
+	 */
 	public void receiveArrivalNotification() throws ClassNotFoundException, IOException {
 		DatagramPacket packetFromElevator = arrivalRequestSocket.receiveMessage();
 		byte[] arrivalNotificationData = UDPClient.readPacketData(packetFromElevator);
 		ElevatorStatus arrivalNotification = ElevatorStatus.decode(arrivalNotificationData);
 		
-		schedulerContext.modifyAvailableElevatorContexts(arrivalNotification.getElevatorId() - 1, arrivalNotification);
+		schedulerContext.modifyAvailableElevatorStatus(arrivalNotification.getElevatorId() - 1, arrivalNotification);
 		sendArrivalNotification(arrivalNotification);
 	}
 	
+	/**
+	 * Sending arrival notification to Floor method
+	 * @param arrivalNotification
+	 * @throws IOException
+	 */
 	private void sendArrivalNotification(ElevatorStatus arrivalNotification) throws IOException {
 		byte[] data = arrivalNotification.encode();
 		
@@ -135,6 +155,11 @@ public class SchedulerSubsystem implements Runnable {
 				simulatorConfiguration.FLOOR_SUBSYSTEM_REQ_PORT);
 	}
 	
+	/**
+	 * Receiving completed request method from the elevator
+	 * @throws ClassNotFoundException
+	 * @throws IOException
+	 */
 	public void receiveCompletedElevatorRequest() throws ClassNotFoundException, IOException {
 		DatagramPacket packetFromElevator =  completedRequestSocket.receiveMessage();
 		byte[] completedRequestData = UDPClient.readPacketData(packetFromElevator);
@@ -144,6 +169,11 @@ public class SchedulerSubsystem implements Runnable {
 		sendCompletedElevatorRequest(completedRequest);
 	}
 	
+	/**
+	 * Send the completed request to the floor
+	 * @param completedRequest
+	 * @throws IOException
+	 */
 	private void sendCompletedElevatorRequest(ElevatorRequest completedRequest) throws IOException {
 		byte[] data = completedRequest.encode();
 		
@@ -152,20 +182,36 @@ public class SchedulerSubsystem implements Runnable {
 				simulatorConfiguration.FLOOR_SUBSYSTEM_REQ_PORT);
 	}
 
+	/**
+	 * Getter for pendingRequestListenerThread()
+	 * @return
+	 */
 	public Thread getPendingRequestListenerThread() {
 		return pendingRequestListenerThread;
 	}
 
 
+	/**
+	 * Getter for arrivalRequestListenerThread
+	 * @return
+	 */
 	public Thread getArrivalRequestListenerThread() {
 		return arrivalRequestListenerThread;
 	}
 
 
+	/**
+	 * Getter for completedRequestListenerThread
+	 * @return
+	 */
 	public Thread getCompletedRequestListenerThread() {
 		return completedRequestListenerThread;
 	}
 	
+	/** 
+	 * Getter for the configuration of this class
+	 * @return
+	 */
 	public SimulatorConfiguration getSimulatorConfiguration() {
 		return simulatorConfiguration;
 	}

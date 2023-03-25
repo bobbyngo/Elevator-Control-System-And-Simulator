@@ -18,7 +18,6 @@ import main.java.dto.AssignedElevatorRequest;
 import main.java.dto.ElevatorRequest;
 import main.java.dto.ElevatorStatus;
 
-// FIXME: remove @author automatically generated
 /**
  * Controller. Routes requests to respective elevators.
  * Handles communication aspect.
@@ -31,8 +30,11 @@ public class ElevatorSubsystem implements Runnable {
 	private SimulatorConfiguration simulatorConfiguration;
 	private Thread requestListenerThread;
 	private UDPClient udpRequestReceiver;
-	//private UDPClient udpClient;
 	
+	/**
+	 * Constructor for Elevator Subsystem
+	 * @param config
+	 */
 	public ElevatorSubsystem(SimulatorConfiguration config) {
 		ElevatorContext elevator;
 		
@@ -49,16 +51,28 @@ public class ElevatorSubsystem implements Runnable {
 		}
 	}
 	
+	/**
+	 * Start the requestListenerThread to listen to the requests from the Scheduler
+	 */
 	public void run() {
 		// Start request fetching
 		requestListenerThread = new Thread(new RequestListenerTask(this));
 		requestListenerThread.start();
 	}
 	
+	/**
+	 * Getter for the configuration of this class
+	 * @return
+	 */
 	public SimulatorConfiguration getConfig() {
 		return simulatorConfiguration;
 	}
 	
+	/**
+	 * Receiving request method
+	 * @throws ClassNotFoundException
+	 * @throws IOException
+	 */
 	public void receiveElevatorRequest() throws ClassNotFoundException, IOException {
 		// NOTE: this is only called by receiving listener thread
 		// raise all exceptions to the calling thread
@@ -82,6 +96,10 @@ public class ElevatorSubsystem implements Runnable {
 		return;
 	}
 	
+	/**
+	 * Update the request to the Elevator context
+	 * @param request
+	 */
 	private void routeElevatorRequest(AssignedElevatorRequest request) {
 		int elevatorId;
 		ElevatorContext ctx;
@@ -91,6 +109,10 @@ public class ElevatorSubsystem implements Runnable {
 		ctx.addExternalRequest(request);
 	}
 	
+	/**
+	 * Sending completed request message method to the Scheduler
+	 * @param request
+	 */
 	public void sendCompletedElevatorRequest(ElevatorRequest request) {
 		// send elevator request: called by context
 		// TODO: spin up a new thread to run this code
@@ -102,6 +124,10 @@ public class ElevatorSubsystem implements Runnable {
 		}
 	}
 	
+	/**
+	 * Sending arrival notification method to the Scheduler
+	 * @param status
+	 */
 	public void sendArrivalNotification(ElevatorStatus status) {
 		// send arrival notification: 
 		// TODO: spin up a new thread to run this code
@@ -113,6 +139,10 @@ public class ElevatorSubsystem implements Runnable {
 		}
 	}
 	
+	/**
+	 * Send the elevator requests to the Scheduler
+	 * @param requests
+	 */
 	public void returnElevatorRequests(List<ElevatorRequest> requests) {
 		UDPClient messageClient = new UDPClient();
 		

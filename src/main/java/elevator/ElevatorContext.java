@@ -27,6 +27,7 @@ import main.java.elevator.state.ElevatorState;
 import main.java.elevator.state.TimeoutEvent;
 
 /**
+ * Entity class for Elevator 
  * @author Zakaria Ismail
  *
  */
@@ -44,6 +45,11 @@ public class ElevatorContext {
 	
 	private ElevatorSubsystem elevatorSubsystem;
 	
+	/**
+	 * Constructor for Elevator Context
+	 * @param subsystem
+	 * @param id
+	 */
 	public ElevatorContext(ElevatorSubsystem subsystem, int id) {
 		elevatorSubsystem = subsystem;
 		
@@ -63,6 +69,9 @@ public class ElevatorContext {
 		// notify position & start state machine in another func
 	}
 	
+	/**
+	 * Start the threads
+	 */
 	public void startElevator() {
 		// XXX: make this a run() function? something to think about...
 		// MUST CALL THIS FUNCTION TO START STATE MACHINE
@@ -74,22 +83,36 @@ public class ElevatorContext {
 		elevatorSubsystem.sendArrivalNotification(new ElevatorStatus(this));
 	}
 	
+	/**
+	 * Adding requests from outside of the elevators
+	 * @param request
+	 */
 	public void addExternalRequest(ElevatorRequest request) {
 		synchronized (externalRequests) {
 			externalRequests.add(request);
 		}
-		onRequestReceived();
+		onRequestReceived(request);
 	}
 	
-	public void onRequestReceived() {
+	/**
+	 * Handle the request state
+	 * @param request
+	 */
+	public void onRequestReceived(ElevatorRequest request) {
 		synchronized (currentState) {
 			System.out.println(String.format("Elevator#%d Event: Request Received", id));
+			System.out.println(String.format("Elevator#%d will handle request going %s from floor %d to floor %d at %s" ,
+					id , request.getDirection(), request.getSourceFloor(), request.getDestinationFloor(), request.getTimestamp()));
 			currentState = currentState.handleRequestReceived();
 			System.out.println(this);
 			// update view...
 		}
 	}
 	
+	/**
+	 * Timeout the event
+	 * @param event
+	 */
 	public void onTimeout(TimeoutEvent event) {
 		synchronized (currentState) {
 			//System.out.println(String.format("Elevator#%d %s", id, event));
@@ -100,6 +123,9 @@ public class ElevatorContext {
 		}
 	}
 	
+	/**
+	 * Loading passengers method
+	 */
 	public void loadPassengers() {
 		// when passengers are loaded, press button
 		// external requests @ current floor are moved to internal requests		
@@ -121,13 +147,15 @@ public class ElevatorContext {
 		return;
 	}
 	
+	/**
+	 * Unload passenger
+	 */
 	public void unloadPassengers() {
 		// clear button at current floor
 		// internal requests @ current floor are removed...
 		// removed internal requests are sent to scheduler as completed requests
 		ElevatorRequest req;
 		List<ElevatorRequest> toRemove = new ArrayList<>();
-		//for (ElevatorRequest req : internalRequests) {
 		for (int i=0; i<internalRequests.size(); i++) {
 			req = internalRequests.get(i);
 			if (req.getDestinationFloor() == currentFloor) {
@@ -141,14 +169,27 @@ public class ElevatorContext {
 		return;
 	}
 	
+	/**
+	 * Update the lamp to true when the floor button is pressed
+	 * @param floor
+	 */
 	private void pressElevatorButton(int floor) {
 		elevatorButtonBoard.put(floor, true);
 	}
 	
+	/**
+	 * Update the lamp to false when the floor button is pressed
+	 * @param floor
+	 */
 	private void clearElevatorButton(int floor) {
 		elevatorButtonBoard.put(floor, false);
 	}
 	
+	/**
+	 * Set timer method
+	 * @param task
+	 * @param delay
+	 */
 	public void setTimer(TimerTask task, int delay) {
 		if (timer != null) {
 			// a timer is already set... call killTimer() first
@@ -159,6 +200,9 @@ public class ElevatorContext {
 		timer.schedule(task, delay);
 	}
 	
+	/**
+	 * Kill timer method
+	 */
 	public void killTimer() {
 		if (timer != null) {
 			timer.cancel();
@@ -166,18 +210,34 @@ public class ElevatorContext {
 		}
 	}
 	
+	/**
+	 * Setter for direction
+	 * @param d
+	 */
 	public void setDirection(Direction d) {
 		direction = d;
 	}
 	
+	/**
+	 * Setter for door
+	 * @param d
+	 */
 	public void setDoors(Door d) {
 		door = d;
 	}
 	
+	/**
+	 * Setter for motor
+	 * @param m
+	 */
 	public void setMotor(Motor m) {
 		motor = m;
 	}
 	
+	/**
+	 * Increment the floor when it gets to the new floor
+	 * @return true if the floor is updated else false
+	 */
 	public boolean incrementCurrentFloor() {
 		// TODO: add condition checks and throw exception
 		// if invalid floor?... the state machine should not
@@ -194,6 +254,10 @@ public class ElevatorContext {
 		return false;
 	}
 	
+	/**
+	 * Decrement the floor when it gets to the new floor
+	 * @return true if the floor is updated else false
+	 */
 	public boolean decrementCurrentFloor() {
 		ElevatorStatus status;
 
@@ -206,55 +270,64 @@ public class ElevatorContext {
 		return false;
 	}
 	
+	/**
+	 * Getter for configuration of this class
+	 * @return configuration
+	 */
 	public SimulatorConfiguration getConfig() {
 		return elevatorSubsystem.getConfig();
 	}
 	
+	/**
+	 * Overriding toString method
+	 */
 	@Override
 	public String toString() {
 		return String.format(
-				"Elevator#%d{%d,%s,%s,%s,%s}",
+				"Elevator#%d {CurrentFloor: %d, Current State: %s, Direction: %s, Motor: %s, Door: %s}",
 				id, currentFloor, currentState, direction, motor, door);
 	}
 
+	/**
+	 * Getter for elevator id
+	 * @return id
+	 */
 	public int getId() {
 		return id;
 	}
 
+	/**
+	 * Getter for direction
+	 * @return direction
+	 */
 	public Direction getDirection() {
 		return direction;
 	}
 
+	/**
+	 * Get total number of requests
+	 * @return number of requests 
+	 */
 	public int getNumRequests() {
 		// i should probably synchronize this...
 		return internalRequests.size() + externalRequests.size();
 	}
 	
+	/**
+	 * Getter for external requests
+	 * @return external requests
+	 */
 	public List<ElevatorRequest> getExternalRequests() {
 		return externalRequests;
 	}
 	
+	/**
+	 * Getter for internal requests
+	 * @return internal requests
+	 */
 	public List<ElevatorRequest> getInternalRequests() {
 		return internalRequests;
 	}
-	
-//	/**
-//	 * Update the Elevator Lamp Light status by flipping the current status of the floor lamp
-//	 * @param floor the floor number that needs to update
-//	 */
-//	private void updateElevatorLampLight(Integer floor) {
-//		boolean currentLampStatus;
-//		if (elevatorButtonBoard.containsKey(floor)) {
-//			currentLampStatus = elevatorButtonBoard.get(floor);
-//			elevatorButtonBoard.put(floor, !currentLampStatus);
-//		}
-//	}
-//	
-//	private void updateElevatorLampLight(Integer floor, Boolean val) {
-//		if (elevatorButtonBoard.containsKey(floor) ) {
-//			elevatorButtonBoard.put(floor, val);
-//		}
-//	}
 	
 	/**
 	 * Get the Elevator Lamp Light status
@@ -280,6 +353,10 @@ public class ElevatorContext {
 		return allSelectedFloors;
 	}
 
+	/**
+	 * Getter for current floor
+	 * @return current floor
+	 */
 	public int getCurrentFloor() {
 		return currentFloor;
 	}
