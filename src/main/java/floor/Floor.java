@@ -88,8 +88,9 @@ public class Floor implements Runnable {
 	 * Sends the series of elevator requests to the SchedulerOld.
 	 * @param elevatorRequests
 	 * @throws IOException 
+	 * @throws InterruptedException 
 	 */
-	private void addRequestToQueue(ArrayList<ElevatorRequest> elevatorRequests) throws IOException {
+	private void addRequestToQueue(ArrayList<ElevatorRequest> elevatorRequests) throws IOException, InterruptedException {
 		if (!elevatorRequests.isEmpty()) {
 			// TODO: Send request as per time stamp logic potential added here
 			// Sends all the request for Floors at serially
@@ -99,6 +100,7 @@ public class Floor implements Runnable {
 				DatagramPacket reply = rpc.floorSendReceive(data, FLOOR_PORT);
 				//rpc.floorAck(reply);
 				System.out.println("--------------------------------------");
+				Thread.sleep(10000);
 			}
 		}
 	}

@@ -55,17 +55,17 @@ public class SchedulerContext {
 		for (ElevatorStatus status : availableElevatorStatus) {
 			if (status.getState() != ElevatorStateEnum.DOORS_STUCK || status.getState() != ElevatorStateEnum.ELEVATOR_STUCK) {
 				// 1st priority: Elevator that is idle
-				if (status.getDirection() == direction && direction == Direction.IDLE) {
+				if (status.getDirection() == Direction.IDLE) {
 					chosenElevatorStatus = status;
 				} 
 				// 2nd priority: Elevator that is moving up and current floor <= source floor
 				else if (status.getDirection() == direction && direction == Direction.UP
-						&& status.getFloor() >= newRequestSourceFloor) {
+						&& status.getFloor() <= newRequestSourceFloor) {
 					chosenElevatorStatus = status;
 				} 
 				// 3rd priority: Elevator that is moving down and current floor >= source floor
 				else if (status.getDirection() == direction && direction == Direction.DOWN
-						&& status.getFloor() <= newRequestSourceFloor) {
+						&& status.getFloor() >= newRequestSourceFloor) {
 					chosenElevatorStatus = status;
 				}
 			}
