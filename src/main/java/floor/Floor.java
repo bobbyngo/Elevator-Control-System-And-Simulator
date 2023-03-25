@@ -22,7 +22,7 @@ import main.java.floor.parser.Parser;
  */
 public class Floor implements Runnable {
 	
-	private static final int FLOOR_PORT = 23;
+	private static final int FLOOR_PORT = 4001;
 	private final Logger logger = Logger.getLogger(this.getClass().getName());
 	private final File file = new File("/src/main/resources/input.txt");
 	
@@ -87,15 +87,17 @@ public class Floor implements Runnable {
 	/**
 	 * Sends the series of elevator requests to the SchedulerOld.
 	 * @param elevatorRequests
+	 * @throws IOException 
 	 */
-	private void addRequestToQueue(ArrayList<ElevatorRequest> elevatorRequests) {
+	private void addRequestToQueue(ArrayList<ElevatorRequest> elevatorRequests) throws IOException {
 		if (!elevatorRequests.isEmpty()) {
 			// TODO: Send request as per time stamp logic potential added here
 			// Sends all the request for Floors at serially
 			for (ElevatorRequest req : elevatorRequests) {
-				byte[] data = encodeData(req);
+				//byte[] data = encodeData(req);
+				byte[] data = req.encode();
 				DatagramPacket reply = rpc.floorSendReceive(data, FLOOR_PORT);
-				rpc.floorAck(reply);
+				//rpc.floorAck(reply);
 				System.out.println("--------------------------------------");
 			}
 		}

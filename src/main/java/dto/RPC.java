@@ -13,8 +13,8 @@ import java.net.InetAddress;
  */
 public class RPC {
 	
-	private static final int FLOOR_PORT = 23;
-	private static final int ELEVATOR_PORT = 69;
+	private static final int FLOOR_PORT = 4001;
+	private static final int ELEVATOR_PORT = 6002;
 	private DatagramSocket dataSocket, ackSocket, floorSocket, elevatorSocket;
 	
 	/**
@@ -65,7 +65,7 @@ public class RPC {
 	 */
 	public DatagramPacket floorSendReceive(byte[] data, int port) {
 		floorSendData(data, port);
-		return floorReceive();
+		return null;
 	}
 	
 	/**
