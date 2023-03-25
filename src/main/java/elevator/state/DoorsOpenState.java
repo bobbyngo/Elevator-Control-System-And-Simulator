@@ -42,4 +42,9 @@ public class DoorsOpenState extends IdleMotorState {
 		return "DoorsOpen";
 	}
 
+	@Override
+	public ElevatorStateEnum getElevatorStateEnum() {
+		return ElevatorStateEnum.DOORS_OPEN;
+	}
+
 }

@@ -39,4 +39,9 @@ public class MovingDownState extends MovingState {
 		return "MovingDown";
 	}
 
+	@Override
+	public ElevatorStateEnum getElevatorStateEnum() {
+		return ElevatorStateEnum.MOVING_DOWN;
+	}
+
 }

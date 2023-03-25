@@ -43,4 +43,9 @@ public class MovingUpState extends MovingState {
 		return "MovingUp";
 	}
 
+	@Override
+	public ElevatorStateEnum getElevatorStateEnum() {
+		return ElevatorStateEnum.MOVING_UP;
+	}
+
 }

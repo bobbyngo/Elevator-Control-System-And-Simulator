@@ -39,4 +39,9 @@ public class IdleState extends IdleMotorState {
 		return "Idle";
 	}
 
+	@Override
+	public ElevatorStateEnum getElevatorStateEnum() {
+		return ElevatorStateEnum.IDLE;
+	}
+
 }

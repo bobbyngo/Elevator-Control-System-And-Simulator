@@ -344,6 +344,10 @@ public class ElevatorContext {
 		return false;
 	}
 	
+	public ElevatorState getCurrentState() {
+		return currentState;
+	}
+	
 	public static void main(String[] args) throws ParseException, UnknownHostException, IOException, InterruptedException {
 		// small visual test
 		System.out.println("--small little elevator context test");

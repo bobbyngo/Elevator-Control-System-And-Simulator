@@ -53,4 +53,9 @@ public class DoorsClosedState extends IdleMotorState {
 		return "DoorsClosed";
 	}
 
+	@Override
+	public ElevatorStateEnum getElevatorStateEnum() {
+		return ElevatorStateEnum.DOORS_CLOSED;
+	}
+
 }

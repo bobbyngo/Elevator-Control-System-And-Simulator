@@ -35,4 +35,9 @@ public class StoppedState extends IdleMotorState {
 		return "Stopped";
 	}
 
+	@Override
+	public ElevatorStateEnum getElevatorStateEnum() {
+		return ElevatorStateEnum.STOPPED;
+	}
+
 }

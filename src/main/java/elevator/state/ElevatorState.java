@@ -28,5 +28,6 @@ public abstract class ElevatorState {
 	public abstract ElevatorState handleRequestReceived();
 	public abstract ElevatorState handleTimeout();
 	public abstract String toString();
+	public abstract ElevatorStateEnum getElevatorStateEnum();
 	
 }
