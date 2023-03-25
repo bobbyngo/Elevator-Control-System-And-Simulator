@@ -76,7 +76,6 @@ public class Scheduler implements Runnable {
 				case Ready: {
 					if (schedulerType == SchedulerType.FloorListener) {
 						DatagramPacket receivedFloorRequest = udpF.receivePacket();
-						SchedulerSubsystem.floorPortNumber = receivedFloorRequest.getPort();
 						ElevatorRequest elevatorRequest = EncodeDecode.decodeData(receivedFloorRequest);
 						byte[] data = EncodeDecode.encodeData(elevatorRequest);
 						// TODO: Scanning algorithm to determine which elevator receives the request should go here
@@ -85,8 +84,10 @@ public class Scheduler implements Runnable {
 						schedulerState = schedulerState.nextState();
 					}
 					else if (schedulerType == SchedulerType.ElevatorListener) {
-						DatagramPacket receivedCompletedElevatorRequest = udpE.receivePacket();
-						udpE.sendPacket(receivedCompletedElevatorRequest.getData(), SchedulerSubsystem.floorPortNumber, Config.floorSubsystemIP); // Sends completed request back to the floor
+						DatagramPacket receivedArrivalRequest = udpE.receivePacket(); // Elevator arrived at source floor
+						ElevatorRequest receivedRequest = EncodeDecode.decodeData(receivedArrivalRequest);
+						int floorPort = Config.floorListenerPorts[receivedRequest.getSourceFloor() - 1]; // SourceFloor - 1 = index in the floor listener array
+						udpE.sendPacket(receivedArrivalRequest.getData(), floorPort, Config.floorSubsystemIP); 
 						schedulerState = schedulerState.nextState();
 					}
 					else if (schedulerType == SchedulerType.ElevatorDataListener) {

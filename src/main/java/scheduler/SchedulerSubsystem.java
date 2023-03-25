@@ -26,7 +26,7 @@ public class SchedulerSubsystem {
 	public Scheduler schedulerED; // For tracking elevator direction, state, and floor number
 	public static Map<Integer, Integer> elevatorLocation;
 	public static Map<Integer, Direction> elevatorDirection;
-	public static int floorPortNumber; // The port number of the floor sending the requests. Used for providing the port when sending the completed requests
+	//public static int floorPortNumber; // The port number of the floor sending the requests. Used for providing the port when sending the completed requests
 	public enum SchedulerType {
 		ElevatorListener,
 		FloorListener,

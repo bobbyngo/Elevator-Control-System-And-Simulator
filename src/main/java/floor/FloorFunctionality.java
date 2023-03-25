@@ -23,39 +23,23 @@ import main.java.floor.parser.Parser;
  */
 public class FloorFunctionality implements Runnable {
 	private final Logger logger = Logger.getLogger(this.getClass().getName());
-	private final File file = new File("/src/main/resources/input.txt");
 	
 	private int floorNumber;
-	private Parser parser;
+	private FloorSubsystem floorSubsystem;
 	private UDP udp;
 	private int eventCounter;
-
-	/**
-	 * Main method for the Floor class.
-	 * @param args, default parameters
-	 */
-	public static void main(String[] args) {
-		new Thread(new FloorFunctionality(1)).start();
-	}
 	
 	/**
 	 * Constructor for the Floor class.
+	 * @param floorNumber the int of the floor number
+	 * @param port the int of the port
 	 */
-	public FloorFunctionality(int floorNumber) {
+	public FloorFunctionality(FloorSubsystem floorSubsystem,int floorNumber, int port) {
 		this.floorNumber = floorNumber;
+		this.floorSubsystem = floorSubsystem;
 		udp = new UDP();
 		logger.setLevel(Level.INFO);
 		eventCounter = 0;
-		try {
-			// Filename before compilation
-			String FILENAME = System.getProperty("user.dir") + file.getPath();
-			this.parser = new Parser(FILENAME);
-		} catch (FileNotFoundException e) {}
-		try {
-			// Filename after compilation
-			String FILENAME = System.getProperty("user.dir") + file.getPath().substring(4);
-			this.parser = new Parser(FILENAME);
-		} catch (FileNotFoundException e) {}
 	}
 	
 	/**
@@ -66,9 +50,7 @@ public class FloorFunctionality implements Runnable {
 	public void run() {
 		try {
 			udp.openSocket();
-			ArrayList<ElevatorRequest> elevatorRequests = getElevatorRequests();
-			addRequestToQueue(elevatorRequests);
-			receiveCompletedRequests(elevatorRequests);
+			addRequestToQueue(floorSubsystem.getElevatorRequestsArr());
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -97,12 +79,14 @@ public class FloorFunctionality implements Runnable {
 			for (int i = 0; i < elevatorRequests.size(); i++) {
 				ElevatorRequest req = elevatorRequests.get(i);
 				byte[] data = EncodeDecode.encodeData(req);
+				boolean floorsMatch = req.getSourceFloor() == floorNumber; // Checks if the request's source floor matches the floor number for this object
 				if (i < elevatorRequests.size() - 1) {
 					Timestamp currentTime = elevatorRequests.get(i).getTimestamp();
 					Timestamp nextTime = elevatorRequests.get(i+1).getTimestamp();
 					offset = nextTime.getTime() - currentTime.getTime();
-					// Send elevator request as per offset from current timestamp and next timestamp
-					udp.sendPacket(data, Config.scheduler_floor_port, Config.schedulerSubsystemIP);
+					if (floorsMatch) {
+						udp.sendPacket(data, Config.scheduler_floor_port, Config.schedulerSubsystemIP);
+					}
 					try {
 						Thread.sleep(offset);
 					} catch (InterruptedException e) {
@@ -111,8 +95,10 @@ public class FloorFunctionality implements Runnable {
 					System.out.println(String.format("%s: Request for elevator sent %d", this.getClass().getSimpleName(), eventCounter++));
 				} else {
 					// Sends the last elevator request
-					udp.sendPacket(data, Config.scheduler_floor_port, Config.schedulerSubsystemIP);
-					System.out.println("All tasks has been completed!");
+					if (floorsMatch) {
+						udp.sendPacket(data, Config.scheduler_floor_port, Config.schedulerSubsystemIP);
+					}
+					System.out.println("All tasks have been completed!");
 				}
 			}
 		}
@@ -130,19 +116,6 @@ public class FloorFunctionality implements Runnable {
 		}
 	}
 
-	/**
-	 * Parse user requests.
-	 * @return elevatorRequests ArrayList<>, a list of elevator requests
-	 */
-	private ArrayList<ElevatorRequest> getElevatorRequests() {
-		ArrayList<ElevatorRequest> elevatorRequests = null;
-		try {
-			elevatorRequests = parser.requestParser();
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-		return elevatorRequests;
-	}
+	
 	
 }

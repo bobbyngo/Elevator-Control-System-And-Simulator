@@ -18,12 +18,8 @@ public class Config {
 	public static final int scheduler_floor_port = 23; // Designated port for receiving floor requests
 	public final static String schedulerSubsystemIP = "127.0.0.1";
 	// Floor ------------------------------------------------------------------------------------------------------------
-	public final static int[] floorFuncPorts = {8069, 8070}; // Ports for all the floor functionality threads
-	public final static int[] floorListenerPorts = {7069, 7070}; // Ports for all the floor listener threads
+	public final static int[] floorFuncPorts = {8069, 8070, 8071, 8072, 8073, 8074, 8075, 8076, 8077, 8078}; // Ports for all the floor functionality threads
+	public final static int[] floorListenerPorts = {7069, 7070, 7071, 7072, 7073, 7074, 7075, 7076, 7077, 7078}; // Ports for all the floor listener threads
 	public final static int numOfFloors = floorListenerPorts.length;
 	public final static String floorSubsystemIP = "127.0.0.1";
-	
-	
-	
-
 }

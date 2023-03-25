@@ -1,5 +1,6 @@
 package main.java.elevator;
 
+import java.net.DatagramPacket;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -144,13 +145,12 @@ public class ElevatorFunctionality implements Runnable {
 							elevatorState = ElevatorState.Moving; // hardcoded for now
 						}
 						if (checkIfDestinationFloor(elevatorSync.getRequestsQueue())) {
-							ArrayList<ElevatorRequest> completedRequests = elevatorSync.removeElevatorRequests(currentFloor);
-							for (ElevatorRequest completedElevatorRequest : completedRequests) {
-								udp.sendPacket(EncodeDecode.encodeData(completedElevatorRequest), Config.scheduler_elevator_port, Config.schedulerSubsystemIP);
-							}
+							elevatorSync.removeElevatorRequests(currentFloor);
 							System.out.println("Elevator #" + id + ": Completed request(s) at floor " + currentFloor);
 						}
 						if (checkIfSourceFloor(elevatorSync.getRequestsQueue())) {
+							String packetStr = "Elevator #" + id + " arrived at floor";
+							udp.sendPacket(packetStr.getBytes(), Config.scheduler_elevator_port, Config.schedulerSubsystemIP);
 							System.out.println("Elevator #" + id + ": Letting in people at floor " + currentFloor);
 						}
 						break;
