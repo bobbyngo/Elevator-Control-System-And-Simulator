@@ -131,6 +131,8 @@ public class ElevatorFunctionality implements Runnable {
 					}
 					case MovingToSource: {
 						movingToSourceFloor(id, elevatorRequest.getSourceFloor());
+						String packetStr = "Elevator #" + id + " arrived at floor";
+						udp.sendPacket(packetStr.getBytes(), Config.scheduler_elevator_port, Config.schedulerSubsystemIP);
 						elevatorState = elevatorState.nextState();
 						break;
 					}

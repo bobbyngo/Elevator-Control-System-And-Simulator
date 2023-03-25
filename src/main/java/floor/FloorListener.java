@@ -37,11 +37,11 @@ public class FloorListener implements Runnable {
 		try {
 			while (true) {
 				DatagramPacket arrivedAtFloorPacket = udp.receivePacket();
-				System.out.println("Elevator arrived at floor " + floorNumber);
+				System.out.println(new String(arrivedAtFloorPacket.getData()).trim() + " " + floorNumber);
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();	
+			e.printStackTrace();
 		}
 		finally {
 			System.out.println("--------- Program terminated ---------");

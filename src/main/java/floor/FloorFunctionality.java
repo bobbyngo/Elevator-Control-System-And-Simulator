@@ -55,7 +55,6 @@ public class FloorFunctionality implements Runnable {
 			e.printStackTrace();
 		} finally {
 			udp.closeSocket();
-			logger.info("Program terminated.");
 		}
 	}
 
@@ -86,19 +85,19 @@ public class FloorFunctionality implements Runnable {
 					offset = nextTime.getTime() - currentTime.getTime();
 					if (floorsMatch) {
 						udp.sendPacket(data, Config.scheduler_floor_port, Config.schedulerSubsystemIP);
+						System.out.println("Sent request from floor " + floorNumber);
 					}
 					try {
 						Thread.sleep(offset);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
-					System.out.println(String.format("%s: Request for elevator sent %d", this.getClass().getSimpleName(), eventCounter++));
 				} else {
 					// Sends the last elevator request
 					if (floorsMatch) {
+						System.out.println("Sent request from floor " + floorNumber);
 						udp.sendPacket(data, Config.scheduler_floor_port, Config.schedulerSubsystemIP);
 					}
-					System.out.println("All tasks have been completed!");
 				}
 			}
 		}

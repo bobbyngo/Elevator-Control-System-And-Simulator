@@ -85,8 +85,8 @@ public class Scheduler implements Runnable {
 					}
 					else if (schedulerType == SchedulerType.ElevatorListener) {
 						DatagramPacket receivedArrivalRequest = udpE.receivePacket(); // Elevator arrived at source floor
-						ElevatorRequest receivedRequest = EncodeDecode.decodeData(receivedArrivalRequest);
-						int floorPort = Config.floorListenerPorts[receivedRequest.getSourceFloor() - 1]; // SourceFloor - 1 = index in the floor listener array
+						int elevatorLocation = SchedulerSubsystem.elevatorLocation.get(receivedArrivalRequest.getPort());
+						int floorPort = Config.floorListenerPorts[elevatorLocation - 1]; // elevatorLocation - 1 = index in the floor listener array
 						udpE.sendPacket(receivedArrivalRequest.getData(), floorPort, Config.floorSubsystemIP); 
 						schedulerState = schedulerState.nextState();
 					}
