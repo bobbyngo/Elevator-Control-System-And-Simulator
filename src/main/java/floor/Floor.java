@@ -103,12 +103,12 @@ public class Floor implements Runnable {
 					Timestamp nextTime = elevatorRequests.get(i+1).getTimestamp();
 					offset = nextTime.getTime() - currentTime.getTime();
 					// Send elevator request as per offset from current timestamp and next timestamp
+					udp.sendPacket(data, FLOOR_PORT);
 					try {
 						Thread.sleep(offset);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
-					udp.sendPacket(data, FLOOR_PORT);
 					System.out.println(String.format("%s: Request for elevator sent %d", this.getClass().getSimpleName(), eventCounter++));
 				} else {
 					// Sends the last elevator request

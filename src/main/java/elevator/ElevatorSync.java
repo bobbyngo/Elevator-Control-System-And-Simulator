@@ -84,7 +84,8 @@ public class ElevatorSync {
 	public synchronized boolean checkForSameDirectionReqs(Direction direction, int currentFloor) {
 		for (ElevatorRequest elevatorRequest : elevatorRequestsArr) {
 			if ((direction == Direction.UP && elevatorRequest.getDestinationFloor() > currentFloor) 
-				 || (direction == Direction.DOWN && elevatorRequest.getDestinationFloor() < currentFloor)) {
+				 || (direction == Direction.DOWN && elevatorRequest.getDestinationFloor() < currentFloor) 
+				 && elevatorRequest.getDirection() == direction) {
 				return true; // There's still some requests heading in the same direction left
 			}
 		}
