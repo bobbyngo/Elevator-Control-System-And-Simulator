@@ -35,9 +35,6 @@ public class ElevatorContext {
 	private Motor motor;
 	private Direction direction;
 	private Door door;
-	// TODO: change to hashmap,. i dont like this
-	private boolean[] buttonLamps;
-	private boolean[] buttons;
 	private HashMap<Integer, Boolean> elevatorButtonBoard = new HashMap<>();
 	private Timer timer;
 	
@@ -50,14 +47,10 @@ public class ElevatorContext {
 		this.id = id;
 		currentFloor = 1;
 		externalRequests = Collections.synchronizedList(new ArrayList<ElevatorRequest>());
-		internalRequests = Collections.synchronizedList(new ArrayList<ElevatorRequest>());	// this is not needed, added anyways
-		//externalRequests = new ArrayList<ElevatorRequest>();
-		//internalRequests = new ArrayList<ElevatorRequest>();
+		internalRequests = Collections.synchronizedList(new ArrayList<ElevatorRequest>());
 		setDoors(Door.OPEN);
 		setDirection(Direction.IDLE);
 		setMotor(Motor.IDLE);
-		buttonLamps = new boolean[subsystem.getConfig().NUM_FLOORS];
-		buttons = new boolean[subsystem.getConfig().NUM_FLOORS];
 		
 		for (int i = 1; i <= elevatorSubsystem.getConfig().NUM_FLOORS; i ++) {
 			elevatorButtonBoard.put(i, false);

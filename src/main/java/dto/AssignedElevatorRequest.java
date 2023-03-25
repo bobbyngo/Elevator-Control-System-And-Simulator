@@ -13,6 +13,7 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.text.ParseException;
 
+import main.java.SerializableEncoder;
 import main.java.elevator.Direction;
 
 /**
@@ -42,26 +43,13 @@ public class AssignedElevatorRequest extends ElevatorRequest implements Serializ
 	}
 	
 	public static AssignedElevatorRequest decode(byte[] data) throws IOException, ClassNotFoundException {
-		Object decodedObject = null;
-		ObjectInput in = null;
-		ByteArrayInputStream byteStream = new ByteArrayInputStream(data);
-		System.out.println(data);
-		in = new ObjectInputStream(byteStream);
-		decodedObject = in.readObject();
-		byteStream.close();
-		return (AssignedElevatorRequest) decodedObject;
+		Object decodedObj = SerializableEncoder.decode(data);
+		return (AssignedElevatorRequest) decodedObj;
 	}
 	
 	public byte[] encode() throws IOException {
-		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-		ObjectOutputStream out = null;
-		byte[] encodedArray = null;
-		
-		out = new ObjectOutputStream(byteStream);
-		out.writeObject(this);
-		//out.flush();
-		encodedArray = byteStream.toByteArray();
-		return encodedArray;
+		byte[] encodedData = SerializableEncoder.encode(this);
+		return encodedData;
 	}
 	
 	public static void main(String[] args) throws ParseException, IOException, ClassNotFoundException {
