@@ -1,5 +1,10 @@
 package main.java.elevator;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
+import main.java.Config;
+
 /**
  * Sets up the elevator threads
  * @author Hussein Elmokdad
@@ -8,19 +13,15 @@ package main.java.elevator;
  */
 public class ElevatorSubsystem {
 	
-	public final static int[] elevatorFuncPorts = {6069, 6070}; // Ports for all the elevator functionality threads
-	public final static int[] elevatorListenerPorts = {5069, 5070}; // Ports for all the elevator listener threads
-	public final static int numOfElevators = elevatorListenerPorts.length;
-	
 	/**
 	 * Main method for the ElevatorSubsystem class.
 	 * @param args, default parameters
 	 */
 	public static void main(String[] args) {
-		for (int i = 0; i < numOfElevators; i++) {
+		for (int i = 0; i < Config.numOfElevators; i++) {
 			ElevatorSync elevatorSync = new ElevatorSync(i + 1);
-			ElevatorFunctionality elevatorFunctionality = new ElevatorFunctionality(i + 1, elevatorSync, elevatorFuncPorts[i]);
-			ElevatorListener elevatorListener = new ElevatorListener(elevatorSync, elevatorListenerPorts[i]);
+			ElevatorFunctionality elevatorFunctionality = new ElevatorFunctionality(i + 1, elevatorSync, Config.elevatorFuncPorts[i]);
+			ElevatorListener elevatorListener = new ElevatorListener(elevatorSync, Config.elevatorListenerPorts[i]);
 			Thread elevatorFuncThread = new Thread(elevatorFunctionality);
 			Thread elevatorListThread = new Thread(elevatorListener);
 			elevatorFuncThread.start();

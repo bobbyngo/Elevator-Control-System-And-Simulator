@@ -48,23 +48,26 @@ public class UDP {
 	 * Sends a data packet then receives a response data packet
 	 * @param data byte[], the data of the packet to send
 	 * @param port int, the port that the packet will be sent to
+	 * @param destinationIP, the String of the destination IP
 	 * @return DatagramPacket, the packet of the response received 
 	 */
-	public DatagramPacket sendReceivePacket(byte[] data, int port) {
-		sendPacket(data, port);
+	public DatagramPacket sendReceivePacket(byte[] data, int port, String destinationIP) {
+		sendPacket(data, port, destinationIP);
 		return receivePacket();
 	}
 	
 	/**
 	 * Sends a packet to a destination port.
-	 * @param data the byte[] of the data to send
+	 * @param dataByteArr the byte[] of the data to send
+	 * @param port, the int port of the destination
+	 * @param destinationIP, the String of the destination IP
 	 */
-	public void sendPacket(byte[] dataByteArr, int port) {
+	public void sendPacket(byte[] dataByteArr, int port, String destinationIP) {
 		try {
 			DatagramPacket dataPacket = new DatagramPacket(
 					dataByteArr, 
 					dataByteArr.length, 
-					InetAddress.getLocalHost(), 
+					InetAddress.getByName(destinationIP), 
 					port);
 			dataSocket.send(dataPacket);
 			//printPacketContent(dataPacket, "Sending packet");

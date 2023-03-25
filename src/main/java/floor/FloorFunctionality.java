@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import main.java.Config;
 import main.java.dto.ElevatorRequest;
 import main.java.dto.EncodeDecode;
 import main.java.dto.UDP;
@@ -20,9 +21,7 @@ import main.java.floor.parser.Parser;
  * @since 1.0, 02/04/23
  * @version 3.0, 03/11/23
  */
-public class Floor implements Runnable {
-	
-	private static final int FLOOR_PORT = 23;
+public class FloorFunctionality implements Runnable {
 	private final Logger logger = Logger.getLogger(this.getClass().getName());
 	private final File file = new File("/src/main/resources/input.txt");
 	
@@ -36,13 +35,13 @@ public class Floor implements Runnable {
 	 * @param args, default parameters
 	 */
 	public static void main(String[] args) {
-		new Thread(new Floor(1)).start();
+		new Thread(new FloorFunctionality(1)).start();
 	}
 	
 	/**
 	 * Constructor for the Floor class.
 	 */
-	public Floor(int floorNumber) {
+	public FloorFunctionality(int floorNumber) {
 		this.floorNumber = floorNumber;
 		udp = new UDP();
 		logger.setLevel(Level.INFO);
@@ -103,7 +102,7 @@ public class Floor implements Runnable {
 					Timestamp nextTime = elevatorRequests.get(i+1).getTimestamp();
 					offset = nextTime.getTime() - currentTime.getTime();
 					// Send elevator request as per offset from current timestamp and next timestamp
-					udp.sendPacket(data, FLOOR_PORT);
+					udp.sendPacket(data, Config.scheduler_floor_port, Config.schedulerSubsystemIP);
 					try {
 						Thread.sleep(offset);
 					} catch (InterruptedException e) {
@@ -112,7 +111,7 @@ public class Floor implements Runnable {
 					System.out.println(String.format("%s: Request for elevator sent %d", this.getClass().getSimpleName(), eventCounter++));
 				} else {
 					// Sends the last elevator request
-					udp.sendPacket(data, FLOOR_PORT);
+					udp.sendPacket(data, Config.scheduler_floor_port, Config.schedulerSubsystemIP);
 					System.out.println("All tasks has been completed!");
 				}
 			}

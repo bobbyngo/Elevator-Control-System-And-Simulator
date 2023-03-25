@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
-import main.java.floor.Floor;
+import main.java.floor.FloorFunctionality;
 
 /**
  * FloorTest tests and validates the methods for the Floor class
@@ -14,10 +14,10 @@ import main.java.floor.Floor;
  */
 public class FloorTest {
 	
-	private Floor floor1;
-	private Floor floor2;
-	private Floor floor3;
-	private Floor floor4;
+	private FloorFunctionality floor1;
+	private FloorFunctionality floor2;
+	private FloorFunctionality floor3;
+	private FloorFunctionality floor4;
 	
 	/**
 	 * Responsible for setting up the test environment 
@@ -25,10 +25,10 @@ public class FloorTest {
 	 */
 	@Before
     	public void setUp() throws Exception {
-		floor1 = new Floor(1);
-		floor2 = new Floor(2);
-		floor3 = new Floor(6);
-		floor4 = new Floor(10);
+		floor1 = new FloorFunctionality(1);
+		floor2 = new FloorFunctionality(2);
+		floor3 = new FloorFunctionality(6);
+		floor4 = new FloorFunctionality(10);
     	}
 	
 	/**

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import main.java.Config;
 import main.java.dto.Direction;
 import main.java.dto.ElevatorRequest;
 import main.java.dto.EncodeDecode;
@@ -38,9 +39,6 @@ public class Scheduler implements Runnable {
 	private UDP udpE; // Contains the socket for receiving packets from the elevators 
 	private UDP udpF; // Contains the socket for receiving packets from the floors
 	private UDP udpED; // Contains the socket for receiving packets from the elevators
-	private static final int FLOOR_PORT = 23; // Designated port for receiving floor requests
-	private static final int ELEVATOR_PORT = 69; // Designated port for receiving elevator requests
-	private static final int ELEVATOR_DATA_PORT = 70; // Designated port for receiving elevator data (floor number, state, direction)
 	
 	/**
 	 * Constructor for the Scheduler.
@@ -65,9 +63,9 @@ public class Scheduler implements Runnable {
 	@Override
 	public void run() {
 		try {
-			if (schedulerType == SchedulerType.FloorListener) udpF.openSocket(FLOOR_PORT);
-			else if (schedulerType == SchedulerType.ElevatorListener) udpE.openSocket(ELEVATOR_PORT);
-			else if (schedulerType == SchedulerType.ElevatorDataListener) udpED.openSocket(ELEVATOR_DATA_PORT);
+			if (schedulerType == SchedulerType.FloorListener) udpF.openSocket(Config.scheduler_floor_port);
+			else if (schedulerType == SchedulerType.ElevatorListener) udpE.openSocket(Config.scheduler_elevator_port);
+			else if (schedulerType == SchedulerType.ElevatorDataListener) udpED.openSocket(Config.scheduler_elevator_data_port);
 			Thread.sleep(0);
 			while (true) {
 				switch (schedulerState) {
@@ -83,12 +81,12 @@ public class Scheduler implements Runnable {
 						byte[] data = EncodeDecode.encodeData(elevatorRequest);
 						// TODO: Scanning algorithm to determine which elevator receives the request should go here
 						int port = assignRequestToElevator(elevatorRequest.getSourceFloor(), elevatorRequest.getDirection());
-						udpF.sendPacket(data, port - 1000); // Send the packet to Elevator Listener Port
+						udpF.sendPacket(data, port - 1000, Config.elevatorSubsystemIP); // Send the packet to Elevator Listener Port
 						schedulerState = schedulerState.nextState();
 					}
 					else if (schedulerType == SchedulerType.ElevatorListener) {
 						DatagramPacket receivedCompletedElevatorRequest = udpE.receivePacket();
-						udpE.sendPacket(receivedCompletedElevatorRequest.getData(), SchedulerSubsystem.floorPortNumber); // Sends completed request back to the floor
+						udpE.sendPacket(receivedCompletedElevatorRequest.getData(), SchedulerSubsystem.floorPortNumber, Config.floorSubsystemIP); // Sends completed request back to the floor
 						schedulerState = schedulerState.nextState();
 					}
 					else if (schedulerType == SchedulerType.ElevatorDataListener) {

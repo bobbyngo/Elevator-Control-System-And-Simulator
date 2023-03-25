@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import main.java.Config;
 import main.java.dto.Direction;
 import main.java.dto.ElevatorRequest;
 import main.java.dto.EncodeDecode;
@@ -20,10 +21,6 @@ import main.java.scheduler.SchedulerSubsystem;
 public class ElevatorFunctionality implements Runnable {
 	
 	private final Logger logger = Logger.getLogger(this.getClass().getName());
-	
-	public static final int ELEVATOR_PORT = 69; // Port that the scheduler receiving the completed requests is listening on
-	public static final int ELEVATOR_DATA_PORT = 70; // Port that the scheduler receiving the elevator data is listening on
-	
 	private int id;
 	private int port;
 	private ElevatorState elevatorState;
@@ -149,7 +146,7 @@ public class ElevatorFunctionality implements Runnable {
 						if (checkIfDestinationFloor(elevatorSync.getRequestsQueue())) {
 							ArrayList<ElevatorRequest> completedRequests = elevatorSync.removeElevatorRequests(currentFloor);
 							for (ElevatorRequest completedElevatorRequest : completedRequests) {
-								udp.sendPacket(EncodeDecode.encodeData(completedElevatorRequest), ELEVATOR_PORT);
+								udp.sendPacket(EncodeDecode.encodeData(completedElevatorRequest), Config.scheduler_elevator_port, Config.schedulerSubsystemIP);
 							}
 							System.out.println("Elevator #" + id + ": Completed request(s) at floor " + currentFloor);
 						}
@@ -202,7 +199,7 @@ public class ElevatorFunctionality implements Runnable {
 	public void registerElevatorData(int currentFloor, Direction elevatorDirection) {
 		// Do not remove the " " at the end of the string; otherwise, the empty bits in the received packet will be included after the .split(" ")
 		String elevatorDataStr = String.valueOf(currentFloor) + " " + elevatorDirection + " "; 
-		udp.sendPacket(elevatorDataStr.getBytes(), ELEVATOR_DATA_PORT);
+		udp.sendPacket(elevatorDataStr.getBytes(), Config.scheduler_elevator_data_port, Config.schedulerSubsystemIP);
 	}
 	
 	/**
