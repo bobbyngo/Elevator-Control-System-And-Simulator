@@ -12,6 +12,7 @@ import main.java.dto.AssignedElevatorRequest;
 import main.java.dto.ElevatorRequest;
 import main.java.elevator.Direction;
 import main.java.elevator.ElevatorContext;
+import main.java.elevator.state.ElevatorStateEnum;
 import main.java.scheduler.state.IdleState;
 import main.java.scheduler.state.SchedulerState;
 import main.java.dto.ElevatorStatus;
@@ -52,19 +53,21 @@ public class SchedulerContext {
 		// checked the available is empty already so no need to check again
 		ElevatorStatus chosenElevatorStatus = null;
 		for (ElevatorStatus status : availableElevatorStatus) {
-			// 1st priority: Elevator that is idle
-			if (status.getDirection() == direction && direction == Direction.IDLE) {
-				chosenElevatorStatus = status;
-			} 
-			// 2nd priority: Elevator that is moving up and current floor <= source floor
-			else if (status.getDirection() == direction && direction == Direction.UP
-					&& status.getFloor() >= newRequestSourceFloor) {
-				chosenElevatorStatus = status;
-			} 
-			// 3rd priority: Elevator that is moving down and current floor >= source floor
-			else if (status.getDirection() == direction && direction == Direction.DOWN
-					&& status.getFloor() <= newRequestSourceFloor) {
-				chosenElevatorStatus = status;
+			if (status.getState() != ElevatorStateEnum.DOORS_STUCK || status.getState() != ElevatorStateEnum.ELEVATOR_STUCK) {
+				// 1st priority: Elevator that is idle
+				if (status.getDirection() == direction && direction == Direction.IDLE) {
+					chosenElevatorStatus = status;
+				} 
+				// 2nd priority: Elevator that is moving up and current floor <= source floor
+				else if (status.getDirection() == direction && direction == Direction.UP
+						&& status.getFloor() >= newRequestSourceFloor) {
+					chosenElevatorStatus = status;
+				} 
+				// 3rd priority: Elevator that is moving down and current floor >= source floor
+				else if (status.getDirection() == direction && direction == Direction.DOWN
+						&& status.getFloor() <= newRequestSourceFloor) {
+					chosenElevatorStatus = status;
+				}
 			}
 		}
 		return chosenElevatorStatus;

@@ -16,6 +16,7 @@ public class StoppedState extends IdleMotorState {
 		super(ctx);
 		StateTimeoutTask stt = new StateTimeoutTask(ctx, TimeoutEvent.DOORS_OPEN);
 		ctx.setTimer(stt, ctx.getConfig().DOORS_OPEN_TIME);
+		ctx.notifyArrivalSensor();
 	}
 
 	@Override
@@ -27,6 +28,12 @@ public class StoppedState extends IdleMotorState {
 	public ElevatorState handleTimeout() {
 		ElevatorContext ctx = this.getContext();
 		ctx.killTimer();
+		if (ctx.isAtDoorsStuckFloor()) {
+			return new DoorsStuckState(ctx);
+		}
+		if (ctx.isAtElevatorStuckFloor()) {
+			return new ElevatorStuckState(ctx);
+		}
 		return new DoorsOpenState(ctx);
 	}
 

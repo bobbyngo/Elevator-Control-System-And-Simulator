@@ -5,6 +5,7 @@ package main.java;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Properties;
 
 /**
@@ -22,6 +23,7 @@ public class SimulatorConfiguration {
 	public final int DOORS_CLOSE_TIME;
 	public final int LOADING_TIME;
 	public final int MOVING_TIME;
+	public final int DOORS_OBSTRUCTED_TIME;
 	
 	// SchedulerOld and SchedulerSubsystem config
 	public final String SCHEDULER_HOST;
@@ -38,6 +40,10 @@ public class SimulatorConfiguration {
 	// Floor config
 	public final String FLOOR_SUBSYSTEM_HOST;
 	public final int FLOOR_SUBSYSTEM_REQ_PORT;
+	
+	// Fault Config
+	public final int[] DOORS_OBSTRUCTED_FLOORS;
+	public final int[] ELEVATOR_STUCK_FLOORS;
 	
 	public SimulatorConfiguration(String configFilePath) {
 		FileInputStream propsInput;
@@ -59,6 +65,7 @@ public class SimulatorConfiguration {
 		DOORS_CLOSE_TIME = Integer.parseInt(prop.getProperty("DOORS_CLOSE_TIME"));
 		LOADING_TIME = Integer.parseInt(prop.getProperty("LOADING_TIME"));
 		MOVING_TIME = Integer.parseInt(prop.getProperty("MOVING_TIME"));
+		DOORS_OBSTRUCTED_TIME = Integer.parseInt(prop.getProperty("DOORS_OBSTRUCTED_TIME"));
 		
 		SCHEDULER_HOST = prop.getProperty("SCHEDULER_HOST");
 		SCHEDULER_FLOOR_REQ_PORT = Integer.parseInt(prop.getProperty("SCHEDULER_FLOOR_REQ_PORT"));
@@ -73,6 +80,8 @@ public class SimulatorConfiguration {
 		FLOOR_SUBSYSTEM_HOST = prop.getProperty("FLOOR_SUBSYSTEM_HOST");
 		FLOOR_SUBSYSTEM_REQ_PORT = Integer.parseInt(prop.getProperty("FLOOR_SUBSYSTEM_REQ_PORT"));
 		
+		DOORS_OBSTRUCTED_FLOORS = Arrays.stream(prop.getProperty("DOORS_OBSTRUCTED_FLOORS").split(",")).mapToInt(Integer::parseInt).toArray();
+		ELEVATOR_STUCK_FLOORS = Arrays.stream(prop.getProperty("ELEVATOR_STUCK_FLOORS").split(",")).mapToInt(Integer::parseInt).toArray();
 	}
 	
 	

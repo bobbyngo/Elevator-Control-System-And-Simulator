@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.security.auth.login.ConfigurationSpi;
+
 import main.java.SimulatorConfiguration;
 import main.java.UDPClient;
 import main.java.dto.AssignedElevatorRequest;
@@ -437,6 +439,35 @@ public class ElevatorContext {
 			}
 		}
 		return false;
+	}
+	
+	public boolean isAtDoorsStuckFloor() {
+		for (int doorsStuckFloor : getConfig().DOORS_OBSTRUCTED_FLOORS) {
+			if (doorsStuckFloor == currentFloor) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean isAtElevatorStuckFloor() {
+		for (int elevatorStuckFloor : getConfig().ELEVATOR_STUCK_FLOORS) {
+			if (elevatorStuckFloor == currentFloor) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public void notifyArrivalSensor() {
+		elevatorSubsystem.sendArrivalNotification(new ElevatorStatus(this));
+	}
+	
+	public void returnExternalRequests() {
+		synchronized (externalRequests) {
+			elevatorSubsystem.returnElevatorRequests(externalRequests);
+			externalRequests.removeAll(externalRequests);
+		}
 	}
 	
 	public ElevatorState getCurrentState() {

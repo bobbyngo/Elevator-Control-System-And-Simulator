@@ -8,6 +8,9 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
+import javax.security.auth.login.ConfigurationSpi;
 
 import main.java.SimulatorConfiguration;
 import main.java.UDPClient;
@@ -110,6 +113,18 @@ public class ElevatorSubsystem implements Runnable {
 		}
 	}
 	
+	public void returnElevatorRequests(List<ElevatorRequest> requests) {
+		UDPClient messageClient = new UDPClient();
+		
+		for (ElevatorRequest request : requests) {
+			try {
+				messageClient.sendMessage(request.encode(), simulatorConfiguration.SCHEDULER_HOST, simulatorConfiguration.SCHEDULER_PENDING_REQ_PORT);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	/**
 	 * @param args
 	 */
@@ -122,7 +137,6 @@ public class ElevatorSubsystem implements Runnable {
 		subsystem = new ElevatorSubsystem(configuration);
 		subsystemThread = new Thread(subsystem);
 		subsystemThread.start();
-		
 	}
 
 }

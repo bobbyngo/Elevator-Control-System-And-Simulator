@@ -11,7 +11,8 @@ public enum TimeoutEvent {
 	DOORS_OPEN("Doors Open"),
 	DOORS_CLOSE("Doors Close"),
 	MOTOR_THROTTLE("Motor Throttle"),
-	MOTOR_STOP("Motor Stop");
+	MOTOR_STOP("Motor Stop"), 
+	DOORS_UNSTUCK("Doors Unstuck");
 	
 	private String eventMsg;
 	

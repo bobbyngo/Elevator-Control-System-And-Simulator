@@ -15,5 +15,7 @@ public enum ElevatorStateEnum implements Serializable {
 	IDLE,
 	MOVING_DOWN,
 	MOVING_UP,
-	STOPPED
+	STOPPED,
+	DOORS_STUCK,
+	ELEVATOR_STUCK
 }
