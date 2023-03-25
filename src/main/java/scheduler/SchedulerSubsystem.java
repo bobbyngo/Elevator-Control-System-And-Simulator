@@ -59,7 +59,7 @@ public class SchedulerSubsystem implements Runnable {
 				while(true) {
 					try {
 						receivePendingRequest();
-						sendPendingRequest();
+						//sendPendingRequest();
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -105,19 +105,26 @@ public class SchedulerSubsystem implements Runnable {
 	 * @throws IOException
 	 */
 	public void receivePendingRequest() throws ClassNotFoundException, IOException {
+		Thread task;
 		DatagramPacket packetFromFloor = pendingRequestSocket.receiveMessage();
 		byte[] floorRequestData = UDPClient.readPacketData(packetFromFloor);
 		ElevatorRequest floorRequest = ElevatorRequest.decode(floorRequestData);
-					
-		schedulerContext.addPendingElevatorRequests(floorRequest);
+		
+		task = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				schedulerContext.addPendingElevatorRequests(floorRequest);
+			}
+		});
+		task.start();
 	}
 	
 	/**
 	 * Sending pending request to the elevator method
 	 * @throws IOException
 	 */
-	public void sendPendingRequest() throws IOException {
-		AssignedElevatorRequest request = schedulerContext.findBestElevatorToAssignRequest();
+	public void sendPendingRequest(AssignedElevatorRequest request) throws IOException {
+		//AssignedElevatorRequest request = schedulerContext.findBestElevatorToAssignRequest();
 		
 		if (request != null) {
 			byte[] data = request.encode();
@@ -134,12 +141,24 @@ public class SchedulerSubsystem implements Runnable {
 	 * @throws IOException
 	 */
 	public void receiveArrivalNotification() throws ClassNotFoundException, IOException {
+		Thread task;
 		DatagramPacket packetFromElevator = arrivalRequestSocket.receiveMessage();
 		byte[] arrivalNotificationData = UDPClient.readPacketData(packetFromElevator);
 		ElevatorStatus arrivalNotification = ElevatorStatus.decode(arrivalNotificationData);
 		
-		schedulerContext.modifyAvailableElevatorStatus(arrivalNotification.getElevatorId() - 1, arrivalNotification);
-		sendArrivalNotification(arrivalNotification);
+		task = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				schedulerContext.modifyAvailableElevatorStatus(arrivalNotification.getElevatorId() - 1, arrivalNotification);
+				try {
+					sendArrivalNotification(arrivalNotification);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		task.start();
+		
 	}
 	
 	/**
@@ -161,12 +180,18 @@ public class SchedulerSubsystem implements Runnable {
 	 * @throws IOException
 	 */
 	public void receiveCompletedElevatorRequest() throws ClassNotFoundException, IOException {
+		Thread task;
 		DatagramPacket packetFromElevator =  completedRequestSocket.receiveMessage();
 		byte[] completedRequestData = UDPClient.readPacketData(packetFromElevator);
 		ElevatorRequest completedRequest = ElevatorRequest.decode(completedRequestData);
 		
-		schedulerContext.addCompletedElevatorRequests(completedRequest);
-		sendCompletedElevatorRequest(completedRequest);
+		task = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				schedulerContext.addCompletedElevatorRequests(completedRequest);
+			}
+		});
+		task.start();
 	}
 	
 	/**
@@ -174,7 +199,7 @@ public class SchedulerSubsystem implements Runnable {
 	 * @param completedRequest
 	 * @throws IOException
 	 */
-	private void sendCompletedElevatorRequest(ElevatorRequest completedRequest) throws IOException {
+	public void sendCompletedElevatorRequest(ElevatorRequest completedRequest) throws IOException {
 		byte[] data = completedRequest.encode();
 		
 		UDPClient socket = new UDPClient();
@@ -220,12 +245,7 @@ public class SchedulerSubsystem implements Runnable {
 		SimulatorConfiguration sc = new SimulatorConfiguration("./src/main/resources/config.properties");
 		SchedulerSubsystem s = new SchedulerSubsystem(sc);
 		Thread sThread = new Thread(s);
-		UDPClient floorSim = new UDPClient(sc.FLOOR_SUBSYSTEM_REQ_PORT);
-		ElevatorRequest req1 = new ElevatorRequest("07:01:15.000", 3, Direction.UP, 5);
 		
 		sThread.start();
-		
-		Thread.sleep(1000);
-		floorSim.sendMessage(req1.encode(), sc.SCHEDULER_HOST, sc.SCHEDULER_PENDING_REQ_PORT);
 	}
 }

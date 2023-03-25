@@ -27,7 +27,13 @@ public class MovingDownState extends MovingState {
 	 */
 	@Override
 	public ElevatorState handleRequestReceived() {
-		return this;
+		ElevatorContext ctx = this.getContext();
+		
+		if (ctx.shouldElevatorStop()) {
+			ctx.killTimer();
+			return new StoppedState(ctx);
+		}
+ 		return this;
 	}
 
 	/**

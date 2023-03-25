@@ -3,6 +3,7 @@
  */
 package main.java.scheduler;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -12,7 +13,6 @@ import main.java.dto.ElevatorRequest;
 import main.java.dto.ElevatorStatus;
 import main.java.elevator.Direction;
 import main.java.elevator.state.ElevatorStateEnum;
-import main.java.scheduler.state.IdleState;
 import main.java.scheduler.state.SchedulerState;
 
 /**
@@ -23,7 +23,6 @@ import main.java.scheduler.state.SchedulerState;
 
 public class SchedulerContext {
 	
-	private SchedulerState currentState;
 	private SchedulerSubsystem schedulerSubsystem;
 	
 	// storing all the elevators that are available
@@ -33,14 +32,14 @@ public class SchedulerContext {
 	// Elevator requests that completed
 	private List<ElevatorRequest> completedElevatorRequests;
 	
+	private SchedulerState currentState;
+	
 	/**
 	 * Constructor for Scheduler Context
 	 * @param schedulerSubsystem
 	 */
 	public SchedulerContext(SchedulerSubsystem schedulerSubsystem) {
 		this.schedulerSubsystem = schedulerSubsystem;
-		
-		currentState = new IdleState(this);
 		
 		// make sure that 4 scheduler threads use the same instance of these 3 array list
 		availableElevatorStatus = Collections.synchronizedList(new ArrayList<>());
@@ -50,6 +49,9 @@ public class SchedulerContext {
 		for (int i = 1; i <= schedulerSubsystem.getSimulatorConfiguration().NUM_ELEVATORS; i++) {
 			availableElevatorStatus.add(new ElevatorStatus(i));
 		}
+		
+		currentState = SchedulerState.start(this);
+		System.out.println(String.format("Current state: %s", currentState));
 	}
 	
 	/**
@@ -117,6 +119,11 @@ public class SchedulerContext {
 		return assignedElevatorRequest;
 	}
 	
+	public void assignNextBestElevatorRequest() throws IOException {
+		AssignedElevatorRequest request = this.findBestElevatorToAssignRequest();
+		schedulerSubsystem.sendPendingRequest(request);
+	}
+	
 	/**
 	 * Getter for availableElevatorStatus
 	 * @return all available elevators status
@@ -161,6 +168,7 @@ public class SchedulerContext {
 	public void addPendingElevatorRequests(ElevatorRequest elevatorRequest) {
 		synchronized(pendingElevatorRequests) {
 			pendingElevatorRequests.add(elevatorRequest);
+			onRequestReceived();
 		}
 	}
 
@@ -179,6 +187,29 @@ public class SchedulerContext {
 	public void addCompletedElevatorRequests(ElevatorRequest elevatorRequest) {
 		synchronized(completedElevatorRequests) {
 			completedElevatorRequests.add(elevatorRequest);
+			onRequestReceived();
 		}
 	}
+	
+	public void onRequestReceived() {
+		synchronized (currentState) {
+			System.out.println("Event: Request Received");
+			currentState = currentState.handleRequestReceived();
+			System.out.println(String.format("Current state: %s", currentState));
+		}
+	}
+	
+	public boolean isSchedulerIdle() {
+		return pendingElevatorRequests.size() == 0 && completedElevatorRequests.size() == 0;
+	}
+	
+	public void processCompletedElevatorRequest() throws IOException {
+		// do something with the completed elevator request here...?
+		ElevatorRequest nextCompletedRequest;
+		if (completedElevatorRequests.size() > 0) {
+			nextCompletedRequest = completedElevatorRequests.get(0);
+			schedulerSubsystem.sendCompletedElevatorRequest(nextCompletedRequest);
+		}
+	}
+
 }

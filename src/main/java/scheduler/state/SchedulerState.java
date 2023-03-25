@@ -20,5 +20,10 @@ public abstract class SchedulerState {
 		return context;
 	}
 	
-	//public abstract SchedulerContext handle
+	public static SchedulerState start(SchedulerContext ctx) {
+		return new IdleState(ctx);
+	}
+	
+	public abstract SchedulerState handleRequestReceived();
+	public abstract String toString();
 }
