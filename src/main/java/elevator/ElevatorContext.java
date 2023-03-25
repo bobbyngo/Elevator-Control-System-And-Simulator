@@ -4,9 +4,11 @@
 package main.java.elevator;
 
 import java.io.IOException;
+import java.net.DatagramPacket;
 import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -97,15 +99,21 @@ public class ElevatorContext {
 	
 	public void loadPassengers() {
 		// when passengers are loaded, press button
-		// external requests @ current floor are moved to internal requests
-		synchronized (externalRequests) {			
-			for (ElevatorRequest req : externalRequests) {
+		// external requests @ current floor are moved to internal requests		
+		synchronized (externalRequests) {		
+			ElevatorRequest req;
+			List<ElevatorRequest> toRemove = new ArrayList<>();
+			
+			for (int i=0; i<externalRequests.size(); i++) {
+				req = externalRequests.get(i);
 				if (req.getSourceFloor() == currentFloor) {
-					externalRequests.remove(req);
+					//externalRequests.remove(req);
+					toRemove.add(req);
 					internalRequests.add(req);
 					pressElevatorButton(req.getDestinationFloor());
 				}
 			}
+			externalRequests.removeAll(toRemove);
 		}
 		return;
 	}
@@ -114,12 +122,18 @@ public class ElevatorContext {
 		// clear button at current floor
 		// internal requests @ current floor are removed...
 		// removed internal requests are sent to scheduler as completed requests
-		for (ElevatorRequest req : internalRequests) {
+		ElevatorRequest req;
+		List<ElevatorRequest> toRemove = new ArrayList<>();
+		//for (ElevatorRequest req : internalRequests) {
+		for (int i=0; i<internalRequests.size(); i++) {
+			req = internalRequests.get(i);
 			if (req.getDestinationFloor() == currentFloor) {
-				internalRequests.remove(req);
+				//internalRequests.remove(req);
+				toRemove.add(req);
 				elevatorSubsystem.sendCompletedElevatorRequest(req);
 			}
 		}
+		internalRequests.removeAll(toRemove);
 		clearElevatorButton(currentFloor);
 		return;
 	}
@@ -355,12 +369,34 @@ public class ElevatorContext {
 		ElevatorSubsystem s = new ElevatorSubsystem(sc);
 		s.startElevatorSubsystem();
 		UDPClient testServer = new UDPClient();
+		UDPClient arrivalNotifRcv = new UDPClient(sc.SCHEDULER_ARRIVAL_REQ_PORT);
+		Thread notifRcvThread;
 		AssignedElevatorRequest testRequest = null;
+
 		Thread.sleep(1000);
 		testRequest = new AssignedElevatorRequest(
 					1, "07:01:15.000", 3, Direction.UP, 5
 				);
 		testServer.sendMessage(testRequest.encode(), sc.ELEVATOR_SUBSYSTEM_HOST, sc.ELEVATOR_SUBSYSTEM_REQ_PORT);
 		
+		notifRcvThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				DatagramPacket packet;
+				ElevatorStatus status;
+				while (true) {
+					packet = arrivalNotifRcv.receiveMessage();
+					try {
+						status = ElevatorStatus.decode(UDPClient.readPacketData(packet));
+						System.out.println(status);
+					} catch (ClassNotFoundException | IOException e) {
+						e.printStackTrace();
+					}
+					
+				}
+				
+			}
+		});
+		notifRcvThread.start();
 	}
 }

@@ -67,8 +67,8 @@ public class ElevatorSubsystem {
 				simulatorConfiguration.SCHEDULER_PENDING_REQ_PORT);
 		receivePacket = udpRequestReceiver.receiveMessage();	// TODO: add a timeout perhaps? this would allow any-order bootup
 		assignedRequest = AssignedElevatorRequest.decode(UDPClient.readPacketData(receivePacket));
-		System.out.println(receivePacket.getData());
-		System.out.println(assignedRequest);
+		//System.out.println(receivePacket.getData());
+		//System.out.println(assignedRequest);
 		routeElevatorRequest(assignedRequest);
 		return;
 	}
@@ -84,10 +84,24 @@ public class ElevatorSubsystem {
 	
 	public void sendCompletedElevatorRequest(ElevatorRequest request) {
 		// send elevator request: called by context
+		// TODO: spin up a new thread to run this code
+		UDPClient messageClient = new UDPClient();
+		try {
+			messageClient.sendMessage(request.encode(), simulatorConfiguration.SCHEDULER_HOST, simulatorConfiguration.SCHEDULER_COMPLETED_REQ_PORT);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void sendArrivalNotification(ElevatorStatus status) {
 		// send arrival notification: 
+		// TODO: spin up a new thread to run this code
+		UDPClient messageClient = new UDPClient();
+		try {
+			messageClient.sendMessage(status.encode(), simulatorConfiguration.SCHEDULER_HOST, simulatorConfiguration.SCHEDULER_ARRIVAL_REQ_PORT);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**

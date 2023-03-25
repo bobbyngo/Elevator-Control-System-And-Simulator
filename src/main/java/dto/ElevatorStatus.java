@@ -57,4 +57,9 @@ public class ElevatorStatus implements Serializable {
 		byte[] encodedData = SerializableEncoder.encode(this);
 		return encodedData;
 	}
+	
+	@Override
+	public String toString() {
+		return String.format("ElevatorStatus{%d,%d,%s,%s,%d}", elevatorId, floor, direction, state, numRequests);
+	}
 }

@@ -32,7 +32,6 @@ public class SerializableEncoder {
 		Object decodedObject = null;
 		ObjectInput in = null;
 		ByteArrayInputStream byteStream = new ByteArrayInputStream(data);
-		System.out.println(data);
 		in = new ObjectInputStream(byteStream);
 		decodedObject = in.readObject();
 		byteStream.close();
