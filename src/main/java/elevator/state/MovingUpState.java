@@ -27,8 +27,10 @@ public class MovingUpState extends MovingState {
 		ElevatorContext ctx = this.getContext();
 		
 		ctx.killTimer();
-		ctx.incrementCurrentFloor();	// arrival notif is fired when increment is called
-		
+		// arrival notif is fired when increment is called
+		if (!ctx.incrementCurrentFloor()) {
+			return new StoppedState(ctx);
+		}
 		// if external request in current direction exists
 		// or internal request exists at current floor
 		if (ctx.shouldElevatorStop()) {

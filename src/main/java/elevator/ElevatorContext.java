@@ -90,7 +90,8 @@ public class ElevatorContext {
 	
 	public void onTimeout(TimeoutEvent event) {
 		synchronized (currentState) {
-			System.out.println(String.format("Elevator#%d %s", id, event));
+			//System.out.println(String.format("Elevator#%d %s", id, event));
+			System.out.println(String.format("Elevator#%d Event: Timeout", id));
 			currentState = currentState.handleTimeout();
 			System.out.println(this);
 			// update view...
@@ -175,24 +176,32 @@ public class ElevatorContext {
 		motor = m;
 	}
 	
-	public void incrementCurrentFloor() {
+	public boolean incrementCurrentFloor() {
 		// TODO: add condition checks and throw exception
 		// if invalid floor?... the state machine should not
 		// allow transition to MOVING state if floor above
 		// doesn't exist...
 		ElevatorStatus status;
 		
-		currentFloor++;
-		status = new ElevatorStatus(this);
-		elevatorSubsystem.sendArrivalNotification(status);
+		if (currentFloor + 1 <= elevatorSubsystem.getConfig().NUM_FLOORS) {
+			currentFloor++;
+			status = new ElevatorStatus(this);
+			elevatorSubsystem.sendArrivalNotification(status);
+			return true;
+		}
+		return false;
 	}
 	
-	public void decrementCurrentFloor() {
+	public boolean decrementCurrentFloor() {
 		ElevatorStatus status;
 
-		currentFloor--;
-		status = new ElevatorStatus(this);
-		elevatorSubsystem.sendArrivalNotification(status);
+		if (currentFloor - 1 >= 1) {
+			currentFloor--;
+			status = new ElevatorStatus(this);
+			elevatorSubsystem.sendArrivalNotification(status);
+			return true;
+		}
+		return false;
 	}
 	
 	public SimulatorConfiguration getConfig() {
@@ -280,11 +289,12 @@ public class ElevatorContext {
 		// if going down, you want to keep going down
 		//	stop going down when there are no more requests below you going DOWN
 		// if idle, ... TBD
-		Direction newDirection;
+		Direction newDirection, directionIfIdle;
 		boolean continueSweepingUp, continueSweepingDown;
 		
 		continueSweepingUp = shouldContinueSweepingUp();
 		continueSweepingDown = shouldContinueSweepingDown();
+		directionIfIdle = determineNextDirection();
 		
 		switch (direction) {
 		case UP:
@@ -295,11 +305,13 @@ public class ElevatorContext {
 			if (continueSweepingUp) return Direction.UP;
 		case IDLE:
 			// TODO: pick based on # of jobs? copying UP for now
-			if (continueSweepingUp) return Direction.UP;
-			if (continueSweepingDown) return Direction.DOWN;
-		default:
-			return Direction.IDLE;
+			// to keep as simple as possible... "when picking up"
+			// new passenger(s) from an idle an state, "ignore"
+			// jobs that are not going in the direction of the passenger
+			// that you are picking up
+			return directionIfIdle;
 		}
+		return Direction.IDLE;
 	}
 	
 	private boolean shouldContinueSweepingUp() {
@@ -341,16 +353,85 @@ public class ElevatorContext {
 		return false;
 	}
 	
+	private Direction determineNextDirection() {
+		ElevatorRequest nextRequest;
+		
+		synchronized (externalRequests) {
+			if (externalRequests.size() > 0) {
+				nextRequest = externalRequests.get(0);
+			} else {
+				return Direction.IDLE;
+			}
+		}
+		if (currentFloor > nextRequest.getSourceFloor()) {
+			return Direction.DOWN;
+		}
+		if (currentFloor < nextRequest.getSourceFloor()) {
+			return Direction.UP;
+		}
+		return Direction.IDLE;	// FIXME: double-check. 
+	}
+	
 	public boolean shouldElevatorStop() {
 		// check that there exists internal request @ current floor
 		// or external request @ current floor and in current direction
+		
+		// new detected case: if the elevator car is empty and the elevator
+		// is moving, then disregard having to check that there is a direction match? (idk if valid...)
+		
+		// case: if going some direction & there's a request at currentFloor & there's no more requests
+		// if you were to go in the same direction, then stop for the request @ the current floor?
+		//	-> can you stop sweeping? violate the check of having to accept a request going in same direction
+		//	-> essentially, the goal is to sweep until you hit the bottom-most or top-most request source?
 		if (getElevatorLampStatus(currentFloor)) {
 			return true;
 		}
 		
 		synchronized (externalRequests) {
+			boolean interceptElevator = false;
+			boolean existsAboveReq = existsExternalRequestsAbove();
+			boolean existsBelowReq = existsExternalRequestsBelow();
 			for (ElevatorRequest pendingReq : externalRequests) {
 				if (pendingReq.getSourceFloor() == currentFloor && pendingReq.getDirection() == direction) {
+					return true;
+				}
+				if (internalRequests.size() == 0 && pendingReq.getSourceFloor() == currentFloor) {
+					// no one is in the car and there is a request at this floor
+					if (!existsAboveReq && direction == Direction.UP || !existsBelowReq && direction == Direction.DOWN) {
+						// if there are no jobs todo in the direction that you are going, then you might as well pick them up
+						interceptElevator = true;
+					}
+				}
+				
+			}
+			
+			if (interceptElevator) {
+				return true;
+			}
+//			// case: elevator is trying to beeline reach a mf floor
+//			if (internalRequests.size() == 0 && externalRequests.size() == 1 && externalRequests.get(0).getSourceFloor() == currentFloor) {
+//				// there is no one in the elevator car and you have come across a floor w/ a pending request & there are no other requests
+//				return true;
+//			}
+		}
+		return false;
+	}
+	
+	private boolean existsExternalRequestsAbove() {
+		synchronized (externalRequests) {
+			for (ElevatorRequest req : externalRequests) {
+				if (req.getSourceFloor() > currentFloor) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	private boolean existsExternalRequestsBelow() {
+		synchronized (externalRequests) {
+			for (ElevatorRequest req : externalRequests) {
+				if (req.getSourceFloor() < currentFloor) {
 					return true;
 				}
 			}
@@ -367,7 +448,7 @@ public class ElevatorContext {
 		System.out.println("--small little elevator context test");
 		SimulatorConfiguration sc = new SimulatorConfiguration("./src/main/resources/config.properties");
 		ElevatorSubsystem s = new ElevatorSubsystem(sc);
-		s.startElevatorSubsystem();
+		//s.startElevatorSubsystem(); TODO: update this lil test
 		UDPClient testServer = new UDPClient();
 		UDPClient arrivalNotifRcv = new UDPClient(sc.SCHEDULER_ARRIVAL_REQ_PORT);
 		Thread notifRcvThread;

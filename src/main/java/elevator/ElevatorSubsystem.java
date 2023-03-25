@@ -22,7 +22,7 @@ import main.java.dto.ElevatorStatus;
  * @author Zakaria Ismail
  *
  */
-public class ElevatorSubsystem {
+public class ElevatorSubsystem implements Runnable {
 	// TODO: change to hashmap to not deal with indexing issues
 	private HashMap<Integer, ElevatorContext> elevators;
 	private SimulatorConfiguration simulatorConfiguration;
@@ -46,7 +46,7 @@ public class ElevatorSubsystem {
 		}
 	}
 	
-	public void startElevatorSubsystem() {
+	public void run() {
 		// Start request fetching
 		requestListenerThread = new Thread(new RequestListenerTask(this));
 		requestListenerThread.start();
@@ -61,15 +61,21 @@ public class ElevatorSubsystem {
 		// raise all exceptions to the calling thread
 		DatagramPacket receivePacket;
 		AssignedElevatorRequest assignedRequest;	// TODO
+		Thread requestHandler;
 
 			// XXX: what do I put in the byte?
-		udpRequestReceiver.sendMessage(new byte[] {}, InetAddress.getByName(simulatorConfiguration.SCHEDULER_HOST), 
-				simulatorConfiguration.SCHEDULER_PENDING_REQ_PORT);
+		//udpRequestReceiver.sendMessage(new byte[] {}, InetAddress.getByName(simulatorConfiguration.SCHEDULER_HOST), 
+		//		simulatorConfiguration.SCHEDULER_PENDING_REQ_PORT);
 		receivePacket = udpRequestReceiver.receiveMessage();	// TODO: add a timeout perhaps? this would allow any-order bootup
 		assignedRequest = AssignedElevatorRequest.decode(UDPClient.readPacketData(receivePacket));
-		//System.out.println(receivePacket.getData());
-		//System.out.println(assignedRequest);
-		routeElevatorRequest(assignedRequest);
+
+		requestHandler = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				routeElevatorRequest(assignedRequest);
+			}
+		});
+		requestHandler.start();
 		return;
 	}
 	
@@ -110,9 +116,13 @@ public class ElevatorSubsystem {
 	public static void main(String[] args) {
 		SimulatorConfiguration configuration;
 		ElevatorSubsystem subsystem;
+		Thread subsystemThread;
 		
 		configuration = new SimulatorConfiguration("./src/main/resources/config.properties");
 		subsystem = new ElevatorSubsystem(configuration);
+		subsystemThread = new Thread(subsystem);
+		subsystemThread.start();
+		
 	}
 
 }

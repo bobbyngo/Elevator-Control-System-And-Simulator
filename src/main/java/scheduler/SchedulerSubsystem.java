@@ -5,6 +5,8 @@ package main.java.scheduler;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.UnknownHostException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -15,13 +17,14 @@ import main.java.UDPClient;
 import main.java.dto.AssignedElevatorRequest;
 import main.java.dto.ElevatorRequest;
 import main.java.dto.ElevatorStatus;
+import main.java.elevator.Direction;
 import main.java.elevator.ElevatorContext;
 
 /**
  * @author Bobby Ngo
  *
  */
-public class SchedulerSubsystem {
+public class SchedulerSubsystem implements Runnable {
 	private SchedulerContext schedulerContext;
 	private SimulatorConfiguration simulatorConfiguration;
 	
@@ -40,13 +43,14 @@ public class SchedulerSubsystem {
 	
 	public SchedulerSubsystem(SimulatorConfiguration config) {
 		simulatorConfiguration = config;
+		schedulerContext = new SchedulerContext(this);
 		// Registering the listening port for the socket
 		pendingRequestSocket = new UDPClient(config.SCHEDULER_PENDING_REQ_PORT);
 		arrivalRequestSocket = new UDPClient(config.SCHEDULER_ARRIVAL_REQ_PORT);
 		completedRequestSocket = new UDPClient(config.SCHEDULER_COMPLETED_REQ_PORT);
 	}
 	
-	private void initializeThreads() {
+	public void run() {
 		pendingRequestListenerThread =  new Thread(new Runnable() {
 			
 			@Override
@@ -88,6 +92,10 @@ public class SchedulerSubsystem {
 				}
 			}
 		});
+		
+		this.pendingRequestListenerThread.start();
+		this.arrivalRequestListenerThread.start();
+		this.completedRequestListenerThread.start();
 	}
 	
 	public void receivePendingRequest() throws ClassNotFoundException, IOException {
@@ -162,8 +170,16 @@ public class SchedulerSubsystem {
 		return simulatorConfiguration;
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws ParseException, InterruptedException, UnknownHostException, IOException {
 		SimulatorConfiguration sc = new SimulatorConfiguration("./src/main/resources/config.properties");
 		SchedulerSubsystem s = new SchedulerSubsystem(sc);
+		Thread sThread = new Thread(s);
+		UDPClient floorSim = new UDPClient(sc.FLOOR_SUBSYSTEM_REQ_PORT);
+		ElevatorRequest req1 = new ElevatorRequest("07:01:15.000", 3, Direction.UP, 5);
+		
+		sThread.start();
+		
+		Thread.sleep(1000);
+		floorSim.sendMessage(req1.encode(), sc.SCHEDULER_HOST, sc.SCHEDULER_PENDING_REQ_PORT);
 	}
 }

@@ -37,15 +37,20 @@ public class DoorsClosedState extends IdleMotorState {
 		// consider current direction
 		nextDirection = ctx.calculateNextDirection();
 		ctx.setDirection(nextDirection);
+		
+		if (ctx.shouldElevatorStop()) {
+			return new StoppedState(ctx);
+		}
 	
 		switch (ctx.getDirection()) {
 		case UP:
 			return new MovingUpState(ctx);
 		case DOWN:
 			return new MovingDownState(ctx);
-		default:
+		case IDLE:
 			return new IdleState(ctx);
 		}
+		return new IdleState(ctx);
 	}
 
 	@Override

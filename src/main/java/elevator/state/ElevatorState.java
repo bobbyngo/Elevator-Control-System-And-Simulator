@@ -18,7 +18,7 @@ public abstract class ElevatorState {
 	}
 	
 	public static ElevatorState start(ElevatorContext ctx) {
-		return new DoorsOpenState(ctx);
+		return new IdleState(ctx);
 	}
 	
 	public ElevatorContext getContext() {
