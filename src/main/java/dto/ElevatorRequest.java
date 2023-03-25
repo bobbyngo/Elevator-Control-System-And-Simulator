@@ -1,10 +1,12 @@
 package main.java.dto;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
+import main.java.SerializableEncoder;
 import main.java.elevator.Direction;
 
 /**
@@ -130,6 +132,16 @@ public class ElevatorRequest implements Serializable {
 						timestampString)
 					.getTime());
 		return timestamp;
+	}
+	
+	public static ElevatorRequest decode(byte[] data) throws IOException, ClassNotFoundException {
+		Object decodedObj = SerializableEncoder.decode(data);
+		return (ElevatorRequest) decodedObj;
+	}
+	
+	public byte[] encode() throws IOException {
+		byte[] encodedData = SerializableEncoder.encode(this);
+		return encodedData;
 	}
 
 }
