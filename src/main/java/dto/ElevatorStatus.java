@@ -34,6 +34,14 @@ public class ElevatorStatus implements Serializable {
 		state = ctx.getCurrentState().getElevatorStateEnum();
 	}
 	
+	public ElevatorStatus(int id) {
+		elevatorId = id;
+		floor = 1;
+		direction = Direction.IDLE;
+		numRequests = 0;
+		state = ElevatorStateEnum.IDLE;
+	}
+	
 	public int getElevatorId() {return elevatorId;}
 	public int getFloor() {return floor;}
 	public Direction getDirection() {return direction;}
