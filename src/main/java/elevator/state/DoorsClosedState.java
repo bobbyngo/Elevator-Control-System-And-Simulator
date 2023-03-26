@@ -15,6 +15,10 @@ import main.java.elevator.ElevatorContext;
  */
 public class DoorsClosedState extends IdleMotorState {
 
+	/**
+	 * Constructor
+	 * @param ctx
+	 */
 	public DoorsClosedState(ElevatorContext ctx) {
 		super(ctx);
 		
@@ -23,11 +27,17 @@ public class DoorsClosedState extends IdleMotorState {
 		ctx.setDoors(Door.CLOSED);
 	}
 
+	/**
+	 * handleRequestReceived
+	 */
 	@Override
 	public ElevatorState handleRequestReceived() {
 		return this;
 	}
 
+	/**
+	 * handleTimeout
+	 */
 	@Override
 	public ElevatorState handleTimeout() {
 		ElevatorContext ctx = this.getContext();
@@ -53,11 +63,17 @@ public class DoorsClosedState extends IdleMotorState {
 		return new IdleState(ctx);
 	}
 
+	/**
+	 * toString
+	 */
 	@Override
 	public String toString() {
 		return "DoorsClosed";
 	}
 
+	/**
+	 * getElevatorStateEnum
+	 */
 	@Override
 	public ElevatorStateEnum getElevatorStateEnum() {
 		return ElevatorStateEnum.DOORS_CLOSED;

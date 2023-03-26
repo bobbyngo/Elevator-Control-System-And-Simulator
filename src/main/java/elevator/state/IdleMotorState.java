@@ -11,6 +11,10 @@ import main.java.elevator.Motor;
  *
  */
 public abstract class IdleMotorState extends ElevatorState {
+	/**
+	 * Constructor
+	 * @param ctx
+	 */
 	public IdleMotorState(ElevatorContext ctx) {
 		super(ctx);
 		ctx.setMotor(Motor.IDLE);

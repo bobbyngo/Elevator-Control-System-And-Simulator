@@ -16,10 +16,17 @@ public enum TimeoutEvent {
 	
 	private String eventMsg;
 	
+	/**
+	 * TimeoutEvent
+	 * @param event
+	 */
 	private TimeoutEvent(String event) {
 		eventMsg = "Event: " + event;
 	}
 	
+	/**
+	 * toString
+	 */
 	@Override
 	public String toString() {
 		return eventMsg;

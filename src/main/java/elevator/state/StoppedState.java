@@ -12,6 +12,10 @@ import main.java.elevator.Motor;
  */
 public class StoppedState extends IdleMotorState {
 
+	/**
+	 * Constructor
+	 * @param ctx
+	 */
 	public StoppedState(ElevatorContext ctx) {
 		super(ctx);
 		StateTimeoutTask stt = new StateTimeoutTask(ctx, TimeoutEvent.DOORS_OPEN);
@@ -19,11 +23,17 @@ public class StoppedState extends IdleMotorState {
 		ctx.notifyArrivalSensor();
 	}
 
+	/**
+	 * handleRequestReceived
+	 */
 	@Override
 	public ElevatorState handleRequestReceived() {
 		return this;
 	}
 
+	/**
+	 * handleTimeout
+	 */
 	@Override
 	public ElevatorState handleTimeout() {
 		ElevatorContext ctx = this.getContext();
@@ -37,11 +47,17 @@ public class StoppedState extends IdleMotorState {
 		return new DoorsOpenState(ctx);
 	}
 
+	/**
+	 * toString
+	 */
 	@Override
 	public String toString() {
 		return "Stopped";
 	}
 
+	/**
+	 * getElevatorStateEnum
+	 */
 	@Override
 	public ElevatorStateEnum getElevatorStateEnum() {
 		return ElevatorStateEnum.STOPPED;

@@ -13,14 +13,27 @@ import main.java.elevator.ElevatorContext;
 public abstract class ElevatorState {
 	private ElevatorContext context;
 	
+	/**
+	 * Constructor
+	 * @param ctx
+	 */
 	public ElevatorState(ElevatorContext ctx) {
 		context = ctx;
 	}
 	
+	/**
+	 * Start the state with Idle
+	 * @param ctx
+	 * @return
+	 */
 	public static ElevatorState start(ElevatorContext ctx) {
 		return new IdleState(ctx);
 	}
 	
+	/**
+	 * Getter for context
+	 * @return
+	 */
 	public ElevatorContext getContext() {
 		return context;
 	}

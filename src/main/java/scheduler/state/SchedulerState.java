@@ -12,14 +12,27 @@ import main.java.scheduler.SchedulerContext;
 public abstract class SchedulerState {
 	private SchedulerContext context;
 	
+	/**
+	 * Constructor
+	 * @param ctx
+	 */
 	public SchedulerState(SchedulerContext ctx) {
 		context = ctx;
 	}
 	
+	/**
+	 * getContext
+	 * @return
+	 */
 	public SchedulerContext getContext() {
 		return context;
 	}
 	
+	/**
+	 * start method with idle state
+	 * @param ctx
+	 * @return
+	 */
 	public static SchedulerState start(SchedulerContext ctx) {
 		return new IdleState(ctx);
 	}

@@ -14,46 +14,12 @@ import main.java.scheduler.SchedulerContext;
  */
 public class InServiceState extends SchedulerState {
 
+	/**
+	 * Constructor
+	 * @param ctx
+	 */
 	public InServiceState(SchedulerContext ctx) {
 		super(ctx);
-		// entry/constructor:
-			// 1. execute behaviour for pendingRequests if there exists a pendingRequest (independent thread)
-			// 2. execute behaviour for completedRequests if there exists a completedRequests (independent thread)
-			//	-> join these two tasks
-//		Thread pendingReqTask, completedReqTask;
-//		
-//		pendingReqTask = new Thread(new Runnable() {
-//			@Override
-//			public void run() {
-//				try {
-//					ctx.assignNextBestElevatorRequest();
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		});
-//		
-//		completedReqTask = new Thread(new Runnable() {
-//
-//			@Override
-//			public void run() {
-//				try {
-//					ctx.processCompletedElevatorRequest();
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		});
-//		
-//		pendingReqTask.start();
-//		completedReqTask.start();
-//		try {
-//			completedReqTask.join();
-//			pendingReqTask.join();
-//		} catch (InterruptedException e) {
-//			e.printStackTrace();
-//		}
-		
 		try {
 			ctx.assignNextBestElevatorRequest();
 			ctx.processCompletedElevatorRequest();
@@ -62,6 +28,9 @@ public class InServiceState extends SchedulerState {
 		}
 	}
 
+	/**
+	 * handleRequestReceived
+	 */
 	@Override
 	public SchedulerState handleRequestReceived() {
 		
@@ -74,11 +43,17 @@ public class InServiceState extends SchedulerState {
 		return new InServiceState(ctx);
 	}
 
+	/**
+	 * toString
+	 */
 	@Override
 	public String toString() {
 		return "InServiceState";
 	}
 
+	/**
+	 * handleRequestSent
+	 */
 	@Override
 	public SchedulerState handleRequestSent() {
 		SchedulerContext ctx = this.getContext();

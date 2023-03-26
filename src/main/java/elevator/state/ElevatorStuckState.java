@@ -11,27 +11,43 @@ import main.java.elevator.ElevatorContext;
  */
 public class ElevatorStuckState extends IdleMotorState {
 
+	/**
+	 * Constructor
+	 * @param ctx
+	 */
 	public ElevatorStuckState(ElevatorContext ctx) {
 		super(ctx);
 		ctx.notifyArrivalSensor();
 		ctx.returnExternalRequests();
 	}
 
+	/**
+	 * handleRequestReceived
+	 */
 	@Override
 	public ElevatorState handleRequestReceived() {
 		return this;
 	}
 
+	/**
+	 * handleTimeout
+	 */
 	@Override
 	public ElevatorState handleTimeout() {
 		return this;
 	}
 
+	/**
+	 * toString
+	 */
 	@Override
 	public String toString() {
 		return "ElevatorStuck";
 	}
 
+	/**
+	 * getElevatorStateEnum
+	 */
 	@Override
 	public ElevatorStateEnum getElevatorStateEnum() {
 		return ElevatorStateEnum.ELEVATOR_STUCK;

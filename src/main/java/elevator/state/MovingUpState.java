@@ -12,11 +12,18 @@ import main.java.elevator.Motor;
  */
 public class MovingUpState extends MovingState {
 
+	/**
+	 * Constructor
+	 * @param ctx
+	 */
 	public MovingUpState(ElevatorContext ctx) {
 		super(ctx);
 		ctx.setMotor(Motor.THROTTLE_UP);
 	}
 
+	/**
+	 * handleRequestReceived
+	 */
 	@Override
 	public ElevatorState handleRequestReceived() {
 		ElevatorContext ctx = this.getContext();
@@ -28,6 +35,9 @@ public class MovingUpState extends MovingState {
 		return this;
 	}
 
+	/**
+	 * handleTimeout
+	 */
 	@Override
 	public ElevatorState handleTimeout() {
 		ElevatorContext ctx = this.getContext();
@@ -45,12 +55,18 @@ public class MovingUpState extends MovingState {
 		return new MovingUpState(ctx);
 	}
 
+	/**
+	 * toString
+	 */
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
 		return "MovingUp";
 	}
 
+	/**
+	 * getElevatorStateEnum
+	 */
 	@Override
 	public ElevatorStateEnum getElevatorStateEnum() {
 		return ElevatorStateEnum.MOVING_UP;

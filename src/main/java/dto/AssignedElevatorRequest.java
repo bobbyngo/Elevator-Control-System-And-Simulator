@@ -3,14 +3,8 @@
  */
 package main.java.dto;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.sql.Timestamp;
 import java.text.ParseException;
 
 import main.java.SerializableEncoder;

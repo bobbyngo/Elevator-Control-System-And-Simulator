@@ -131,10 +131,12 @@ public class SchedulerContext {
 		return assignedElevatorRequest;
 	}
 	
+	/**
+	 * assignNextBestElevatorRequest
+	 * @throws IOException
+	 */
 	public void assignNextBestElevatorRequest() throws IOException {
-		AssignedElevatorRequest request;
-		
-		request = this.findBestElevatorToAssignRequest();
+		AssignedElevatorRequest request = this.findBestElevatorToAssignRequest();
 		if (request != null) {
 			schedulerSubsystem.sendPendingRequest(request);
 		}
@@ -207,6 +209,9 @@ public class SchedulerContext {
 		}
 	}
 	
+	/**
+	 * Method for onRequestReceived
+	 */
 	public void onRequestReceived() {
 		synchronized (currentState) {
 			System.out.println("Event: Request Received");
@@ -216,6 +221,9 @@ public class SchedulerContext {
 		}
 	}
 	
+	/**
+	 * onRequestSent
+	 */
 	public void onRequestSent() {
 		synchronized (currentState) {
 			System.out.println("Event: Request Sent");
@@ -225,10 +233,18 @@ public class SchedulerContext {
 		}
 	}
 	
+	/**
+	 * Checking if scheduler should be idle
+	 * @return boolean
+	 */
 	public boolean isSchedulerIdle() {
 		return pendingElevatorRequests.size() == 0 && completedElevatorRequests.size() == 0;
 	}
 	
+	/**
+	 * processCompletedElevatorRequest
+	 * @throws IOException
+	 */
 	public void processCompletedElevatorRequest() throws IOException {
 		// do something with the completed elevator request here...?
 		ElevatorRequest nextCompletedRequest;

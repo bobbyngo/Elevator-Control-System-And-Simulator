@@ -14,6 +14,10 @@ import main.java.elevator.Motor;
  */
 public class IdleState extends IdleMotorState {
 
+	/**
+	 * Constructor
+	 * @param ctx
+	 */
 	public IdleState(ElevatorContext ctx) {
 		super(ctx);
 		
@@ -21,6 +25,9 @@ public class IdleState extends IdleMotorState {
 		ctx.setDirection(Direction.IDLE);
 	}
 
+	/**
+	 * handleRequestReceived
+	 */
 	@Override
 	public ElevatorState handleRequestReceived() {
 		ElevatorContext ctx = this.getContext();
@@ -29,16 +36,25 @@ public class IdleState extends IdleMotorState {
 		return new DoorsClosedState(ctx);
 	}
 
+	/**
+	 * handleTimeout
+	 */
 	@Override
 	public ElevatorState handleTimeout() {
 		return this;
 	}
 
+	/**
+	 * toString
+	 */
 	@Override
 	public String toString() {
 		return "Idle";
 	}
 
+	/**
+	 * getElevatorStateEnum
+	 */
 	@Override
 	public ElevatorStateEnum getElevatorStateEnum() {
 		return ElevatorStateEnum.IDLE;

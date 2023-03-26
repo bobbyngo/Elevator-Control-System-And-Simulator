@@ -10,6 +10,10 @@ import main.java.elevator.ElevatorContext;
  *
  */
 public abstract class MovingState extends ElevatorState {
+	/**
+	 * Constructor
+	 * @param ctx
+	 */
 	public MovingState(ElevatorContext ctx) {
 		super(ctx);
 		StateTimeoutTask stt = new StateTimeoutTask(ctx, TimeoutEvent.MOTOR_STOP);

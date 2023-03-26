@@ -11,6 +11,10 @@ import main.java.scheduler.SchedulerContext;
  */
 public class IdleState extends SchedulerState {
 
+	/**
+	 * Constructor
+	 * @param ctx
+	 */
 	public IdleState(SchedulerContext ctx) {
 		super(ctx);
 		// entry/constructor():
@@ -19,6 +23,9 @@ public class IdleState extends SchedulerState {
 		// and completedRequests in the queues
 	}
 
+	/**
+	 * handleRequestReceived
+	 */
 	@Override
 	public SchedulerState handleRequestReceived() {
 		SchedulerContext ctx = this.getContext();
@@ -29,11 +36,17 @@ public class IdleState extends SchedulerState {
 
 	}
 
+	/**
+	 * toString
+	 */
 	@Override
 	public String toString() {
 		return "IdleState";
 	}
 
+	/**
+	 * handleRequestSent 
+	 */
 	@Override
 	public SchedulerState handleRequestSent() {
 		return this;

@@ -11,6 +11,10 @@ import main.java.elevator.ElevatorContext;
  */
 public class DoorsStuckState extends IdleMotorState {
 
+	/**
+	 * Constructor
+	 * @param ctx
+	 */
 	public DoorsStuckState(ElevatorContext ctx) {
 		super(ctx);
 		StateTimeoutTask stt = new StateTimeoutTask(ctx, TimeoutEvent.DOORS_UNSTUCK);
@@ -18,11 +22,17 @@ public class DoorsStuckState extends IdleMotorState {
 		ctx.notifyArrivalSensor();
 	}
 
+	/**
+	 * handleRequestReceived
+	 */
 	@Override
 	public ElevatorState handleRequestReceived() {
 		return this;
 	}
 
+	/**
+	 * handleTimeout
+	 */
 	@Override
 	public ElevatorState handleTimeout() {
 		ElevatorContext ctx = this.getContext();
@@ -30,12 +40,18 @@ public class DoorsStuckState extends IdleMotorState {
 		return new DoorsOpenState(ctx);
 	}
 
+	/**
+	 * toString
+	 */
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
 		return "DoorsStuck";
 	}
 
+	/**
+	 * getElevatorStateEnum
+	 */
 	@Override
 	public ElevatorStateEnum getElevatorStateEnum() {
 		// TODO Auto-generated method stub

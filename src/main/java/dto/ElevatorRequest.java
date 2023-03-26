@@ -134,11 +134,23 @@ public class ElevatorRequest implements Serializable {
 		return timestamp;
 	}
 	
+	/**
+	 * decode
+	 * @param data
+	 * @return
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
 	public static ElevatorRequest decode(byte[] data) throws IOException, ClassNotFoundException {
 		Object decodedObj = SerializableEncoder.decode(data);
 		return (ElevatorRequest) decodedObj;
 	}
 	
+	/**
+	 * encode
+	 * @return
+	 * @throws IOException
+	 */
 	public byte[] encode() throws IOException {
 		byte[] encodedData = SerializableEncoder.encode(this);
 		return encodedData;
