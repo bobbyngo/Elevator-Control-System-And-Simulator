@@ -6,10 +6,11 @@ Department of Systems and Computer Engineering
 SYSC 3303A Real-Time Concurrent Systems Winter 2023 
 Iteration 1 - Establish Connections between the three subsystems.
 Iteration 2 - Adding the Scheduler and Elevator Subsystems.
-Iteration 3 – Multiple Cars and System Distribution.
+Iteration 3 â€“ Multiple Cars and System Distribution.
 @version 1.0, 02/04/23
 @version 2.0, 02/27/23
 @version 3.0, 03/11/23
+@version 4.0, 03/25/23
 ```
 
 ## Group 7 Members:
@@ -44,26 +45,13 @@ the documentation folder labeled:
 No other external dependencies required.
 
 ## Compiling & Running the Application
+Navigate to SchedulerSubsystem.java -> Run the main method
+</br>
+Navigate to ElevatorSubsystem.java -> Run the main method
+</br>
+Navigate to Floor.java -> Run the main method
 
-Note that this application was built on Eclipse IDE release version 4.26.0. using Window 10 OS.
-
-The program can be compiled and executed via Command Prompt. Note that each program requires its own 
-terminal. In other words, it must be able to run multiple main programs 
-(projects) concurrently.
-
-```console
-> cd C:\..\..\src\				// Navigate to the src directory	
-> javac *.java					// Compile the source code
-> cd 							// Change directory to .class files
-> java -cp . Scheduler			// Set classpath to run application
-> java -cp . Floor				// Set classpath to run application
-> java -cp . Elevator			// Set classpath to run application
-```
-
-1. Download and extract the .zip file.
-2. Import the source code and run the program in local IDE. 
-3. Right click and select to "Run As" Java Application.
-4. Run Scheduler, Floor, Elevator in this sequence.
+The output should be in the console of eclipse
 
 ## UML Diagrams
 ![UML-class](/documentation/P3-UML-class.drawio.png)
@@ -79,9 +67,13 @@ The ElevatorRequest as a shared object that is used for threads to communicate.
 Adding State Machine functionality for the Scheduler subsystem and Elevator subsystem. Demonstrating the state changes of subsystems when there is an action or event that trigger it
 
 # Iteration 3
-Split up system to separate programs that can be run on three separate computers and communicate with each other using UDP using Remote Procedure Calls.
+Split up system to separate programs that can be run on three separate computers and communicate with each other using UDP.
 The Scheduler will now be used to coordinate the movement of cars such that each car carries roughly the same number of passengers as all of the others and so that the waiting time for passengers at floors is minimized.
 The state machines for each car should execute independently of each other, but they will all have to share their position with the scheduler. The scheduler will choose which elevator will be used to service a given request.
+
+# Iteration 4
+Adding error states for DOOR_STUCK and ELEVATOR_STUCK by determining the floor would case these state to happen. If the elevator reaches those floor the error state would appear. 
+Adding the state machine pattern, making the system configurable
 
 ## Project structure:
 
@@ -115,17 +107,41 @@ ELEVATOR-CONTROL-SYSTEM-AND-SIMULATOR
     |   +---java
     |   |   |   Main.java
     |   |   |   package-info.java
+    |   |   |   SerializableEncoder.java
+    |   |   |   SimulatorConfiguration.java
+    |   |   |   UDPClient.java
     |   |   |
     |   |   +---dto
-    |   |   |       Direction.java
+    |   |   |       AssignedElevatorRequest.java
+    |   |   |       ElevatorStatus.java
     |   |   |       ElevatorRequest.java
     |   |   |       package-info.java
     |   |   |       RPC.java
     |   |   |
     |   |   +---elevator
-    |   |   |       Elevator.java
-    |   |   |       ElevatorState.java
+    |   |   |       Direction.java
+    |   |   |       Door.java
+    |   |   |       ElevatorContext.java
+    |   |   |       ElevatorSubsystem.java
+    |   |   |       Motor.java
+    |   |   |       RequestListenerTask.java
     |   |   |       package-info.java
+    |   |   |
+    |   |   |   +---state
+    |   |   |   |       DoorsClosedState.java
+    |   |   |   |       DoorsOpenState.java
+    |   |   |   |       DoorsStuckState.java
+    |   |   |   |       ElevatorState.java
+    |   |   |   |       ElevatorStateEnum.java
+    |   |   |   |       ElevatorStuckState.java
+    |   |   |   |       IdleMotorState.java
+    |   |   |   |       IdleState.java
+    |   |   |   |       MovingDownState.java
+    |   |   |   |       MovingState.java
+    |   |   |   |       MovingUpState.java
+    |   |   |   |       StateTimeoutTask.java
+    |   |   |   |       StoppedState.java
+    |   |   |   |       TimeoutEvent.java
     |   |   |
     |   |   +---exception
     |   |   |       ElevatorReqParamException.java
@@ -133,6 +149,7 @@ ELEVATOR-CONTROL-SYSTEM-AND-SIMULATOR
     |   |   |
     |   |   +---floor
     |   |   |   |   Floor.java
+    |   |   |   |   FloorComponents.java
     |   |   |   |   package-info.java
     |   |   |   |
     |   |   |   \---parser
@@ -141,17 +158,22 @@ ELEVATOR-CONTROL-SYSTEM-AND-SIMULATOR
     |   |   |
     |   |   \---scheduler
     |   |           package-info.java
-    |   |           Scheduler.java
-    |   |           SchedulerState.java
+    |   |           SchedulerContext.java
+    |   |           SchedulerSubsystem.java
+    |   |   |   \---state
+    |   |   |           package-info.java
+    |   |   |           IdleState.java
+    |   |   |           InServiceState.java
+    |   |   |           SchedulerState.java
     |   |
     |   \---resources
     |           input.txt
     |           package-info.java
+    |           config.properties
     |
     \---test
         +---java
         |   |   package-info.java
-        |   |   SystemTest.java
         |   |
         |   +---dto
         |   |       ElevatorRequestTest.java
@@ -172,8 +194,7 @@ ELEVATOR-CONTROL-SYSTEM-AND-SIMULATOR
         |   |
         |   \---scheduler
         |           package-info.java
-        |           SchedulerStateTest.java
-        |           SchedulerTest.java
+        |           SchedulerContextTest.java
         |
         \---resources
                 incorrectInput.txt
@@ -184,21 +205,29 @@ ELEVATOR-CONTROL-SYSTEM-AND-SIMULATOR
 
 ### main package
 `dto:` Location for enums, shared resource buffer classes:
+* AssignedElevatorRequest.java: Subclass for ElevatorRequest
 * ElevatorRequest.java: A class storing all the relevant information regarding passenger's elevator requests
 * Direction.java: A class that storing the moving direction of the elevator in enum 
 * RPC.java: A class that is responsible for the remote procedure call communication using UDP
 
 `scheduler:` Package for classes related to scheduler subsystem
-* SchedulerState.java: Enum class provides the available states of the Scheduler subsystem
-* Scheduler.java: The server which responsible for handling the input from threads and route each elevator to requested floors and coordinating elevators
+* SchedulerSubsystem.java: Subsystem class that containing 3 threads for listening to the request and sending requests
+* SchedulerContext.java: Entity class
+
+`scheduler.states:` Package for classes related to scheduler subsystem
 
 `exception:` Package for customize exception classes
 * ElevatorReqParamException.java: Custom exception for elevator request error
 
 `elevator:` Package for classes related to elevator subsystem
 * ElevatorComponents.java: A class containing elevator components that will be used in the UI integration with Static Model of Domain
-* ElevatorState.java: Enum class provides the available states of the Elevator subsystem
-* Elevator.java: A consumer class dispatches requests of the scheduler after finishing the request
+* ElevatorEntity.java: Entity class
+* ElevatorSubsystem.java: Subsystem has 1 thread for listening to the request from Scheduler
+* Direction.java: Enum class for direction of elevator
+* Door.java: Enum class for door closing
+* RequestListenerTask.java: Listener thread
+
+`elevator.state:` Package for elevator states
 
 `floor:` Package for classes related to floor subsystem
 * Floor.java: A producer class initiates requests to the scheduler for users wanting to travel up or down
@@ -213,7 +242,7 @@ ELEVATOR-CONTROL-SYSTEM-AND-SIMULATOR
 * ElevatorRequestTest.java: Test class for ElevatorRequest class
 * SystemTest.java: Test class for the behaviors of the system
 * FloorTest.java: Test class for the floor system
-* SchedulerStateTest.java: Test class for Scheduler state subsystem
+* SchedulerContextTest.java: Test class for Scheduler state subsystem
 * ElevatorStateTest.java: Test class for Elevator state subsystem
 * ElevatorTest.java: Test class for Scheduler subsystem
 
