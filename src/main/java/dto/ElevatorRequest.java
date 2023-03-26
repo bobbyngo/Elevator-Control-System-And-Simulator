@@ -1,8 +1,13 @@
 package main.java.dto;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+
+import main.java.SerializableEncoder;
+import main.java.elevator.Direction;
 
 /**
  * The ElevatorRequest class is responsible for storing all the
@@ -10,8 +15,12 @@ import java.text.SimpleDateFormat;
  * @author Patrick Liu
  * @version 1.0, 02/04/23
  */
-public class ElevatorRequest {
+public class ElevatorRequest implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Timestamp timestamp;
 	private Integer sourceFloor;
 	private Direction direction;
@@ -123,6 +132,28 @@ public class ElevatorRequest {
 						timestampString)
 					.getTime());
 		return timestamp;
+	}
+	
+	/**
+	 * decode
+	 * @param data
+	 * @return
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
+	public static ElevatorRequest decode(byte[] data) throws IOException, ClassNotFoundException {
+		Object decodedObj = SerializableEncoder.decode(data);
+		return (ElevatorRequest) decodedObj;
+	}
+	
+	/**
+	 * encode
+	 * @return
+	 * @throws IOException
+	 */
+	public byte[] encode() throws IOException {
+		byte[] encodedData = SerializableEncoder.encode(this);
+		return encodedData;
 	}
 
 }

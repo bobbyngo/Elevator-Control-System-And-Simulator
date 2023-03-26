@@ -1,4 +1,5 @@
 /bin/
+.metadata
 .metadata/.lock
 *.log
 *.xmi

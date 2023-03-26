@@ -10,8 +10,8 @@ import java.text.SimpleDateFormat;
 import org.junit.Before;
 import org.junit.Test;
 
-import main.java.dto.Direction;
 import main.java.dto.ElevatorRequest;
+import main.java.elevator.Direction;
 
 /**
  * ElevatorRequestTest tests and validates methods in the data transfer object

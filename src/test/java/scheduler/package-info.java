@@ -1,6 +1,6 @@
 /**
  * This package contains the unit tests for verifying
- * and validating the functionality of the Scheduler
+ * and validating the functionality of the SchedulerOld
  * subsystem in the Elevator Control System & Simulator.
  * @version 1.0, 02/04/23
  * @since 1.0, 02/04/23
