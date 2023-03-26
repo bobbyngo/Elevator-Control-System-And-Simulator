@@ -34,8 +34,8 @@ The work breakdown responsibility of the project for the iteration is located:
 The UML class diagram and the UML sequence diagram of the system is contained in
 the documentation folder labeled: 
 
-* documentation/P3-UML-class.drawio.pdf
-* documentation/P3-UML-sequence.drawio.pdf
+* documentation/P4-UML-class.drawio.pdf
+* documentation/P4-UML-sequence.drawio.pdf
 
 ## Requirements & Dependencies
 
@@ -54,8 +54,8 @@ Navigate to Floor.java -> Run the main method
 The output should be in the console of eclipse
 
 ## UML Diagrams
-![UML-class](/documentation/P3-UML-class.drawio.png)
-![UML-sequence](/documentation/P3-UML-sequence.drawio.png)
+![UML-class](/documentation/P4-UML-class.drawio.png)
+![UML-sequence](/documentation/diagrams-sequence.drawio.png)
 
 # Iteration 1
 Set up an application for 3 subsystems: Floor, Scheduler, and Elevator. 
@@ -70,6 +70,8 @@ Adding State Machine functionality for the Scheduler subsystem and Elevator subs
 Split up system to separate programs that can be run on three separate computers and communicate with each other using UDP.
 The Scheduler will now be used to coordinate the movement of cars such that each car carries roughly the same number of passengers as all of the others and so that the waiting time for passengers at floors is minimized.
 The state machines for each car should execute independently of each other, but they will all have to share their position with the scheduler. The scheduler will choose which elevator will be used to service a given request.
+![UML-elevatorState-class](/documentation/P4-UML-elevatorState.draw.io.png)
+![UML-schedulerState-sequence](/documentation/P4-UML-schedulerState.drawio.png)
 
 # Iteration 4
 Adding error states for DOOR_STUCK and ELEVATOR_STUCK by determining the floor would case these state to happen. If the elevator reaches those floor the error state would appear. 
