@@ -52,6 +52,7 @@ public class SchedulerContext {
 		
 		currentState = SchedulerState.start(this);
 		System.out.println(String.format("Current state: %s", currentState));
+		
 	}
 	
 	/**
@@ -103,14 +104,25 @@ public class SchedulerContext {
 		} else {
 			ElevatorStatus chosenElevatorStatus = null;
 			
-			for (ElevatorRequest request : pendingElevatorRequests)	{
-				 chosenElevatorStatus = findTheAvailableElevator(request.getDirection(), request.getSourceFloor()); 
-				if (chosenElevatorStatus != null) {
-					assignedElevatorRequest = new AssignedElevatorRequest(chosenElevatorStatus.getElevatorId(), request);
-				} else {
-					// Get the first elevator
-					chosenElevatorStatus = availableElevatorStatus.get(0);
-					assignedElevatorRequest = new AssignedElevatorRequest(chosenElevatorStatus.getElevatorId(), request);
+			synchronized (pendingElevatorRequests) {
+				ElevatorRequest request = null;
+				//for (ElevatorRequest request : pendingElevatorRequests)	{
+				for (int i=0; i<pendingElevatorRequests.size(); i++) {
+					request = pendingElevatorRequests.get(i);
+					 chosenElevatorStatus = findTheAvailableElevator(request.getDirection(), request.getSourceFloor()); 
+					if (chosenElevatorStatus != null) {
+						assignedElevatorRequest = new AssignedElevatorRequest(chosenElevatorStatus.getElevatorId(), request);
+						break;
+					} else {
+						// Get the first elevator
+						chosenElevatorStatus = availableElevatorStatus.get(0);
+						assignedElevatorRequest = new AssignedElevatorRequest(chosenElevatorStatus.getElevatorId(), request);
+						break;
+					}
+				}
+				
+				if (request != null) {
+					pendingElevatorRequests.remove(request);
 				}
 			}
 		}
@@ -120,8 +132,12 @@ public class SchedulerContext {
 	}
 	
 	public void assignNextBestElevatorRequest() throws IOException {
-		AssignedElevatorRequest request = this.findBestElevatorToAssignRequest();
-		schedulerSubsystem.sendPendingRequest(request);
+		AssignedElevatorRequest request;
+		
+		request = this.findBestElevatorToAssignRequest();
+		if (request != null) {
+			schedulerSubsystem.sendPendingRequest(request);
+		}
 	}
 	
 	/**
@@ -195,7 +211,17 @@ public class SchedulerContext {
 		synchronized (currentState) {
 			System.out.println("Event: Request Received");
 			currentState = currentState.handleRequestReceived();
-			System.out.println(String.format("Current state: %s", currentState));
+			System.out.println(String.format("Current state: %s, # Completed: %d", 
+					currentState, this.completedElevatorRequests.size()));
+		}
+	}
+	
+	public void onRequestSent() {
+		synchronized (currentState) {
+			System.out.println("Event: Request Sent");
+			currentState = currentState.handleRequestSent();
+			System.out.println(String.format("Current state: %s, # Completed: %d", 
+					currentState, this.completedElevatorRequests.size()));
 		}
 	}
 	
@@ -207,7 +233,8 @@ public class SchedulerContext {
 		// do something with the completed elevator request here...?
 		ElevatorRequest nextCompletedRequest;
 		if (completedElevatorRequests.size() > 0) {
-			nextCompletedRequest = completedElevatorRequests.get(0);
+			nextCompletedRequest = completedElevatorRequests.get(completedElevatorRequests.size() - 1);
+			//this.completedElevatorRequests.remove(nextCompletedRequest);
 			schedulerSubsystem.sendCompletedElevatorRequest(nextCompletedRequest);
 		}
 	}

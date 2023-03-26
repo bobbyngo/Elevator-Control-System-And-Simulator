@@ -125,14 +125,30 @@ public class SchedulerSubsystem implements Runnable {
 	 */
 	public void sendPendingRequest(AssignedElevatorRequest request) throws IOException {
 		//AssignedElevatorRequest request = schedulerContext.findBestElevatorToAssignRequest();
+		Thread task;
 		
-		if (request != null) {
-			byte[] data = request.encode();
-			
-			UDPClient socket = new UDPClient();
-			socket.sendMessage(data, simulatorConfiguration.ELEVATOR_SUBSYSTEM_HOST, 
-					simulatorConfiguration.ELEVATOR_SUBSYSTEM_REQ_PORT);
-		}
+		task = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				if (request != null) {
+					byte[] data;
+					try {
+						data = request.encode();
+						UDPClient socket = new UDPClient();
+						socket.sendMessage(data, simulatorConfiguration.ELEVATOR_SUBSYSTEM_HOST, 
+								simulatorConfiguration.ELEVATOR_SUBSYSTEM_REQ_PORT);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					
+					System.out.println(String.format("Sent AssignedElevatorRequest: %s", request));
+					schedulerContext.onRequestSent();
+					
+				}
+			}
+		});
+		task.start();
+		
 	}
 	
 	/**
@@ -185,13 +201,16 @@ public class SchedulerSubsystem implements Runnable {
 		byte[] completedRequestData = UDPClient.readPacketData(packetFromElevator);
 		ElevatorRequest completedRequest = ElevatorRequest.decode(completedRequestData);
 		
-		task = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				schedulerContext.addCompletedElevatorRequests(completedRequest);
-			}
-		});
-		task.start();
+//		task = new Thread(new Runnable() {
+//			@Override
+//			public void run() {
+//				System.out.println("Received completed request %s" + completedRequest);
+//				schedulerContext.addCompletedElevatorRequests(completedRequest);
+//			}
+//		});
+//		task.start();
+		System.out.println("Received completed request %s" + completedRequest);
+		schedulerContext.addCompletedElevatorRequests(completedRequest);
 	}
 	
 	/**
@@ -200,11 +219,23 @@ public class SchedulerSubsystem implements Runnable {
 	 * @throws IOException
 	 */
 	public void sendCompletedElevatorRequest(ElevatorRequest completedRequest) throws IOException {
-		byte[] data = completedRequest.encode();
-		
-		UDPClient socket = new UDPClient();
-		socket.sendMessage(data, simulatorConfiguration.FLOOR_SUBSYSTEM_HOST, 
-				simulatorConfiguration.FLOOR_SUBSYSTEM_REQ_PORT);
+		Thread task;
+		task = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				byte[] data;
+				try {
+					UDPClient socket = new UDPClient();
+					data = completedRequest.encode();
+					socket.sendMessage(data, simulatorConfiguration.FLOOR_SUBSYSTEM_HOST, 
+							simulatorConfiguration.FLOOR_SUBSYSTEM_REQ_PORT);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				schedulerContext.onRequestSent();
+			}
+		});
+		task.start();
 	}
 
 	/**

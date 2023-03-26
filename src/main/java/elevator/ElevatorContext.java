@@ -161,6 +161,7 @@ public class ElevatorContext {
 			if (req.getDestinationFloor() == currentFloor) {
 				//internalRequests.remove(req);
 				toRemove.add(req);
+				System.out.println("Completed ElevatorRequest... sending back to scheduler: " + req);
 				elevatorSubsystem.sendCompletedElevatorRequest(req);
 			}
 		}
@@ -283,9 +284,20 @@ public class ElevatorContext {
 	 */
 	@Override
 	public String toString() {
+		String externalReqStr = "";
+		String internalReqStr = "";
+		
+		for (ElevatorRequest req : externalRequests) {
+			externalReqStr += req + ", ";
+		}
+		for (ElevatorRequest req : internalRequests) {
+			internalReqStr += req + ", ";
+		}
+		
 		return String.format(
-				"Elevator#%d {CurrentFloor: %d, Current State: %s, Direction: %s, Motor: %s, Door: %s}",
-				id, currentFloor, currentState, direction, motor, door);
+				"Elevator#%d {CurrentFloor: %d, Current State: %s, Direction: %s, Motor: %s, Door: %s}"
+				+ " queued for pickup: {%s}, carrying: {%s}",
+				id, currentFloor, currentState, direction, motor, door, externalReqStr, internalReqStr);
 	}
 
 	/**
@@ -542,6 +554,7 @@ public class ElevatorContext {
 	
 	public void returnExternalRequests() {
 		synchronized (externalRequests) {
+			System.out.println("Elevator crashed: returning externalRequests to scheduler");
 			elevatorSubsystem.returnElevatorRequests(externalRequests);
 			externalRequests.removeAll(externalRequests);
 		}

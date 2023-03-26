@@ -25,5 +25,6 @@ public abstract class SchedulerState {
 	}
 	
 	public abstract SchedulerState handleRequestReceived();
+	public abstract SchedulerState handleRequestSent();
 	public abstract String toString();
 }

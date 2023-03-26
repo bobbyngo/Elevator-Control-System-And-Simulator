@@ -21,15 +21,22 @@ public class IdleState extends SchedulerState {
 
 	@Override
 	public SchedulerState handleRequestReceived() {
-		// handleRequestReceived():
-		// transition to IN_SERVICE
-		return new InServiceState(this.getContext());
+		SchedulerContext ctx = this.getContext();
+		if (ctx.isSchedulerIdle()) {
+			return this;
+		}
+		return new InServiceState(ctx);
 
 	}
 
 	@Override
 	public String toString() {
 		return "IdleState";
+	}
+
+	@Override
+	public SchedulerState handleRequestSent() {
+		return this;
 	}
 
 }

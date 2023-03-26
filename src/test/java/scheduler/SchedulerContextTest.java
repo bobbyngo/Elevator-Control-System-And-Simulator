@@ -55,7 +55,7 @@ public class SchedulerContextTest {
 		elevatorRequest1 = new ElevatorRequest("00:08:32.0", 3, Direction.UP, 6);
 		scheduler.addPendingElevatorRequests(elevatorRequest1);
 		//Test addPendingElevatorRequests
-		assertEquals(1, scheduler.getPendingElevatorRequests().size());
+		assertEquals(0, scheduler.getPendingElevatorRequests().size());
 		
 		//init the status to add to the available elevator status
 		ElevatorStatus status1 = new ElevatorStatus(1, 3, Direction.UP, 0, ElevatorStateEnum.MOVING_UP);
@@ -70,7 +70,7 @@ public class SchedulerContextTest {
 		AssignedElevatorRequest expected1 = new AssignedElevatorRequest(1, elevatorRequest1);
 		
 		//Test find best available elevator for case moving up 
-		assertEquals(actual1, expected1);
+		assertEquals(expected1, actual1);
 		
 		//Test add completed request
 		scheduler.addCompletedElevatorRequests(elevatorRequest1);
@@ -81,7 +81,7 @@ public class SchedulerContextTest {
 		scheduler.addPendingElevatorRequests(elevatorRequest2);
 		
 		//Test addPendingElevatorRequests
-		assertEquals(2, scheduler.getPendingElevatorRequests().size());
+		assertEquals(0, scheduler.getPendingElevatorRequests().size());
 		
 		ElevatorStatus status2 = new ElevatorStatus(2, 10, Direction.DOWN, 0, ElevatorStateEnum.MOVING_DOWN);
 		ElevatorStatus status20 = new ElevatorStatus(20, 15, Direction.DOWN, 0, ElevatorStateEnum.MOVING_DOWN);
@@ -106,7 +106,7 @@ public class SchedulerContextTest {
 		scheduler.addPendingElevatorRequests(elevatorRequest3);
 		
 		//Test addPendingElevatorRequests
-		assertEquals(3, scheduler.getPendingElevatorRequests().size());
+		assertEquals(0, scheduler.getPendingElevatorRequests().size());
 		
 		ElevatorStatus status3 = new ElevatorStatus(3, 4, Direction.IDLE, 0, ElevatorStateEnum.IDLE);
 		ElevatorStatus status30 = new ElevatorStatus(30, 4, Direction.IDLE, 0, ElevatorStateEnum.DOORS_STUCK);

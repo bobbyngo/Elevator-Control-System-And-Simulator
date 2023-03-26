@@ -79,4 +79,13 @@ public class InServiceState extends SchedulerState {
 		return "InServiceState";
 	}
 
+	@Override
+	public SchedulerState handleRequestSent() {
+		SchedulerContext ctx = this.getContext();
+		if (ctx.isSchedulerIdle()) {
+			return new IdleState(ctx);
+		}
+		return this;
+	}
+
 }
