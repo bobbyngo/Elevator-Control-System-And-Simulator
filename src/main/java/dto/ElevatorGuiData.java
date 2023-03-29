@@ -3,6 +3,7 @@
  */
 package main.java.dto;
 
+import java.io.IOException;
 import java.io.Serializable;
 
 import main.java.elevator.Direction;
@@ -38,7 +39,29 @@ public class ElevatorGuiData implements Serializable {
 		door = ctx.getDoors();
 		motor = ctx.getMotor();
 	}
-
+	
+	/**
+	 * Decoding method
+	 * @param data
+	 * @return
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
+	public static ElevatorGuiData decode(byte[] data) throws IOException, ClassNotFoundException {
+		Object decodedObj = SerializableEncoder.decode(data);
+		return (ElevatorGuiData) decodedObj;
+	}
+	
+	/**
+	 * Encoding method
+	 * @return
+	 * @throws IOException
+	 */
+	public byte[] encode() throws IOException {
+		byte[] encodedData = SerializableEncoder.encode(this);
+		return encodedData;
+	}
+	
 	public int getId() {
 		return id;
 	}
