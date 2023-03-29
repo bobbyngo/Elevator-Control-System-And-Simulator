@@ -564,6 +564,14 @@ public class ElevatorContext {
 		return currentState;
 	}
 	
+	public Door getDoors() {
+		return door;
+	}
+	
+	public Motor getMotor() {
+		return motor;
+	}
+	
 	public static void main(String[] args) throws ParseException, UnknownHostException, IOException, InterruptedException {
 		// small visual test
 		System.out.println("--small little elevator context test");

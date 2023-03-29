@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.text.ParseException;
 
-import main.java.SerializableEncoder;
 import main.java.elevator.Direction;
 
 /**
