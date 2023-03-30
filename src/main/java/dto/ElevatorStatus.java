@@ -6,7 +6,6 @@ package main.java.dto;
 import java.io.IOException;
 import java.io.Serializable;
 
-import main.java.SerializableEncoder;
 import main.java.elevator.Direction;
 import main.java.elevator.ElevatorContext;
 import main.java.elevator.state.ElevatorStateEnum;

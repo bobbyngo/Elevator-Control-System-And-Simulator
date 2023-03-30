@@ -1,7 +1,7 @@
 /**
  * 
  */
-package main.java;
+package main.java.dto;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
