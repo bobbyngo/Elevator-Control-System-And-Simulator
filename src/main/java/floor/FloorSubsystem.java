@@ -5,13 +5,18 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.UnknownHostException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import main.java.SimulatorConfiguration;
 import main.java.dto.ElevatorRequest;
 import main.java.dto.RPC;
+import main.java.elevator.ElevatorSubsystem;
 import main.java.floor.parser.Parser;
+import main.java.scheduler.SchedulerSubsystem;
 
 /**
  * The class that holds information about a floor and initiates requests 
@@ -20,28 +25,21 @@ import main.java.floor.parser.Parser;
  * @since 1.0, 02/04/23
  * @version 3.0, 03/11/23
  */
-public class Floor implements Runnable {
+public class FloorSubsystem implements Runnable {
 	
 	private static final int FLOOR_PORT = 4001;
 	private final Logger logger = Logger.getLogger(this.getClass().getName());
 	private final File file = new File("/src/main/resources/input.txt");
-	
+	private SimulatorConfiguration simulatorConfiguration;
 	private int floorNumber;
 	private Parser parser;
-	private RPC rpc;
+	private UDP udp;
 	
 	/**
-	 * Main method for the Floor class.
-	 * @param args, default parameters
+	 * Constructor for the FloorSubsystem class.
 	 */
-	public static void main(String[] args) {
-		new Thread(new Floor(1)).start();
-	}
-	
-	/**
-	 * Constructor for the Floor class.
-	 */
-	public Floor(int floorNumber) {
+	public FloorSubsystem(SimulatorConfiguration config) {
+		simulatorConfiguration = config;
 		this.floorNumber = floorNumber;
 		rpc = new RPC();
 		logger.setLevel(Level.INFO);
@@ -137,6 +135,20 @@ public class Floor implements Runnable {
 			System.exit(1);
 		}
 		return elevatorRequests;
+	}
+	
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		SimulatorConfiguration configuration;
+		ElevatorSubsystem floorSubsystem;
+		Thread floorSubsystemThread;
+		
+		configuration = new SimulatorConfiguration("./src/main/resources/config.properties");
+		floorSubsystemThread = new FloorSubsystem(configuration);
+		floorSubsystemThread = new Thread(floorSubsystem);
+		floorSubsystemThread.start();
 	}
 	
 }

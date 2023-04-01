@@ -137,6 +137,7 @@ public class SchedulerSubsystem implements Runnable {
 						UDPClient socket = new UDPClient();
 						socket.sendMessage(data, simulatorConfiguration.ELEVATOR_SUBSYSTEM_HOST, 
 								simulatorConfiguration.ELEVATOR_SUBSYSTEM_REQ_PORT);
+						socket.close();
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -188,6 +189,7 @@ public class SchedulerSubsystem implements Runnable {
 		UDPClient socket = new UDPClient();
 		socket.sendMessage(data, simulatorConfiguration.FLOOR_SUBSYSTEM_HOST, 
 				simulatorConfiguration.FLOOR_SUBSYSTEM_REQ_PORT);
+		socket.close();
 	}
 	
 	/**
@@ -229,6 +231,7 @@ public class SchedulerSubsystem implements Runnable {
 					data = completedRequest.encode();
 					socket.sendMessage(data, simulatorConfiguration.FLOOR_SUBSYSTEM_HOST, 
 							simulatorConfiguration.FLOOR_SUBSYSTEM_REQ_PORT);
+					socket.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
