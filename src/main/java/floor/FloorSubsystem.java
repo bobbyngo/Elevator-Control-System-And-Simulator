@@ -3,7 +3,13 @@ package main.java.floor;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.UnknownHostException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import main.java.SimulatorConfiguration;
@@ -55,8 +61,6 @@ public class FloorSubsystem implements Runnable {
 			addRequestsToQueue(elevatorRequests);
 		} catch (Exception e) {
 			e.printStackTrace();
-		} finally {
-			logger.info("Program terminated.");
 		}
 	}
 	
@@ -66,13 +70,27 @@ public class FloorSubsystem implements Runnable {
 	 * @throws IOException 
 	 * @throws InterruptedException 
 	 */
-	private void addRequestsToQueue(ArrayList<ElevatorRequest> elevatorRequests) throws IOException, InterruptedException {
+	private void addRequestsToQueue(ArrayList<ElevatorRequest> elevatorRequests) throws IOException, InterruptedException, ParseException {
 		if (!elevatorRequests.isEmpty()) {
+			Timer requestsTimer = new Timer();
 			for (ElevatorRequest req : elevatorRequests) {
 				byte[] data = req.encode();
 				udpRequestReceiver.sendMessage(data, simulatorConfiguration.SCHEDULER_HOST, simulatorConfiguration.SCHEDULER_PENDING_REQ_PORT);
+				System.out.println("Scheduling " + req.toString());
+				System.out.println(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS").parse(req.getTimestamp().toString()));
+				requestsTimer.schedule(new TimerTask() {
+					@Override
+					public void run() {
+						UDPClient udpSendReq = new UDPClient();
+						try {
+							udpSendReq.sendMessage(data, simulatorConfiguration.SCHEDULER_HOST, simulatorConfiguration.SCHEDULER_PENDING_REQ_PORT);
+						} catch (UnknownHostException e) {
+							e.printStackTrace();
+						}
+						System.out.println("SENDING REQUEST");
+					}
+				}, new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS").parse(req.getTimestamp().toString()));
 				System.out.println("--------------------------------------");
-				Thread.sleep(10000);
 			}
 		}
 	}
