@@ -1,47 +1,36 @@
 package main.java.floor;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.UnknownHostException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import main.java.SimulatorConfiguration;
+import main.java.UDPClient;
 import main.java.dto.ElevatorRequest;
-import main.java.dto.RPC;
-import main.java.elevator.ElevatorSubsystem;
 import main.java.floor.parser.Parser;
-import main.java.scheduler.SchedulerSubsystem;
 
 /**
  * The class that holds information about a floor and initiates requests 
  * to the scheduler for users wanting to travel up or down
  * @author Hussein El Mokdad
  * @since 1.0, 02/04/23
- * @version 3.0, 03/11/23
+ * @version 4.0, 04/1/23
  */
 public class FloorSubsystem implements Runnable {
-	
-	private static final int FLOOR_PORT = 4001;
 	private final Logger logger = Logger.getLogger(this.getClass().getName());
 	private final File file = new File("/src/main/resources/input.txt");
 	private SimulatorConfiguration simulatorConfiguration;
-	private int floorNumber;
 	private Parser parser;
-	private UDP udp;
+	private UDPClient udpRequestReceiver;
 	
 	/**
 	 * Constructor for the FloorSubsystem class.
 	 */
 	public FloorSubsystem(SimulatorConfiguration config) {
 		simulatorConfiguration = config;
-		this.floorNumber = floorNumber;
-		rpc = new RPC();
+		udpRequestReceiver = new UDPClient(simulatorConfiguration.FLOOR_SUBSYSTEM_REQ_PORT);
 		logger.setLevel(Level.INFO);
 		try {
 			// Filename before compilation
@@ -62,25 +51,14 @@ public class FloorSubsystem implements Runnable {
 	@Override
 	public void run() {
 		try {
-			rpc.openSocket();
 			ArrayList<ElevatorRequest> elevatorRequests = getElevatorRequests();
-			addRequestToQueue(elevatorRequests);
+			addRequestsToQueue(elevatorRequests);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			rpc.closeSocket();
 			logger.info("Program terminated.");
 		}
 	}
-	
-	/**
-	 * Get the floor number.
-	 * @return int, floor number
-	 */
-	public int getFloorNumber() {
-		return this.floorNumber;
-	}
-	
 	
 	/**
 	 * Sends the series of elevator requests to the SchedulerOld.
@@ -88,38 +66,15 @@ public class FloorSubsystem implements Runnable {
 	 * @throws IOException 
 	 * @throws InterruptedException 
 	 */
-	private void addRequestToQueue(ArrayList<ElevatorRequest> elevatorRequests) throws IOException, InterruptedException {
+	private void addRequestsToQueue(ArrayList<ElevatorRequest> elevatorRequests) throws IOException, InterruptedException {
 		if (!elevatorRequests.isEmpty()) {
-			// TODO: Send request as per time stamp logic potential added here
-			// Sends all the request for Floors at serially
 			for (ElevatorRequest req : elevatorRequests) {
-				//byte[] data = encodeData(req);
 				byte[] data = req.encode();
-				DatagramPacket reply = rpc.floorSendReceive(data, FLOOR_PORT);
-				//rpc.floorAck(reply);
+				udpRequestReceiver.sendMessage(data, simulatorConfiguration.SCHEDULER_HOST, simulatorConfiguration.SCHEDULER_PENDING_REQ_PORT);
 				System.out.println("--------------------------------------");
 				Thread.sleep(10000);
 			}
 		}
-	}
-	
-	/**
-	 * Encodes an elevator request object into a byte[] data.
-	 * @param elevatorRequest, ElevatorRequest obj
-	 * @return message byte[], the encoded elevatorRequest
-	 * @throws IOException
-	 */
-	private byte[] encodeData(ElevatorRequest elevatorRequest) {
-		ByteArrayOutputStream os = new ByteArrayOutputStream();
-		byte[] message = null;
-		try {
-			os.write(elevatorRequest.toString().getBytes());
-			os.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		message = os.toByteArray();
-		return message;
 	}
 
 	/**
@@ -142,11 +97,11 @@ public class FloorSubsystem implements Runnable {
 	 */
 	public static void main(String[] args) {
 		SimulatorConfiguration configuration;
-		ElevatorSubsystem floorSubsystem;
+		FloorSubsystem floorSubsystem;
 		Thread floorSubsystemThread;
 		
 		configuration = new SimulatorConfiguration("./src/main/resources/config.properties");
-		floorSubsystemThread = new FloorSubsystem(configuration);
+		floorSubsystem = new FloorSubsystem(configuration);
 		floorSubsystemThread = new Thread(floorSubsystem);
 		floorSubsystemThread.start();
 	}
