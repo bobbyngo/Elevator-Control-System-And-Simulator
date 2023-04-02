@@ -51,4 +51,9 @@ public class Floor {
 	public boolean getFloorDownLamp() {
 		return components.getButtonLampStatus(Direction.DOWN);
 	}
+	
+	@Override
+	public String toString() {
+		return "Floor " + floorNum + ": " + components.toString();
+	}
 }

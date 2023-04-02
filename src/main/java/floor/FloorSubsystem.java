@@ -129,11 +129,15 @@ public class FloorSubsystem implements Runnable {
 								floor.setFloorDownLamp(true);
 								System.out.println("Turned floor down lamp on");
 							}
+							
+							System.out.println(floor.toString());
+							
 						} catch (ClassNotFoundException | IOException e) {
 							e.printStackTrace();
 						}
 						
 						System.out.println("Sending request " + req.toString());
+						
 						System.out.println("--------------------------------------------------");
 					}
 				}, new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS").parse(req.getTimestamp().toString()));

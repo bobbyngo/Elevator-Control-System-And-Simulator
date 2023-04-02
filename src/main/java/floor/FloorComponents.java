@@ -34,8 +34,8 @@ public class FloorComponents {
 		buttonLamp.put(Direction.DOWN, false);
 		
 		for(int i = 0; i < simulatorConfiguration.NUM_ELEVATORS; i++) {
-			arrivalSensor.put(i, false);
-			directionLamp.put(i, Direction.IDLE);
+			arrivalSensor.put(i + 1, false);
+			directionLamp.put(i + 1, Direction.IDLE);
 		}
 	}
 	
@@ -97,5 +97,18 @@ public class FloorComponents {
 	 */
 	public void updateArrivalSensor(int elevatorID, boolean arrivalSensor) {
 		this.arrivalSensor.put(elevatorID, arrivalSensor);
+	}
+	
+	@Override
+	public String toString() {
+		String stringedObject = "";
+		
+		stringedObject += "Up ButtonLamp: " + buttonLamp.get(Direction.UP).toString() + ", Down ButtonLamp: " + buttonLamp.get(Direction.DOWN).toString();
+		
+		for (int i = 1; i <= simulatorConfiguration.NUM_ELEVATORS; i++) {
+			stringedObject += "; \n\tElevator# " + (i) + " arrival sensor: " + getArrivalSensor(i) + ", direction lamp: " + getDirectionLamp(i);
+		}
+		
+		return stringedObject;
 	}
 }
