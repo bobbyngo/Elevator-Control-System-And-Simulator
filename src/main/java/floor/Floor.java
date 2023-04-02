@@ -3,6 +3,8 @@
  */
 package main.java.floor;
 
+import main.java.elevator.Direction;
+
 /**
  * Responsible for controlling the floor components
  * @author Hussein El Mokdad
@@ -11,29 +13,27 @@ package main.java.floor;
  */
 public class Floor {
 	private int floorNum;
-	private boolean floorUpLamp;
-	private boolean floorDownLamp;
+	private FloorComponents components;
 	
 	public Floor(int floorNum) {
 		this.floorNum = floorNum;
-		this.floorUpLamp = false;
-		this.floorDownLamp = false;
+		this.components = new FloorComponents();	
 	}
 	
 	/**
 	 * Turns the floor up lamp on or off
 	 * @param mode the boolean of whether to turn the lamp on or off (true: on / false: off)
 	 */
-	public void setFloorUpLamp(boolean mode) {
-		floorUpLamp = mode;
+	public void setFloorUpLamp(boolean status) {
+		components.updateButtonDirectionStatus(Direction.UP, status);
 	}
 	
 	/**
 	 * Turns the floor down lamp on or off
 	 * @param mode the boolean of whether to turn the lamp on or off (true: on / false: off)
 	 */
-	public void setFloorDownLamp(boolean mode) {
-		floorDownLamp = mode;
+	public void setFloorDownLamp(boolean status) {
+		components.updateButtonDirectionStatus(Direction.DOWN, status);
 	}
 	
 	/**
@@ -41,7 +41,7 @@ public class Floor {
 	 * @return the boolean of whether the lamp is on or off (true: on / false: off)
 	 */
 	public boolean getFloorUpLamp() {
-		return floorUpLamp;
+		return components.getButtonLampStatus(Direction.UP);
 	}
 	
 	/**
@@ -49,6 +49,6 @@ public class Floor {
 	 * @return the boolean of whether the lamp is on or off (true: on / false: off)
 	 */
 	public boolean getFloorDownLamp() {
-		return floorDownLamp;
+		return components.getButtonLampStatus(Direction.DOWN);
 	}
 }
