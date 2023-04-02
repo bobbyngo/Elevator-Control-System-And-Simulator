@@ -1,7 +1,10 @@
 package main.java.floor;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
+import main.java.SimulatorConfiguration;
+import main.java.dto.ElevatorStatus;
 import main.java.elevator.Direction;
 /**
  * An wrapper class containing all the information of components of the floor
@@ -13,13 +16,14 @@ public class FloorComponents {
 	// Both hashmap size should always be 1
 	// Up and Down buttons will use the below logic
 	// Each floor will have the components below, if there is the event
-	// that trigger when clicking the button, invokes the implemented methods 
+	// that trigger when clicking the button, invokes the implemented methods
+	private SimulatorConfiguration simulatorConfiguration = new SimulatorConfiguration("./src/main/resources/config.properties");
 	private HashMap<Direction, Boolean> upButtonHashMap = new HashMap<>();
 	private HashMap<Direction, Boolean> downButtonHashMap = new HashMap<>();
+	private HashMap<Integer, Boolean> arrivalSensor = new HashMap<>();
 	// Denote the arrival and direction of an elevator at a floor
-	private Direction directionLamp;
+	private HashMap<Integer, Direction> directionLamp = new HashMap<>();
 	// Detecting elevator arrived to the floor
-	private boolean arrivalSensor;
 	
 	/**
 	 * Constructor for FloorComponents
@@ -29,8 +33,11 @@ public class FloorComponents {
 		// init all the component is not selected
 		upButtonHashMap.put(Direction.UP, false);
 		downButtonHashMap.put(Direction.DOWN, false);
-		this.directionLamp = direction;
-		arrivalSensor = false;
+		
+		for(int i = 0; i < simulatorConfiguration.NUM_ELEVATORS; i++) {
+			arrivalSensor.put(i, false);
+			directionLamp.put(i, Direction.IDLE);
+		}
 	}
 	
 	/**
@@ -51,16 +58,24 @@ public class FloorComponents {
 	 * Getter for direction of the lamp
 	 * @return Direction.UP or Direction.DOWN
 	 */
-	public Direction getDirectionLamp() {
+	public HashMap<Integer, Direction> getDirectionLamp() {
 		return this.directionLamp;
+	}
+	
+	public Direction getDirectionLamp(int elevatorID) {
+		return this.directionLamp.get(elevatorID);
 	}
 	
 	/**
 	 * Getter for arrival sensor
 	 * @return arrival sensor boolean
 	 */
-	public boolean getArrivalSensor() {
+	public HashMap<Integer, Boolean> getArrivalSensor() {
 		return this.arrivalSensor;
+	}
+	
+	public Boolean getArrivalSensor(int elevatorID) {
+		return this.arrivalSensor.get(elevatorID);
 	}
 	
 	/**
@@ -83,15 +98,15 @@ public class FloorComponents {
 	 * Update the direction of the elevator at a floor
 	 * @param directionLamp
 	 */
-	public void updateDirectionLamp(Direction directionLamp) {
-		this.directionLamp = directionLamp;
+	public void updateDirectionLamp(int elevatorID, Direction directionLamp) {
+		this.directionLamp.put(elevatorID, directionLamp);
 	}
 	
 	/**
 	 * Flipping the arrival sensor
 	 * @param true if the elevator present at the floor, else false
 	 */
-	public void updateArrivalSensor(boolean arrivalSensor) {
-		this.arrivalSensor = arrivalSensor;
+	public void updateArrivalSensor(int elevatorID, boolean arrivalSensor) {
+		this.arrivalSensor.put(elevatorID, arrivalSensor);
 	}
 }
