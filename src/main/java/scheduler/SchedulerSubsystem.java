@@ -201,15 +201,7 @@ public class SchedulerSubsystem implements Runnable {
 		byte[] completedRequestData = UDPClient.readPacketData(packetFromElevator);
 		ElevatorRequest completedRequest = ElevatorRequest.decode(completedRequestData);
 		
-//		task = new Thread(new Runnable() {
-//			@Override
-//			public void run() {
-//				System.out.println("Received completed request %s" + completedRequest);
-//				schedulerContext.addCompletedElevatorRequests(completedRequest);
-//			}
-//		});
-//		task.start();
-		System.out.println("Received completed request %s" + completedRequest);
+		System.out.println("Received completed request " + completedRequest);
 		schedulerContext.addCompletedElevatorRequests(completedRequest);
 	}
 	
