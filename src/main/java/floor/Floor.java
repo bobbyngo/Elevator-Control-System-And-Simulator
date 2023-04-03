@@ -22,7 +22,7 @@ public class Floor {
 	
 	/**
 	 * Turns the floor up lamp on or off
-	 * @param mode the boolean of whether to turn the lamp on or off (true: on / false: off)
+	 * @param status the boolean of whether to turn the lamp on or off (true: on / false: off)
 	 */
 	public void setFloorUpLamp(boolean status) {
 		components.updateButtonDirectionStatus(Direction.UP, status);
@@ -30,7 +30,7 @@ public class Floor {
 	
 	/**
 	 * Turns the floor down lamp on or off
-	 * @param mode the boolean of whether to turn the lamp on or off (true: on / false: off)
+	 * @param status the boolean of whether to turn the lamp on or off (true: on / false: off)
 	 */
 	public void setFloorDownLamp(boolean status) {
 		components.updateButtonDirectionStatus(Direction.DOWN, status);
