@@ -80,7 +80,8 @@ public class ElevatorContext {
 		currentState = ElevatorState.start(this);
 		System.out.println(this);
 		// notify starting position
-		elevatorSubsystem.sendArrivalNotification(new ElevatorStatus(this));
+		//elevatorSubsystem.sendArrivalNotification(new ElevatorStatus(this));
+		notifyArrivalSensor();
 	}
 	
 	/**
@@ -106,6 +107,7 @@ public class ElevatorContext {
 			currentState = currentState.handleRequestReceived();
 			System.out.println(this);
 			// update view...
+			notifyArrivalSensor();
 		}
 	}
 	
@@ -120,6 +122,7 @@ public class ElevatorContext {
 			currentState = currentState.handleTimeout();
 			System.out.println(this);
 			// update view...
+			notifyArrivalSensor();
 		}
 	}
 	
@@ -249,7 +252,7 @@ public class ElevatorContext {
 		if (currentFloor + 1 <= elevatorSubsystem.getConfig().NUM_FLOORS) {
 			currentFloor++;
 			status = new ElevatorStatus(this);
-			elevatorSubsystem.sendArrivalNotification(status);
+			//elevatorSubsystem.sendArrivalNotification(status);
 			return true;
 		}
 		return false;
@@ -265,7 +268,7 @@ public class ElevatorContext {
 		if (currentFloor - 1 >= 1) {
 			currentFloor--;
 			status = new ElevatorStatus(this);
-			elevatorSubsystem.sendArrivalNotification(status);
+			//elevatorSubsystem.sendArrivalNotification(status);
 			return true;
 		}
 		return false;
