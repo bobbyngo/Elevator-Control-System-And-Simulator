@@ -20,7 +20,6 @@ public class StoppedState extends IdleMotorState {
 		super(ctx);
 		StateTimeoutTask stt = new StateTimeoutTask(ctx, TimeoutEvent.DOORS_OPEN);
 		ctx.setTimer(stt, ctx.getConfig().DOORS_OPEN_TIME);
-		ctx.notifyArrivalSensor();
 	}
 
 	/**
