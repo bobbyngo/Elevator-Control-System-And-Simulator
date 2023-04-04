@@ -106,7 +106,7 @@ public class ElevatorSubsystem implements Runnable {
 		
 		elevatorId = request.getElevatorId();
 		ctx = elevators.get(elevatorId);
-		ctx.addExternalRequest(request);
+		ctx.onRequestReceived(request);
 	}
 	
 	/**

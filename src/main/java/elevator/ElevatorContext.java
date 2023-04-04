@@ -86,10 +86,7 @@ public class ElevatorContext {
 	 * @param request
 	 */
 	public void addExternalRequest(ElevatorRequest request) {
-		synchronized (externalRequests) {
-			externalRequests.add(request);
-		}
-		onRequestReceived(request);
+		externalRequests.add(request);
 	}
 	
 	/**
@@ -97,6 +94,7 @@ public class ElevatorContext {
 	 * @param request
 	 */
 	public void onRequestReceived(ElevatorRequest request) {
+		addExternalRequest(request);
 		synchronized (currentState) {
 			System.out.println(String.format("Elevator#%d Event: Request Received", id));
 			System.out.println(String.format("Elevator#%d will handle request going %s from floor %d to floor %d at %s" ,
@@ -477,7 +475,7 @@ public class ElevatorContext {
 			boolean existsAboveReq = existsExternalRequestsAbove();
 			boolean existsBelowReq = existsExternalRequestsBelow();
 			for (ElevatorRequest pendingReq : externalRequests) {
-				if (pendingReq.getSourceFloor() == currentFloor && pendingReq.getDirection() == direction) {
+				if (pendingReq.getSourceFloor() == currentFloor && (pendingReq.getDirection() == direction || direction == Direction.IDLE)) {
 					return true;
 				}
 				if (internalRequests.size() == 0 && pendingReq.getSourceFloor() == currentFloor) {

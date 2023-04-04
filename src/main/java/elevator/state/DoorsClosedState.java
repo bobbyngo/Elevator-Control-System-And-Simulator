@@ -57,8 +57,6 @@ public class DoorsClosedState extends IdleMotorState {
 			return new MovingUpState(ctx);
 		case DOWN:
 			return new MovingDownState(ctx);
-		case IDLE:
-			return new IdleState(ctx);
 		}
 		return new IdleState(ctx);
 	}
