@@ -197,8 +197,10 @@ public class ElevatorContext {
 			return;
 		}
 		
-		timer = new Timer();
-		timer.schedule(task, delay);
+		if (!elevatorSubsystem.getConfig().TEST_MODE) {
+			timer = new Timer();
+			timer.schedule(task, delay);
+		}
 	}
 	
 	/**

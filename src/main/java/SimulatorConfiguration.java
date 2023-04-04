@@ -44,6 +44,9 @@ public class SimulatorConfiguration {
 	public final int FLOOR_SUBSYSTEM_COMPLETED_REQ_PORT;
 	public final int FLOOR_SUBSYSTEM_ARRIVAL_REQ_PORT;
 	
+	// Test config, disables automataic state transitions via clock timeout
+	public final boolean TEST_MODE;
+	
 	public SimulatorConfiguration(String configFilePath) {
 		FileInputStream propsInput;
 		Properties prop = null;
@@ -81,6 +84,8 @@ public class SimulatorConfiguration {
 		FLOOR_SUBSYSTEM_HOST = prop.getProperty("FLOOR_SUBSYSTEM_HOST");
 		FLOOR_SUBSYSTEM_COMPLETED_REQ_PORT = Integer.parseInt(prop.getProperty("FLOOR_SUBSYSTEM_COMPLETED_REQ_PORT"));
 		FLOOR_SUBSYSTEM_ARRIVAL_REQ_PORT = Integer.parseInt(prop.getProperty("FLOOR_SUBSYSTEM_ARRIVAL_REQ_PORT"));
+		
+		TEST_MODE = Boolean.parseBoolean(prop.getProperty("TEST_MODE", "false"));
 	}
 	
 	
