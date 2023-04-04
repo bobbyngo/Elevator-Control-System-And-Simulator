@@ -26,13 +26,14 @@ public class ElevatorRequest implements Serializable {
 	private Direction direction;
 	private Integer destinationFloor;
 	private ElevatorError elevatorError;
-	
+		
 	/**
 	 * Constructor of the ElevatorRequest class.
 	 * @param timestamp Timestamp, a point in time which the passenger pressed the floor button
 	 * @param sourceFloor Integer, the floor which the passenger declared his/her traveling intention
 	 * @param direction Direction, passenger's declared traveling direction
 	 * @param destinationFloor Integer, the destination floor which the passenger entered inside the elevator cart
+	 * @param elevatorError ElevatorError, error enum representing fault
 	 */
 	public ElevatorRequest(Timestamp timestamp, Integer sourceFloor, Direction direction, Integer destinationFloor,
 			ElevatorError elevatorError) {
@@ -49,12 +50,36 @@ public class ElevatorRequest implements Serializable {
 	 * @param sourceFloor Integer, the floor which the passenger declared his/her traveling intention
 	 * @param direction Direction, passenger's declared traveling direction
 	 * @param destinationFloor Integer, the destination floor which the passenger entered inside the elevator cart
+	 * @param elevatorError ElevatorError, error enum representing fault
 	 * @throws ParseException
 	 * @author Zakaria Ismail
 	 */
 	public ElevatorRequest(String timestampString, Integer sourceFloor, Direction direction, Integer destinationFloor,
 			ElevatorError elevatorError) throws ParseException {
 		this(stringToTimestamp(timestampString), sourceFloor, direction, destinationFloor, elevatorError);
+	}
+	
+	/**
+	 * Constructor of the ElevatorRequest class.
+	 * @param timestamp Timestamp, a point in time which the passenger pressed the floor button
+	 * @param sourceFloor Integer, the floor which the passenger declared his/her traveling intention
+	 * @param direction Direction, passenger's declared traveling direction
+	 * @param destinationFloor Integer, the destination floor which the passenger entered inside the elevator cart
+	 */
+	public ElevatorRequest(Timestamp timestamp, Integer sourceFloor, Direction direction, Integer destinationFloor) {
+		this(timestamp, sourceFloor, direction, destinationFloor, null);
+	}
+	
+	/**
+	 * Constructor of the ElevatorRequest class.
+	 * @param timestamp Timestamp, a point in time which the passenger pressed the floor button
+	 * @param sourceFloor Integer, the floor which the passenger declared his/her traveling intention
+	 * @param direction Direction, passenger's declared traveling direction
+	 * @param destinationFloor Integer, the destination floor which the passenger entered inside the elevator cart
+	 * @throws ParseException 
+	 */
+	public ElevatorRequest(String timestampString, Integer sourceFloor, Direction direction, Integer destinationFloor) throws ParseException {
+		this(stringToTimestamp(timestampString), sourceFloor, direction, destinationFloor, null);
 	}
 	
 	/**

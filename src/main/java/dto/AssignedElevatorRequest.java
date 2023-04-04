@@ -23,6 +23,22 @@ public class AssignedElevatorRequest extends ElevatorRequest implements Serializ
 	/**
 	 * Constructor method
 	 * @param assignedElevatorId
+	 * @param timestampString
+	 * @param sourceFloor
+	 * @param direction
+	 * @param destinationFloor
+	 * @param elevatorError
+	 * @throws ParseException
+	 */
+	public AssignedElevatorRequest(int assignedElevatorId, String timestampString, Integer sourceFloor, 
+			Direction direction, Integer destinationFloor, ElevatorError elevatorError) throws ParseException {
+		super(timestampString, sourceFloor, direction, destinationFloor, elevatorError);
+		elevatorId = assignedElevatorId;
+	}
+	
+	/**
+	 * Constructor method
+	 * @param assignedElevatorId
 	 * @param request
 	 */
 	public AssignedElevatorRequest(int assignedElevatorId, ElevatorRequest request) {
@@ -40,9 +56,8 @@ public class AssignedElevatorRequest extends ElevatorRequest implements Serializ
 	 * @throws ParseException
 	 */
 	public AssignedElevatorRequest(int assignedElevatorId, String timestampString, Integer sourceFloor, 
-			Direction direction, Integer destinationFloor, ElevatorError elevatorError) throws ParseException {
-		super(timestampString, sourceFloor, direction, destinationFloor, elevatorError);
-		elevatorId = assignedElevatorId;
+			Direction direction, Integer destinationFloor) throws ParseException {
+		this(assignedElevatorId, timestampString, sourceFloor, direction, destinationFloor, null);
 	}
 	
 	/**
