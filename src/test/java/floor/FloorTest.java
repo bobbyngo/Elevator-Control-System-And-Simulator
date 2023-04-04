@@ -34,7 +34,7 @@ public class FloorTest {
 	 */
 	@Test
 	public void testGetFloorNumber() throws IOException {
-		
+		// FIXME: implement tests here
 	}
 	
 }
