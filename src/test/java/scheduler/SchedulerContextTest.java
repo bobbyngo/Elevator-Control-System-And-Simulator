@@ -27,7 +27,6 @@ public class SchedulerContextTest {
 	private SchedulerContext scheduler;
 	private ElevatorRequest elevatorRequest1;
 	private ElevatorRequest elevatorRequest2;
-	private ElevatorRequest elevatorRequest3;
 	
 	/**
 	 * Set up the testing environment.
@@ -43,13 +42,14 @@ public class SchedulerContextTest {
 	/**
 	 * Because the scheduler will need to bind the port, all the testing methods will be inside this so that
 	 * it won't get port is in used
-	 * Test the scheduler addPendingElevatorRequests method
+	 * Test the scheduler addAvailableElevatorRequests method
 	 * Test the scheduler addCompletedElevatorRequests method
 	 * @throws ParseException 
 	 */
 	@Test
-	public void testFindTheAvailableElevator() throws ParseException {
+	public void testAddAvailableElevatorStatus_testAddCompletedElevatorRequest() throws ParseException {
 		//init the status to add to the available elevator status
+		ElevatorRequest elevatorRequest3;
 		ElevatorStatus status1 = new ElevatorStatus(1, 3, Direction.UP, 0, ElevatorStateEnum.MOVING_UP);
 		ElevatorStatus status10 = new ElevatorStatus(10, 4, Direction.UP, 0, ElevatorStateEnum.MOVING_UP);
 		scheduler.addAvailableElevatorStatus(status1);
@@ -58,7 +58,7 @@ public class SchedulerContextTest {
 		//Test addAvailableElevatorStatus (4 elevators will be added when the scheduler)
 		assertEquals(6, scheduler.getAvailableElevatorStatus().size());
 		
-		//Test add completed request
+		elevatorRequest1 = new ElevatorRequest("00:08:33.0", 3, Direction.UP, 5);
 		scheduler.addCompletedElevatorRequests(elevatorRequest1);
 		assertEquals(1, scheduler.getCompletedElevatorRequests().size());
 		

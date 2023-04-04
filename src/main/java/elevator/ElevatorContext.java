@@ -74,13 +74,11 @@ public class ElevatorContext {
 	 */
 	public void startElevator() {
 		// XXX: make this a run() function? something to think about...
-		// MUST CALL THIS FUNCTION TO START STATE MACHINE
-		ElevatorStatus status;
-		
+		// MUST CALL THIS FUNCTION TO START STATE MACHINE		
 		currentState = ElevatorState.start(this);
 		System.out.println(this);
 		// notify starting position
-		elevatorSubsystem.sendArrivalNotification(new ElevatorStatus(this));
+		notifyArrivalSensor();
 	}
 	
 	/**
@@ -106,6 +104,7 @@ public class ElevatorContext {
 			currentState = currentState.handleRequestReceived();
 			System.out.println(this);
 			// update view...
+			notifyArrivalSensor();
 		}
 	}
 	
@@ -120,6 +119,7 @@ public class ElevatorContext {
 			currentState = currentState.handleTimeout();
 			System.out.println(this);
 			// update view...
+			notifyArrivalSensor();
 		}
 	}
 	
@@ -243,13 +243,9 @@ public class ElevatorContext {
 		// TODO: add condition checks and throw exception
 		// if invalid floor?... the state machine should not
 		// allow transition to MOVING state if floor above
-		// doesn't exist...
-		ElevatorStatus status;
-		
+		// doesn't exist...		
 		if (currentFloor + 1 <= elevatorSubsystem.getConfig().NUM_FLOORS) {
 			currentFloor++;
-			status = new ElevatorStatus(this);
-			elevatorSubsystem.sendArrivalNotification(status);
 			return true;
 		}
 		return false;
@@ -260,12 +256,8 @@ public class ElevatorContext {
 	 * @return true if the floor is updated else false
 	 */
 	public boolean decrementCurrentFloor() {
-		ElevatorStatus status;
-
 		if (currentFloor - 1 >= 1) {
 			currentFloor--;
-			status = new ElevatorStatus(this);
-			elevatorSubsystem.sendArrivalNotification(status);
 			return true;
 		}
 		return false;

@@ -122,6 +122,7 @@ public class ElevatorSubsystem implements Runnable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		messageClient.close();
 	}
 	
 	/**
@@ -137,6 +138,7 @@ public class ElevatorSubsystem implements Runnable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		messageClient.close();
 	}
 	
 	/**
@@ -153,6 +155,7 @@ public class ElevatorSubsystem implements Runnable {
 				e.printStackTrace();
 			}
 		}
+		messageClient.close();
 	}
 	
 	/**
