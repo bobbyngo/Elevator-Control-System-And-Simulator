@@ -44,10 +44,6 @@ public class SimulatorConfiguration {
 	public final int FLOOR_SUBSYSTEM_COMPLETED_REQ_PORT;
 	public final int FLOOR_SUBSYSTEM_ARRIVAL_REQ_PORT;
 	
-	// Fault Config
-	public final int[] DOORS_OBSTRUCTED_FLOORS;
-	public final int[] ELEVATOR_STUCK_FLOORS;
-	
 	public SimulatorConfiguration(String configFilePath) {
 		FileInputStream propsInput;
 		Properties prop = null;
@@ -85,9 +81,6 @@ public class SimulatorConfiguration {
 		FLOOR_SUBSYSTEM_HOST = prop.getProperty("FLOOR_SUBSYSTEM_HOST");
 		FLOOR_SUBSYSTEM_COMPLETED_REQ_PORT = Integer.parseInt(prop.getProperty("FLOOR_SUBSYSTEM_COMPLETED_REQ_PORT"));
 		FLOOR_SUBSYSTEM_ARRIVAL_REQ_PORT = Integer.parseInt(prop.getProperty("FLOOR_SUBSYSTEM_ARRIVAL_REQ_PORT"));
-		
-		DOORS_OBSTRUCTED_FLOORS = Arrays.stream(prop.getProperty("DOORS_OBSTRUCTED_FLOORS").split(",")).mapToInt(Integer::parseInt).toArray();
-		ELEVATOR_STUCK_FLOORS = Arrays.stream(prop.getProperty("ELEVATOR_STUCK_FLOORS").split(",")).mapToInt(Integer::parseInt).toArray();
 	}
 	
 	

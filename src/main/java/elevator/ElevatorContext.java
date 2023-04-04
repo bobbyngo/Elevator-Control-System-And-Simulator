@@ -522,22 +522,19 @@ public class ElevatorContext {
 		return false;
 	}
 	
-	public boolean isAtDoorsStuckFloor() {
-		for (int doorsStuckFloor : getConfig().DOORS_OBSTRUCTED_FLOORS) {
-			if (doorsStuckFloor == currentFloor) {
-				return true;
+	public ElevatorError isAtErrorFloor() {
+		ElevatorError error = null, reqError;
+		for (int i=0; i<internalRequests.size(); i++) {
+			reqError = internalRequests.get(i).getElevatorError();
+			if (reqError != null) {
+				// XXX: i have to do this because can't use switch/case w/ null
+				switch (reqError) {
+					case ELEVATOR_STUCK: return ElevatorError.ELEVATOR_STUCK;
+					case DOORS_STUCK: error = ElevatorError.DOORS_STUCK;
+				}
 			}
 		}
-		return false;
-	}
-	
-	public boolean isAtElevatorStuckFloor() {
-		for (int elevatorStuckFloor : getConfig().ELEVATOR_STUCK_FLOORS) {
-			if (elevatorStuckFloor == currentFloor) {
-				return true;
-			}
-		}
-		return false;
+		return error;
 	}
 	
 	public void notifyArrivalSensor() {
