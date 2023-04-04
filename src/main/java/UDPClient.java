@@ -141,7 +141,7 @@ public class UDPClient {
 		UDPClient sender = new UDPClient(sendPort);
 		UDPClient receiver = new UDPClient(recvPort);
 		AssignedElevatorRequest testObj = new AssignedElevatorRequest(
-				1, "07:01:15.000", 3, Direction.UP, 5, null
+				1, "07:01:15.000", 3, Direction.UP, 5
 			), testObj2;
 		DatagramPacket packet;
 		byte[] encodedData = testObj.encode();
