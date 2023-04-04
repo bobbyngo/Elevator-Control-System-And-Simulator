@@ -140,7 +140,7 @@ public class FloorSubsystem implements Runnable {
 						
 						System.out.println("--------------------------------------------------");
 					}
-				}, new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS").parse(req.getTimestamp().toString()));
+				}, req.getTimestampDate());
 			}
 		}
 	}

@@ -3,8 +3,11 @@ package main.java.dto;
 import java.io.IOException;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
 import main.java.elevator.Direction;
 import main.java.elevator.ElevatorError;
@@ -174,6 +177,19 @@ public class ElevatorRequest implements Serializable {
 						timestampString)
 					.getTime());
 		return timestamp;
+	}
+	
+	/**
+	 * Get timestamp's Date object. Sets the timezone to America/New York.
+	 * @return Date, timestamp Date object in EST timezone
+	 * @throws ParseException
+	 */
+	public Date getTimestampDate() throws ParseException {
+		Date date;
+		DateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+		format.setTimeZone(TimeZone.getTimeZone("America/New_York"));
+		date = format.parse(timestamp.toString());
+		return date;
 	}
 	
 	/**
