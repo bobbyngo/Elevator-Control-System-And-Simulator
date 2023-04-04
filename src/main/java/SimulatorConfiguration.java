@@ -18,6 +18,8 @@ public class SimulatorConfiguration {
 	public final int NUM_ELEVATORS;
 	public final int NUM_FLOORS;
 	
+	public final String INPUT_PATH;
+	
 	// times in ms
 	public final int DOORS_OPEN_TIME;
 	public final int DOORS_CLOSE_TIME;
@@ -61,6 +63,8 @@ public class SimulatorConfiguration {
 		
 		NUM_ELEVATORS = Integer.parseInt(prop.getProperty("NUM_ELEVATORS"));
 		NUM_FLOORS = Integer.parseInt(prop.getProperty("NUM_FLOORS"));
+		
+		INPUT_PATH = prop.getProperty("INPUT_PATH");
 		
 		DOORS_OPEN_TIME = Integer.parseInt(prop.getProperty("DOORS_OPEN_TIME"));
 		DOORS_CLOSE_TIME = Integer.parseInt(prop.getProperty("DOORS_CLOSE_TIME"));
