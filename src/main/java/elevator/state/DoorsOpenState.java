@@ -1,6 +1,3 @@
-/**
- * 
- */
 package main.java.elevator.state;
 
 import main.java.elevator.Door;

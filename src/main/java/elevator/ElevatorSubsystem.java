@@ -1,22 +1,19 @@
-/**
- * 
- */
 package main.java.elevator;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.security.auth.login.ConfigurationSpi;
+import javax.swing.JTextArea;
 
 import main.java.SimulatorConfiguration;
 import main.java.UDPClient;
 import main.java.dto.AssignedElevatorRequest;
 import main.java.dto.ElevatorRequest;
 import main.java.dto.ElevatorStatus;
+import main.java.gui.GUI;
+
 
 /**
  * Controller. Routes requests to respective elevators.
@@ -30,7 +27,8 @@ public class ElevatorSubsystem implements Runnable {
 	private SimulatorConfiguration simulatorConfiguration;
 	private Thread requestListenerThread;
 	private UDPClient udpRequestReceiver;
-	
+	private GUI gui;
+
 	/**
 	 * Constructor for Elevator Subsystem
 	 * @param config
@@ -47,8 +45,11 @@ public class ElevatorSubsystem implements Runnable {
 		for (int i=1; i<=simulatorConfiguration.NUM_ELEVATORS; i++) {
 			elevator = new ElevatorContext(this, i);
 			elevator.startElevator();
-			elevators.put(i, elevator);	
+			elevators.put(i, elevator);
 		}
+		
+		gui = new GUI(simulatorConfiguration);
+		gui.displayGUI();
 	}
 	
 	/**

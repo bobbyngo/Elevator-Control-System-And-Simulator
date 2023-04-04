@@ -1,6 +1,3 @@
-/**
- * 
- */
 package main.java.elevator;
 
 import java.io.IOException;
@@ -8,15 +5,13 @@ import java.net.DatagramPacket;
 import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.security.auth.login.ConfigurationSpi;
+import javax.swing.JTextArea;
 
 import main.java.SimulatorConfiguration;
 import main.java.UDPClient;
@@ -25,6 +20,7 @@ import main.java.dto.ElevatorRequest;
 import main.java.dto.ElevatorStatus;
 import main.java.elevator.state.ElevatorState;
 import main.java.elevator.state.TimeoutEvent;
+import main.java.gui.GUI;
 
 /**
  * Entity class for Elevator 
@@ -44,6 +40,8 @@ public class ElevatorContext {
 	private Timer timer;
 	
 	private ElevatorSubsystem elevatorSubsystem;
+	private JTextArea elevatorLog;
+	private GUI gui;
 	
 	/**
 	 * Constructor for Elevator Context
@@ -66,7 +64,12 @@ public class ElevatorContext {
 			elevatorButtonBoard.put(i, false);
 		}
 		
+		elevatorLog = new JTextArea();
+		gui = new GUI(subsystem.getConfig());
+		gui.displayConsole(this.getClass().getSimpleName() + " " + id, elevatorLog);
+		gui.handleElevatorEvent(getId(), getCurrentFloor(), getCurrentState().getElevatorStateEnum());
 		// notify position & start state machine in another func
+		
 	}
 	
 	/**
@@ -78,9 +81,10 @@ public class ElevatorContext {
 		ElevatorStatus status;
 		
 		currentState = ElevatorState.start(this);
-		System.out.println(this);
+		print(this.toString());
 		// notify starting position
 		elevatorSubsystem.sendArrivalNotification(new ElevatorStatus(this));
+		gui.handleElevatorEvent(getId(), getCurrentFloor(), getCurrentState().getElevatorStateEnum());
 	}
 	
 	/**
@@ -100,12 +104,13 @@ public class ElevatorContext {
 	 */
 	public void onRequestReceived(ElevatorRequest request) {
 		synchronized (currentState) {
-			System.out.println(String.format("Elevator#%d Event: Request Received", id));
-			System.out.println(String.format("Elevator#%d will handle request going %s from floor %d to floor %d at %s" ,
+			print(String.format("Elevator#%d Event: Request Received", id));
+			print(String.format("Elevator#%d will handle request going %s from floor %d to floor %d at %s" ,
 					id , request.getDirection(), request.getSourceFloor(), request.getDestinationFloor(), request.getTimestamp()));
 			currentState = currentState.handleRequestReceived();
-			System.out.println(this);
+			print(this.toString());
 			// update view...
+			gui.handleElevatorEvent(getId(), getCurrentFloor(), getCurrentState().getElevatorStateEnum());
 		}
 	}
 	
@@ -116,10 +121,11 @@ public class ElevatorContext {
 	public void onTimeout(TimeoutEvent event) {
 		synchronized (currentState) {
 			//System.out.println(String.format("Elevator#%d %s", id, event));
-			System.out.println(String.format("Elevator#%d Event: Timeout", id));
+			print(String.format("Elevator#%d Event: Timeout", id));
 			currentState = currentState.handleTimeout();
-			System.out.println(this);
+			print(this.toString());
 			// update view...
+			gui.handleElevatorEvent(getId(), getCurrentFloor(), getCurrentState().getElevatorStateEnum());
 		}
 	}
 	
@@ -140,11 +146,11 @@ public class ElevatorContext {
 					toRemove.add(req);
 					internalRequests.add(req);
 					pressElevatorButton(req.getDestinationFloor());
+					gui.handleElevatorEvent(getId(), getCurrentFloor(), getCurrentState().getElevatorStateEnum());
 				}
 			}
 			externalRequests.removeAll(toRemove);
 		}
-		return;
 	}
 	
 	/**
@@ -161,13 +167,13 @@ public class ElevatorContext {
 			if (req.getDestinationFloor() == currentFloor) {
 				//internalRequests.remove(req);
 				toRemove.add(req);
-				System.out.println("Completed ElevatorRequest... sending back to scheduler: " + req);
+				print("Completed ElevatorRequest... sending back to scheduler: " + req);
 				elevatorSubsystem.sendCompletedElevatorRequest(req);
+				gui.handleElevatorEvent(getId(), getCurrentFloor(), getCurrentState().getElevatorStateEnum());
 			}
 		}
 		internalRequests.removeAll(toRemove);
 		clearElevatorButton(currentFloor);
-		return;
 	}
 	
 	/**
@@ -250,6 +256,7 @@ public class ElevatorContext {
 			currentFloor++;
 			status = new ElevatorStatus(this);
 			elevatorSubsystem.sendArrivalNotification(status);
+			gui.handleElevatorEvent(getId(), getCurrentFloor(), getCurrentState().getElevatorStateEnum());
 			return true;
 		}
 		return false;
@@ -266,6 +273,7 @@ public class ElevatorContext {
 			currentFloor--;
 			status = new ElevatorStatus(this);
 			elevatorSubsystem.sendArrivalNotification(status);
+			gui.handleElevatorEvent(getId(), getCurrentFloor(), getCurrentState().getElevatorStateEnum());
 			return true;
 		}
 		return false;
@@ -533,6 +541,7 @@ public class ElevatorContext {
 	public boolean isAtDoorsStuckFloor() {
 		for (int doorsStuckFloor : getConfig().DOORS_OBSTRUCTED_FLOORS) {
 			if (doorsStuckFloor == currentFloor) {
+				gui.handleElevatorEvent(getId(), getCurrentFloor(), getCurrentState().getElevatorStateEnum());
 				return true;
 			}
 		}
@@ -542,6 +551,7 @@ public class ElevatorContext {
 	public boolean isAtElevatorStuckFloor() {
 		for (int elevatorStuckFloor : getConfig().ELEVATOR_STUCK_FLOORS) {
 			if (elevatorStuckFloor == currentFloor) {
+				gui.handleElevatorEvent(getId(), getCurrentFloor(), getCurrentState().getElevatorStateEnum());
 				return true;
 			}
 		}
@@ -554,7 +564,7 @@ public class ElevatorContext {
 	
 	public void returnExternalRequests() {
 		synchronized (externalRequests) {
-			System.out.println("Elevator crashed: returning externalRequests to scheduler");
+			print("Elevator crashed: returning externalRequests to scheduler");
 			elevatorSubsystem.returnElevatorRequests(externalRequests);
 			externalRequests.removeAll(externalRequests);
 		}
@@ -570,6 +580,11 @@ public class ElevatorContext {
 	
 	public Motor getMotor() {
 		return motor;
+	}
+	
+	public void print(String message) {
+		System.out.println(message);
+		elevatorLog.append(" " + message + "\n");
 	}
 	
 	public static void main(String[] args) throws ParseException, UnknownHostException, IOException, InterruptedException {

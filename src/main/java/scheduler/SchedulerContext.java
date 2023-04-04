@@ -1,6 +1,3 @@
-/**
- * 
- */
 package main.java.scheduler;
 
 import java.io.IOException;
@@ -143,14 +140,6 @@ public class SchedulerContext {
 	}
 	
 	/**
-	 * Getter for availableElevatorStatus
-	 * @return all available elevators status
-	 */
-	public List<ElevatorStatus> getAvailableElevatorStatus() {
-		return availableElevatorStatus;
-	}
-	
-	/**
 	 * Adding method for availableElevatorStatus list
 	 * @param elevatorStatus
 	 */
@@ -170,14 +159,6 @@ public class SchedulerContext {
 			availableElevatorStatus.set(index, elevatorStatus);
 		}
 	}
-
-	/**
-	 * Getter for pendingElevatorRequests
-	 * @return pendingElevatorRequests list
-	 */
-	public List<ElevatorRequest> getPendingElevatorRequests() {
-		return pendingElevatorRequests;
-	}
 	
 	/**
 	 * Adding method for pendingElevatorRequests list
@@ -188,14 +169,6 @@ public class SchedulerContext {
 			pendingElevatorRequests.add(elevatorRequest);
 			onRequestReceived();
 		}
-	}
-
-	/**
-	 * Getter for completedElevatorRequests
-	 * @return elevator request
-	 */
-	public List<ElevatorRequest> getCompletedElevatorRequests() {
-		return completedElevatorRequests;
 	}
 	
 	/**
@@ -254,5 +227,36 @@ public class SchedulerContext {
 			schedulerSubsystem.sendCompletedElevatorRequest(nextCompletedRequest);
 		}
 	}
+	
+	/**
+	 * Getter for availableElevatorStatus
+	 * @return all available elevators status
+	 */
+	public List<ElevatorStatus> getAvailableElevatorStatus() {
+		return availableElevatorStatus;
+	}
+	
+	/**
+	 * Getter for pendingElevatorRequests
+	 * @return pendingElevatorRequests list
+	 */
+	public List<ElevatorRequest> getPendingElevatorRequests() {
+		return pendingElevatorRequests;
+	}
+	
+	/**
+	 * Getter for completedElevatorRequests
+	 * @return elevator request
+	 */
+	public List<ElevatorRequest> getCompletedElevatorRequests() {
+		return completedElevatorRequests;
+	}
+	
+	public SchedulerState getCurrentState() {
+		return currentState;
+	}
 
+	
+	
+	
 }
