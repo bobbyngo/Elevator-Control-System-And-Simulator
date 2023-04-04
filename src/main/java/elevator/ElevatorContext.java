@@ -577,7 +577,7 @@ public class ElevatorContext {
 
 		Thread.sleep(1000);
 		testRequest = new AssignedElevatorRequest(
-					1, "07:01:15.000", 3, Direction.UP, 5, null
+					1, "07:01:15.000", 3, Direction.UP, 5
 				);
 		testServer.sendMessage(testRequest.encode(), sc.ELEVATOR_SUBSYSTEM_HOST, sc.ELEVATOR_SUBSYSTEM_REQ_PORT);
 		
