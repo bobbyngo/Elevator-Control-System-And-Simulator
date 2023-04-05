@@ -5,14 +5,19 @@ package test.java.elevator.state;
 
 import static org.junit.Assert.*;
 
+import java.text.ParseException;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import main.java.elevator.Direction;
 import main.java.elevator.ElevatorContext;
 import main.java.elevator.ElevatorSubsystem;
 import main.java.elevator.state.ElevatorState;
+import main.java.elevator.state.MovingDownState;
+import main.java.elevator.state.StoppedState;
 
 /**
  * @author Zakaria Ismail
@@ -23,7 +28,7 @@ public class MovingDownStateTest {
 	private static ElevatorSubsystem elevatorSubsystem;
 
 	@BeforeClass
-	public void classSetUp() {
+	public static void classSetUp() {
 		elevatorSubsystem = ElevatorStateTestUtil.initElevatorSubsystem();
 	}
 	
@@ -32,8 +37,9 @@ public class MovingDownStateTest {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		elevatorState = ElevatorStateTestUtil.initElevatorState(elevatorSubsystem);
+		elevatorState = new MovingDownState(ElevatorStateTestUtil.initElevatorContext(elevatorSubsystem));
 		assertTrue(elevatorState.getContext().incrementCurrentFloor()); // Start elevator @ 2nd floor
+		assertEquals(2, elevatorState.getContext().getCurrentFloor());
 	}
 
 	/**
@@ -46,11 +52,15 @@ public class MovingDownStateTest {
 
 	/**
 	 * Test method for {@link main.java.elevator.state.MovingDownState#handleRequestReceived()}.
+	 * @throws ParseException 
 	 */
 	@Test
-	public void testHandleRequestReceived() {
+	public void testHandleRequestReceived() throws ParseException {
 		// Case: elevator is passing by floor with request going in the DOWN direction
 		ElevatorContext ctx = elevatorState.getContext();
+		ctx.addExternalRequest(ElevatorStateTestUtil.initElevatorRequest(2, Direction.DOWN, 1));
+		assert elevatorState.handleRequestReceived() instanceof StoppedState;
+		assertEquals(2, ctx.getCurrentFloor());
 	}
 
 	/**

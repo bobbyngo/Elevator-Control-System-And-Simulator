@@ -38,6 +38,7 @@ public abstract class ElevatorState {
 		return context;
 	}
 	
+	// FIXME: Optimization - handleRequestReceived should take ElevatorRequest object as arg (why loop?)
 	public abstract ElevatorState handleRequestReceived();
 	public abstract ElevatorState handleTimeout();
 	public abstract String toString();
