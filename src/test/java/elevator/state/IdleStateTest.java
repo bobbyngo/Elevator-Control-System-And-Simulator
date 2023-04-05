@@ -40,6 +40,14 @@ public class IdleStateTest {
 	public void setUp() {
 		elevatorState = new IdleState(ElevatorStateTestUtil.initElevatorContext(elevatorSubsystem));
 	}
+	
+	/**
+	 * @throws java.lang.Exception
+	 */
+	@After
+	public void tearDown() throws Exception {
+		elevatorState = null;
+	}
 
 	/**
 	 * Test method for {@link main.java.elevator.state.IdleState#handleRequestReceived()}.

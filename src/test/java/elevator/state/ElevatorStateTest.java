@@ -36,6 +36,14 @@ public class ElevatorStateTest {
 	public void setUp() throws Exception {
 		elevatorState = ElevatorStateTestUtil.initElevatorState(elevatorSubsystem);
 	}
+	
+	/**
+	 * @throws java.lang.Exception
+	 */
+	@After
+	public void tearDown() throws Exception {
+		elevatorState = null;
+	}
 
 	/**
 	 * Test method for {@link main.java.elevator.state.ElevatorState#start(main.java.elevator.ElevatorContext)}.

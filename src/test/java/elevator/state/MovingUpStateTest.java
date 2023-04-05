@@ -32,6 +32,14 @@ public class MovingUpStateTest {
 	public void setUp() throws Exception {
 		elevatorState = new MovingUpState(ElevatorStateTestUtil.initElevatorContext(elevatorSubsystem));
 	}
+	
+	/**
+	 * @throws java.lang.Exception
+	 */
+	@After
+	public void tearDown() throws Exception {
+		elevatorState = null;
+	}
 
 	@Test
 	public void testHandleRequestReceived() throws ParseException {
