@@ -80,8 +80,9 @@ public class DoorsClosedStateTest {
 	@Test
 	public void testHandleTimeoutToMovingDown() throws ParseException {
 		ElevatorContext ctx = elevatorState.getContext();
-		ctx.incrementCurrentFloor();
-		ctx.incrementCurrentFloor();
+		assertTrue(ctx.incrementCurrentFloor());
+		assertTrue(ctx.incrementCurrentFloor());
+		assertEquals(3, ctx.getCurrentFloor());
 		ctx.addExternalRequest(ElevatorStateTestUtil.initElevatorRequest(2, Direction.DOWN, 1));
 		assert elevatorState.handleTimeout() instanceof MovingDownState;
 	}

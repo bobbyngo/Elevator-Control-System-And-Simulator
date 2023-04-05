@@ -22,6 +22,11 @@ public class ElevatorStateTestUtil {
 		return elevatorState;
 	}
 	
+	public static ElevatorState initElevatorState(ElevatorSubsystem subsystem) {
+		ElevatorState elevatorState = ElevatorState.start(initElevatorContext(subsystem));
+		return elevatorState;
+	}
+	
 	public static ElevatorContext initElevatorContext() {
 		ElevatorContext context = new ElevatorContext(initElevatorSubsystem(), 1);
 		return context;

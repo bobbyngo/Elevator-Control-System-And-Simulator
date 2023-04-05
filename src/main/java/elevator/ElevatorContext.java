@@ -476,6 +476,7 @@ public class ElevatorContext {
 			boolean existsBelowReq = existsExternalRequestsBelow();
 			for (ElevatorRequest pendingReq : externalRequests) {
 				if (pendingReq.getSourceFloor() == currentFloor && (pendingReq.getDirection() == direction || direction == Direction.IDLE)) {
+					// there exists a pending req that is "on the way" - continue sweeping
 					return true;
 				}
 				if (internalRequests.size() == 0 && pendingReq.getSourceFloor() == currentFloor) {

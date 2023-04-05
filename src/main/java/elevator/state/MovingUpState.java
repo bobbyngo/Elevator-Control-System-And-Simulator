@@ -3,6 +3,7 @@
  */
 package main.java.elevator.state;
 
+import main.java.elevator.Direction;
 import main.java.elevator.ElevatorContext;
 import main.java.elevator.Motor;
 
@@ -19,6 +20,7 @@ public class MovingUpState extends MovingState {
 	public MovingUpState(ElevatorContext ctx) {
 		super(ctx);
 		ctx.setMotor(Motor.THROTTLE_UP);
+		ctx.setDirection(Direction.UP);
 	}
 
 	/**
@@ -27,7 +29,6 @@ public class MovingUpState extends MovingState {
 	@Override
 	public ElevatorState handleRequestReceived() {
 		ElevatorContext ctx = this.getContext();
-		
 		if (ctx.shouldElevatorStop()) {
 			ctx.killTimer();
 			return new StoppedState(ctx);
@@ -43,7 +44,8 @@ public class MovingUpState extends MovingState {
 		ElevatorContext ctx = this.getContext();
 		
 		ctx.killTimer();
-		// arrival notif is fired when increment is called
+		
+		// Increment the current floor onTimeout
 		if (!ctx.incrementCurrentFloor()) {
 			return new StoppedState(ctx);
 		}

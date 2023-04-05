@@ -7,6 +7,7 @@ import static org.junit.Assert.*;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import main.java.SimulatorConfiguration;
@@ -22,13 +23,18 @@ import main.java.elevator.state.IdleState;
 public class ElevatorStateTest {
 	
 	private ElevatorState elevatorState;
+	private static ElevatorSubsystem elevatorSubsystem;
 
+	@BeforeClass
+	public static void classSetUp() {
+		elevatorSubsystem = ElevatorStateTestUtil.initElevatorSubsystem();
+	}
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@Before
 	public void setUp() throws Exception {
-		elevatorState = ElevatorStateTestUtil.initElevatorState();
+		elevatorState = ElevatorStateTestUtil.initElevatorState(elevatorSubsystem);
 	}
 
 	/**
