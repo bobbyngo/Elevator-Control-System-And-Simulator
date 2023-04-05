@@ -52,8 +52,26 @@ public class Floor {
 		return components.getButtonLampStatus(Direction.DOWN);
 	}
 	
+	/**
+	 * Updates the sensor at an elevator shaft
+	 * @param sensorId the int of the sensor ID (equal to the elevator ID)
+	 * @param status the boolean of whether the sensor detects an elevator (true) or not (false)
+	 */
+	public void setFloorSensor(int sensorId, boolean status) {
+		components.updateArrivalSensor(sensorId, status);
+	}
+	
+	/**
+	 * Updates the direction lamp for an elevator shaft
+	 * @param elevatorId the int of the elevator id 
+	 * @param direction the Direction enum to change the lamp's status to
+	 */
+	public void setElevatorDirectionLamp(int elevatorId, Direction direction) {
+		components.updateDirectionLamp(elevatorId, direction);
+	}
+	
 	@Override
 	public String toString() {
-		return "Floor " + floorNum + ": " + components.toString();
+		return "Floor " + floorNum + "\n" + components.toString();
 	}
 }
