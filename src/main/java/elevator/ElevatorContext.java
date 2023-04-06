@@ -99,7 +99,7 @@ public class ElevatorContext {
 			System.out.println(String.format("Elevator#%d Event: Request Received", id));
 			System.out.println(String.format("Elevator#%d will handle request going %s from floor %d to floor %d at %s" ,
 					id , request.getDirection(), request.getSourceFloor(), request.getDestinationFloor(), request.getTimestamp()));
-			currentState = currentState.handleRequestReceived();
+			currentState = currentState.handleRequestReceived(request);
 			System.out.println(this);
 			// update view...
 			notifyArrivalSensor();
