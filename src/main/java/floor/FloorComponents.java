@@ -101,14 +101,19 @@ public class FloorComponents {
 	
 	@Override
 	public String toString() {
-		String stringedObject = "";
+		String floorButtonsStr = "";
+		String directionLampsStr = "{";
+		String floorSesnsorsStr = "{";
 		
-		stringedObject += "Up ButtonLamp: " + buttonLamp.get(Direction.UP).toString() + ", Down ButtonLamp: " + buttonLamp.get(Direction.DOWN).toString();
+		floorButtonsStr = "{Up ButtonLamp: " + buttonLamp.get(Direction.UP).toString() + ", Down ButtonLamp: " + buttonLamp.get(Direction.DOWN).toString() + "} \n";
 		
 		for (int i = 1; i <= simulatorConfiguration.NUM_ELEVATORS; i++) {
-			stringedObject += "; \n\tElevator# " + (i) + " arrival sensor: " + getArrivalSensor(i) + ", direction lamp: " + getDirectionLamp(i);
+			directionLampsStr += "Elevator# " + (i) + " direction lamp: " + getDirectionLamp(i) + ", ";
+			floorSesnsorsStr += "Elevator# " + (i) + " arrival sensor: " + getArrivalSensor(i) + ", ";
 		}
-		
-		return stringedObject;
+		directionLampsStr += "} \n";
+		floorSesnsorsStr += "}";
+
+		return floorButtonsStr + directionLampsStr + floorSesnsorsStr;
 	}
 }
