@@ -47,6 +47,7 @@ public class SchedulerSubsystem implements Runnable {
 		schedulerLog = new JTextArea();
 		gui = new GUI(simulatorConfiguration);
 		gui.displayConsole(this.getClass().getSimpleName(), schedulerLog);
+		gui.displayGUI();
 	}
 	
 	/**

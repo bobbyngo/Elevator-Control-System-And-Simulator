@@ -63,7 +63,7 @@ public class ElevatorContext {
 		for (int i = 1; i <= elevatorSubsystem.getConfig().NUM_FLOORS; i ++) {
 			elevatorButtonBoard.put(i, false);
 		}
-		
+		currentState = ElevatorState.start(this);
 		elevatorLog = new JTextArea();
 		gui = new GUI(subsystem.getConfig());
 		gui.displayConsole(this.getClass().getSimpleName() + " " + id, elevatorLog);
@@ -591,7 +591,7 @@ public class ElevatorContext {
 		// small visual test
 		System.out.println("--small little elevator context test");
 		SimulatorConfiguration sc = new SimulatorConfiguration("./src/main/resources/config.properties");
-		ElevatorSubsystem s = new ElevatorSubsystem(sc);
+		ElevatorSubsystem s = new ElevatorSubsystem(sc, sc.NUM_ELEVATORS);
 		//s.startElevatorSubsystem(); TODO: update this lil test
 		UDPClient testServer = new UDPClient();
 		UDPClient arrivalNotifRcv = new UDPClient(sc.SCHEDULER_ARRIVAL_REQ_PORT);

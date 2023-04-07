@@ -33,7 +33,7 @@ public class ElevatorSubsystem implements Runnable {
 	 * Constructor for Elevator Subsystem
 	 * @param config
 	 */
-	public ElevatorSubsystem(SimulatorConfiguration config) {
+	public ElevatorSubsystem(SimulatorConfiguration config, int numElevators) {
 		ElevatorContext elevator;
 		
 		elevators = new HashMap<>();
@@ -42,7 +42,7 @@ public class ElevatorSubsystem implements Runnable {
 		
 		// 1-index elevator identification
 		// FIXME: change to concurrent initialization? (TBD)
-		for (int i=1; i<=simulatorConfiguration.NUM_ELEVATORS; i++) {
+		for (int i=1; i<=numElevators; i++) {
 			elevator = new ElevatorContext(this, i);
 			elevator.startElevator();
 			elevators.put(i, elevator);
@@ -165,7 +165,7 @@ public class ElevatorSubsystem implements Runnable {
 		Thread subsystemThread;
 		
 		configuration = new SimulatorConfiguration("./src/main/resources/config.properties");
-		subsystem = new ElevatorSubsystem(configuration);
+		subsystem = new ElevatorSubsystem(configuration, configuration.NUM_ELEVATORS);
 		subsystemThread = new Thread(subsystem);
 		subsystemThread.start();
 	}
