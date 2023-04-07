@@ -19,7 +19,6 @@ public class DoorsStuckState extends IdleMotorState {
 		super(ctx);
 		StateTimeoutTask stt = new StateTimeoutTask(ctx, TimeoutEvent.DOORS_UNSTUCK);
 		ctx.setTimer(stt, ctx.getConfig().DOORS_OBSTRUCTED_TIME);
-		ctx.notifyArrivalSensor();
 	}
 
 	/**

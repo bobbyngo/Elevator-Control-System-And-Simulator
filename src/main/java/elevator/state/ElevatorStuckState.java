@@ -17,7 +17,6 @@ public class ElevatorStuckState extends IdleMotorState {
 	 */
 	public ElevatorStuckState(ElevatorContext ctx) {
 		super(ctx);
-		ctx.notifyArrivalSensor();
 		ctx.returnExternalRequests();
 	}
 

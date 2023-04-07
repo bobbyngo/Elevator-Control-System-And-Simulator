@@ -52,33 +52,78 @@ public class SchedulerContext {
 		
 	}
 	
+	private ElevatorStatus findTheClosestElevatorToRequestFloor(ArrayList<ElevatorStatus>elevators, int sourceFloor) {
+		ElevatorStatus chosenElevatorStatus = null;
+		// init the min value to the total floors
+		int closestElevator = schedulerSubsystem.getSimulatorConfiguration().NUM_FLOORS;
+		
+		
+		// Find the smallest distance between the floor that the elevator locates and the floor that request elevator
+		for (ElevatorStatus status : elevators) {
+			int differentBetweenElevatorAndRequest = Math.abs(status.getFloor() - sourceFloor);
+			
+			if(closestElevator > differentBetweenElevatorAndRequest) {
+				differentBetweenElevatorAndRequest = closestElevator = differentBetweenElevatorAndRequest;
+				chosenElevatorStatus = status;
+			}
+		}
+		return chosenElevatorStatus;
+	}
+	
+	private ElevatorStatus findTheAvailableIdleElevator(ElevatorRequest request) {
+		ArrayList<ElevatorStatus> idleElevatorStatus = new ArrayList<>();
+		for (ElevatorStatus status : availableElevatorStatus) {
+			if (status.getDirection() == Direction.IDLE) {
+				idleElevatorStatus.add(status);
+			}
+		}
+		ElevatorStatus chosenElevatorStatus = null;
+		
+		// Begining of the program, all the elevators are idle, return a first elevator
+		if (idleElevatorStatus.size() == schedulerSubsystem.getSimulatorConfiguration().NUM_ELEVATORS) {
+			chosenElevatorStatus = availableElevatorStatus.get(0);
+			
+		} else {
+			chosenElevatorStatus = findTheClosestElevatorToRequestFloor(idleElevatorStatus, request.getSourceFloor());
+		}
+		return chosenElevatorStatus;
+	}
+	
 	/**
-	 * Method for finding all the elevators that are available and fit with the input
+	 * Method for finding all the elevators that are moving and make sure that its current distance is closest the most to the floor requesting the request. 
 	 * @param direction
 	 * @param newRequestSourceFloor
 	 * @return Elevator Status
 	 */
-	private ElevatorStatus findTheAvailableElevator(Direction direction, int newRequestSourceFloor) {
+	private ElevatorStatus findTheAvailableMovingElevator(Direction direction, int newRequestSourceFloor) {
 		// checked the available is empty already so no need to check again
 		ElevatorStatus chosenElevatorStatus = null;
+		ArrayList<ElevatorStatus> movingUpElevatorStatus = new ArrayList<>();
+		ArrayList<ElevatorStatus> movingDownElevatorStatus = new ArrayList<>();
 		for (ElevatorStatus status : availableElevatorStatus) {
 			if (status.getState() != ElevatorStateEnum.DOORS_STUCK || status.getState() != ElevatorStateEnum.ELEVATOR_STUCK) {
-				// 1st priority: Elevator that is idle
-				if (status.getDirection() == Direction.IDLE) {
-					chosenElevatorStatus = status;
-				} 
-				// 2nd priority: Elevator that is moving up and current floor <= source floor
-				else if (status.getDirection() == direction && direction == Direction.UP
+				// 1st priority: Elevator that is moving up and current floor <= source floor
+				if (status.getDirection() == direction && direction == Direction.UP
 						&& status.getFloor() <= newRequestSourceFloor) {
-					chosenElevatorStatus = status;
+					movingUpElevatorStatus.add(status);
+					//chosenElevatorStatus = status;
 				} 
-				// 3rd priority: Elevator that is moving down and current floor >= source floor
+				// 2nd priority: Elevator that is moving down and current floor >= source floor
 				else if (status.getDirection() == direction && direction == Direction.DOWN
 						&& status.getFloor() >= newRequestSourceFloor) {
-					chosenElevatorStatus = status;
-				}
+					movingDownElevatorStatus.add(status);
+					//chosenElevatorStatus = status;
+				} 
 			}
 		}
+		// Find the closest distance of the elevator that is moving up and its current floor is closest to the floor that request the elevator
+		if (direction == Direction.UP) {
+			chosenElevatorStatus = findTheClosestElevatorToRequestFloor(movingUpElevatorStatus, newRequestSourceFloor);
+		} else if(direction == Direction.DOWN) {
+			// Find the closest distance of the elevator that is moving down and its current floor is closest to the floor that request the elevator
+			chosenElevatorStatus = findTheClosestElevatorToRequestFloor(movingDownElevatorStatus, newRequestSourceFloor);
+		}
+		
 		return chosenElevatorStatus;
 	}
 	
@@ -103,18 +148,29 @@ public class SchedulerContext {
 			
 			synchronized (pendingElevatorRequests) {
 				ElevatorRequest request = null;
-				//for (ElevatorRequest request : pendingElevatorRequests)	{
+				// Find the moving elevators
 				for (int i=0; i<pendingElevatorRequests.size(); i++) {
 					request = pendingElevatorRequests.get(i);
-					 chosenElevatorStatus = findTheAvailableElevator(request.getDirection(), request.getSourceFloor()); 
+					
+					chosenElevatorStatus = findTheAvailableMovingElevator(request.getDirection(), request.getSourceFloor()); 
+					 
 					if (chosenElevatorStatus != null) {
 						assignedElevatorRequest = new AssignedElevatorRequest(chosenElevatorStatus.getElevatorId(), request);
 						break;
-					} else {
-						// Get the first elevator
-						chosenElevatorStatus = availableElevatorStatus.get(0);
-						assignedElevatorRequest = new AssignedElevatorRequest(chosenElevatorStatus.getElevatorId(), request);
-						break;
+					} 
+				}
+				
+				// Find the idle elevators
+				if (chosenElevatorStatus == null) {
+					for (int i=0; i<pendingElevatorRequests.size(); i++) {
+						request = pendingElevatorRequests.get(i);
+						
+						chosenElevatorStatus = findTheAvailableIdleElevator(request);
+						 
+						if (chosenElevatorStatus != null) {
+							assignedElevatorRequest = new AssignedElevatorRequest(chosenElevatorStatus.getElevatorId(), request);
+							break;
+						} 
 					}
 				}
 				
@@ -127,6 +183,8 @@ public class SchedulerContext {
 		// can be null cause the 2 if statements
 		return assignedElevatorRequest;
 	}
+	
+	
 	
 	/**
 	 * assignNextBestElevatorRequest

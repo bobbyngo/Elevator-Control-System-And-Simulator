@@ -27,13 +27,12 @@ public class ElevatorSubsystem implements Runnable {
 	private SimulatorConfiguration simulatorConfiguration;
 	private Thread requestListenerThread;
 	private UDPClient udpRequestReceiver;
-	private GUI gui;
 
 	/**
 	 * Constructor for Elevator Subsystem
 	 * @param config
 	 */
-	public ElevatorSubsystem(SimulatorConfiguration config, int numElevators) {
+	public ElevatorSubsystem(SimulatorConfiguration config) {
 		ElevatorContext elevator;
 		
 		elevators = new HashMap<>();
@@ -42,14 +41,11 @@ public class ElevatorSubsystem implements Runnable {
 		
 		// 1-index elevator identification
 		// FIXME: change to concurrent initialization? (TBD)
-		for (int i=1; i<=numElevators; i++) {
+		for (int i=1; i<=config.NUM_ELEVATORS; i++) {
 			elevator = new ElevatorContext(this, i);
 			elevator.startElevator();
 			elevators.put(i, elevator);
 		}
-		
-		gui = new GUI(simulatorConfiguration);
-		gui.displayGUI();
 	}
 	
 	/**
@@ -123,6 +119,7 @@ public class ElevatorSubsystem implements Runnable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		messageClient.close();
 	}
 	
 	/**
@@ -138,6 +135,7 @@ public class ElevatorSubsystem implements Runnable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		messageClient.close();
 	}
 	
 	/**
@@ -154,6 +152,7 @@ public class ElevatorSubsystem implements Runnable {
 				e.printStackTrace();
 			}
 		}
+		messageClient.close();
 	}
 	
 	/**
@@ -165,7 +164,7 @@ public class ElevatorSubsystem implements Runnable {
 		Thread subsystemThread;
 		
 		configuration = new SimulatorConfiguration("./src/main/resources/config.properties");
-		subsystem = new ElevatorSubsystem(configuration, configuration.NUM_ELEVATORS);
+		subsystem = new ElevatorSubsystem(configuration);
 		subsystemThread = new Thread(subsystem);
 		subsystemThread.start();
 	}

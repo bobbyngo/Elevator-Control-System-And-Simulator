@@ -41,7 +41,6 @@ public class ElevatorContext {
 	
 	private ElevatorSubsystem elevatorSubsystem;
 	private JTextArea elevatorLog;
-	private GUI gui;
 	
 	/**
 	 * Constructor for Elevator Context
@@ -65,9 +64,6 @@ public class ElevatorContext {
 		}
 		currentState = ElevatorState.start(this);
 		elevatorLog = new JTextArea();
-		gui = new GUI(subsystem.getConfig());
-		gui.displayConsole(this.getClass().getSimpleName() + " " + id, elevatorLog);
-		gui.handleElevatorEvent(getId(), getCurrentFloor(), getCurrentState().getElevatorStateEnum());
 		// notify position & start state machine in another func
 		
 	}
@@ -77,14 +73,11 @@ public class ElevatorContext {
 	 */
 	public void startElevator() {
 		// XXX: make this a run() function? something to think about...
-		// MUST CALL THIS FUNCTION TO START STATE MACHINE
-		ElevatorStatus status;
-		
+		// MUST CALL THIS FUNCTION TO START STATE MACHINE		
 		currentState = ElevatorState.start(this);
-		print(this.toString());
+		printLog(this.toString());
 		// notify starting position
-		elevatorSubsystem.sendArrivalNotification(new ElevatorStatus(this));
-		gui.handleElevatorEvent(getId(), getCurrentFloor(), getCurrentState().getElevatorStateEnum());
+		notifyArrivalSensor();
 	}
 	
 	/**
@@ -104,13 +97,13 @@ public class ElevatorContext {
 	 */
 	public void onRequestReceived(ElevatorRequest request) {
 		synchronized (currentState) {
-			print(String.format("Elevator#%d Event: Request Received", id));
-			print(String.format("Elevator#%d will handle request going %s from floor %d to floor %d at %s" ,
+			printLog(String.format("Elevator#%d Event: Request Received", id));
+			printLog(String.format("Elevator#%d will handle request going %s from floor %d to floor %d at %s" ,
 					id , request.getDirection(), request.getSourceFloor(), request.getDestinationFloor(), request.getTimestamp()));
 			currentState = currentState.handleRequestReceived();
-			print(this.toString());
+			printLog(this.toString());
 			// update view...
-			gui.handleElevatorEvent(getId(), getCurrentFloor(), getCurrentState().getElevatorStateEnum());
+			notifyArrivalSensor();
 		}
 	}
 	
@@ -121,11 +114,11 @@ public class ElevatorContext {
 	public void onTimeout(TimeoutEvent event) {
 		synchronized (currentState) {
 			//System.out.println(String.format("Elevator#%d %s", id, event));
-			print(String.format("Elevator#%d Event: Timeout", id));
+			printLog(String.format("Elevator#%d Event: Timeout", id));
 			currentState = currentState.handleTimeout();
-			print(this.toString());
+			printLog(this.toString());
 			// update view...
-			gui.handleElevatorEvent(getId(), getCurrentFloor(), getCurrentState().getElevatorStateEnum());
+			notifyArrivalSensor();
 		}
 	}
 	
@@ -146,7 +139,6 @@ public class ElevatorContext {
 					toRemove.add(req);
 					internalRequests.add(req);
 					pressElevatorButton(req.getDestinationFloor());
-					gui.handleElevatorEvent(getId(), getCurrentFloor(), getCurrentState().getElevatorStateEnum());
 				}
 			}
 			externalRequests.removeAll(toRemove);
@@ -167,9 +159,8 @@ public class ElevatorContext {
 			if (req.getDestinationFloor() == currentFloor) {
 				//internalRequests.remove(req);
 				toRemove.add(req);
-				print("Completed ElevatorRequest... sending back to scheduler: " + req);
+				printLog("Completed ElevatorRequest... sending back to scheduler: " + req);
 				elevatorSubsystem.sendCompletedElevatorRequest(req);
-				gui.handleElevatorEvent(getId(), getCurrentFloor(), getCurrentState().getElevatorStateEnum());
 			}
 		}
 		internalRequests.removeAll(toRemove);
@@ -203,8 +194,10 @@ public class ElevatorContext {
 			return;
 		}
 		
-		timer = new Timer();
-		timer.schedule(task, delay);
+		if (!elevatorSubsystem.getConfig().TEST_MODE) {
+			timer = new Timer();
+			timer.schedule(task, delay);
+		}
 	}
 	
 	/**
@@ -249,14 +242,9 @@ public class ElevatorContext {
 		// TODO: add condition checks and throw exception
 		// if invalid floor?... the state machine should not
 		// allow transition to MOVING state if floor above
-		// doesn't exist...
-		ElevatorStatus status;
-		
+		// doesn't exist...		
 		if (currentFloor + 1 <= elevatorSubsystem.getConfig().NUM_FLOORS) {
 			currentFloor++;
-			status = new ElevatorStatus(this);
-			elevatorSubsystem.sendArrivalNotification(status);
-			gui.handleElevatorEvent(getId(), getCurrentFloor(), getCurrentState().getElevatorStateEnum());
 			return true;
 		}
 		return false;
@@ -267,13 +255,8 @@ public class ElevatorContext {
 	 * @return true if the floor is updated else false
 	 */
 	public boolean decrementCurrentFloor() {
-		ElevatorStatus status;
-
 		if (currentFloor - 1 >= 1) {
 			currentFloor--;
-			status = new ElevatorStatus(this);
-			elevatorSubsystem.sendArrivalNotification(status);
-			gui.handleElevatorEvent(getId(), getCurrentFloor(), getCurrentState().getElevatorStateEnum());
 			return true;
 		}
 		return false;
@@ -538,24 +521,19 @@ public class ElevatorContext {
 		return false;
 	}
 	
-	public boolean isAtDoorsStuckFloor() {
-		for (int doorsStuckFloor : getConfig().DOORS_OBSTRUCTED_FLOORS) {
-			if (doorsStuckFloor == currentFloor) {
-				gui.handleElevatorEvent(getId(), getCurrentFloor(), getCurrentState().getElevatorStateEnum());
-				return true;
+	public ElevatorError isAtErrorFloor() {
+		ElevatorError error = null, reqError;
+		for (int i=0; i<internalRequests.size(); i++) {
+			reqError = internalRequests.get(i).getElevatorError();
+			if (reqError != null) {
+				// XXX: i have to do this because can't use switch/case w/ null
+				switch (reqError) {
+					case ELEVATOR_STUCK: return ElevatorError.ELEVATOR_STUCK;
+					case DOORS_STUCK: error = ElevatorError.DOORS_STUCK;
+				}
 			}
 		}
-		return false;
-	}
-	
-	public boolean isAtElevatorStuckFloor() {
-		for (int elevatorStuckFloor : getConfig().ELEVATOR_STUCK_FLOORS) {
-			if (elevatorStuckFloor == currentFloor) {
-				gui.handleElevatorEvent(getId(), getCurrentFloor(), getCurrentState().getElevatorStateEnum());
-				return true;
-			}
-		}
-		return false;
+		return error;
 	}
 	
 	public void notifyArrivalSensor() {
@@ -564,7 +542,7 @@ public class ElevatorContext {
 	
 	public void returnExternalRequests() {
 		synchronized (externalRequests) {
-			print("Elevator crashed: returning externalRequests to scheduler");
+			printLog("Elevator crashed: returning externalRequests to scheduler");
 			elevatorSubsystem.returnElevatorRequests(externalRequests);
 			externalRequests.removeAll(externalRequests);
 		}
@@ -582,7 +560,7 @@ public class ElevatorContext {
 		return motor;
 	}
 	
-	public void print(String message) {
+	private void printLog(String message) {
 		System.out.println(message);
 		elevatorLog.append(" " + message + "\n");
 	}
@@ -591,7 +569,7 @@ public class ElevatorContext {
 		// small visual test
 		System.out.println("--small little elevator context test");
 		SimulatorConfiguration sc = new SimulatorConfiguration("./src/main/resources/config.properties");
-		ElevatorSubsystem s = new ElevatorSubsystem(sc, sc.NUM_ELEVATORS);
+		ElevatorSubsystem s = new ElevatorSubsystem(sc);
 		//s.startElevatorSubsystem(); TODO: update this lil test
 		UDPClient testServer = new UDPClient();
 		UDPClient arrivalNotifRcv = new UDPClient(sc.SCHEDULER_ARRIVAL_REQ_PORT);

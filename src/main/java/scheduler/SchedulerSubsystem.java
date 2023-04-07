@@ -34,7 +34,6 @@ public class SchedulerSubsystem implements Runnable {
 	private Thread completedRequestListenerThread;
 	
 	private JTextArea schedulerLog;
-	private GUI gui;
 	
 	public SchedulerSubsystem(SimulatorConfiguration config) {
 		simulatorConfiguration = config;
@@ -45,9 +44,6 @@ public class SchedulerSubsystem implements Runnable {
 		completedRequestSocket = new UDPClient(config.SCHEDULER_COMPLETED_REQ_PORT);
 		
 		schedulerLog = new JTextArea();
-		gui = new GUI(simulatorConfiguration);
-		gui.displayConsole(this.getClass().getSimpleName(), schedulerLog);
-		gui.displayGUI();
 	}
 	
 	/**
@@ -139,6 +135,7 @@ public class SchedulerSubsystem implements Runnable {
 						UDPClient socket = new UDPClient();
 						socket.sendMessage(data, simulatorConfiguration.ELEVATOR_SUBSYSTEM_HOST, 
 								simulatorConfiguration.ELEVATOR_SUBSYSTEM_REQ_PORT);
+						socket.close();
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -189,7 +186,8 @@ public class SchedulerSubsystem implements Runnable {
 		
 		UDPClient socket = new UDPClient();
 		socket.sendMessage(data, simulatorConfiguration.FLOOR_SUBSYSTEM_HOST, 
-				simulatorConfiguration.FLOOR_SUBSYSTEM_REQ_PORT);
+				simulatorConfiguration.FLOOR_SUBSYSTEM_ARRIVAL_REQ_PORT);
+		socket.close();
 	}
 	
 	/**
@@ -202,16 +200,7 @@ public class SchedulerSubsystem implements Runnable {
 		DatagramPacket packetFromElevator =  completedRequestSocket.receiveMessage();
 		byte[] completedRequestData = UDPClient.readPacketData(packetFromElevator);
 		ElevatorRequest completedRequest = ElevatorRequest.decode(completedRequestData);
-		
-//		task = new Thread(new Runnable() {
-//			@Override
-//			public void run() {
-//				System.out.println("Received completed request %s" + completedRequest);
-//				schedulerContext.addCompletedElevatorRequests(completedRequest);
-//			}
-//		});
-//		task.start();
-		print("Received completed request " + completedRequest);
+		System.out.println("Received completed request " + completedRequest);
 		schedulerContext.addCompletedElevatorRequests(completedRequest);
 	}
 	
@@ -230,7 +219,8 @@ public class SchedulerSubsystem implements Runnable {
 					UDPClient socket = new UDPClient();
 					data = completedRequest.encode();
 					socket.sendMessage(data, simulatorConfiguration.FLOOR_SUBSYSTEM_HOST, 
-							simulatorConfiguration.FLOOR_SUBSYSTEM_REQ_PORT);
+							simulatorConfiguration.FLOOR_SUBSYSTEM_COMPLETED_REQ_PORT);
+					socket.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
