@@ -477,6 +477,7 @@ public class ElevatorContext {
 			for (ElevatorRequest pendingReq : externalRequests) {
 				if (pendingReq.getSourceFloor() == currentFloor && (pendingReq.getDirection() == direction || direction == Direction.IDLE)) {
 					// there exists a pending req that is "on the way" - continue sweeping
+					// FIXME: is it correct to add a Direction.IDLE condition?
 					return true;
 				}
 				if (internalRequests.size() == 0 && pendingReq.getSourceFloor() == currentFloor) {
@@ -497,6 +498,13 @@ public class ElevatorContext {
 //				// there is no one in the elevator car and you have come across a floor w/ a pending request & there are no other requests
 //				return true;
 //			}
+		}
+		return false;
+	}
+	
+	public boolean shouldElevatorStop(ElevatorRequest request) {
+		if (request.getSourceFloor() == currentFloor && request.getDirection() == direction) {
+			return true;
 		}
 		return false;
 	}
