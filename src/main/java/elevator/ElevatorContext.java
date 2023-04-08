@@ -66,7 +66,7 @@ public class ElevatorContext {
 			elevatorButtonBoard.put(i, false);
 		}
 
-		logConsole = new LogConsole(String.format("Elevator#%d Log", id));
+		logConsole = new LogConsole(String.format("Elevator#%d", id));
 		// notify position & start state machine in another func
 		
 	}

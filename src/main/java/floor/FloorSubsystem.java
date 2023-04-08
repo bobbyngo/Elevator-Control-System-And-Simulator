@@ -64,7 +64,7 @@ public class FloorSubsystem implements Runnable {
 			floorArr[i] = new Floor(i + 1); 
 		}
 		
-		logConsole = new LogConsole("Floor Subsystem Log");
+		logConsole = new LogConsole("Floor Subsystem");
 	}
 	
 	/**
@@ -226,7 +226,7 @@ public class FloorSubsystem implements Runnable {
 	}
 	
 	private void printLog(String message) {
-		logConsole.appendLog(message);
+		System.out.println(message);
 		logConsole.appendLog(" " + message + "\n");
 	}
 	

@@ -44,7 +44,7 @@ public class SchedulerSubsystem implements Runnable {
 		arrivalRequestSocket = new UDPClient(config.SCHEDULER_ARRIVAL_REQ_PORT);
 		completedRequestSocket = new UDPClient(config.SCHEDULER_COMPLETED_REQ_PORT);
 		
-		logConsole = new LogConsole("Scheduler Log");
+		logConsole = new LogConsole("Scheduler");
 	}
 	
 	/**

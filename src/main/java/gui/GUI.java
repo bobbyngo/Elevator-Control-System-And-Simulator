@@ -226,6 +226,7 @@ public class GUI extends JFrame implements Runnable {
 		}
 	}
 	
+	@Deprecated
 	public void displayConsole(String consolename, JTextArea consoleLog) { 
 		consoleLog.setFont(new Font("Arial", Font.ROMAN_BASELINE, 14));
 		consoleLog.setLineWrap(true);
