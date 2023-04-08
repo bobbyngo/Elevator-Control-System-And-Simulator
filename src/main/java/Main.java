@@ -1,9 +1,12 @@
 package main.java;
 
+import java.io.IOException;
+
 import main.java.elevator.ElevatorSubsystem;
 import main.java.floor.FloorSubsystem;
 import main.java.gui.GUI;
 import main.java.scheduler.SchedulerSubsystem;
+import main.resources.GenerateEvents;
 
 /**
  * @author Trong Nguyen
@@ -12,6 +15,14 @@ import main.java.scheduler.SchedulerSubsystem;
 public class Main {
 	
 	public static void main(String[] args) {
+
+		try {
+			new GenerateEvents();
+			GenerateEvents.generateEvents();
+			Thread.sleep(2000);
+		} catch (InterruptedException | IOException e) {
+
+		}
 		
 		SimulatorConfiguration configuration = new SimulatorConfiguration("./src/main/resources/config.properties");
 		
