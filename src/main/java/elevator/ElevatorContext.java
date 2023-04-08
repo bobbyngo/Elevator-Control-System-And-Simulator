@@ -539,8 +539,10 @@ public class ElevatorContext {
 		return error;
 	}
 	
-	public void notifyArrivalSensor() {
-		elevatorSubsystem.sendArrivalNotification(new ElevatorStatus(this));
+	// XXX: this method name is misleading...
+	private void notifyArrivalSensor() {
+		elevatorSubsystem.notifyContextUpdate(this);
+		
 	}
 	
 	public void returnExternalRequests() {

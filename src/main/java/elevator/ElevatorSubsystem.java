@@ -10,6 +10,7 @@ import javax.swing.JTextArea;
 import main.java.SimulatorConfiguration;
 import main.java.UDPClient;
 import main.java.dto.AssignedElevatorRequest;
+import main.java.dto.ElevatorGuiData;
 import main.java.dto.ElevatorRequest;
 import main.java.dto.ElevatorStatus;
 import main.java.gui.GUI;
@@ -123,16 +124,32 @@ public class ElevatorSubsystem implements Runnable {
 		messageClient.close();
 	}
 	
+	public void notifyContextUpdate(ElevatorContext ctx) {
+		new Thread(() -> sendArrivalNotification(new ElevatorStatus(ctx))).start();
+		new Thread(() -> sendGuiNotification(new ElevatorGuiData(ctx))).start();
+		return;
+	}
+	
 	/**
 	 * Sending arrival notification method to the Scheduler
 	 * @param status
 	 */
-	public void sendArrivalNotification(ElevatorStatus status) {
+	private void sendArrivalNotification(ElevatorStatus status) {
 		// send arrival notification: 
 		// TODO: spin up a new thread to run this code
 		UDPClient messageClient = new UDPClient();
 		try {
 			messageClient.sendMessage(status.encode(), simulatorConfiguration.SCHEDULER_HOST, simulatorConfiguration.SCHEDULER_ARRIVAL_REQ_PORT);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		messageClient.close();
+	}
+	
+	private void sendGuiNotification(ElevatorGuiData data) {
+		UDPClient messageClient = new UDPClient();
+		try {
+			messageClient.sendMessage(data.encode(), simulatorConfiguration.GUI_HOST, simulatorConfiguration.GUI_ELEVATOR_DTO_PORT);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
