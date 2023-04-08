@@ -3,6 +3,7 @@
  */
 package main.java.elevator.state;
 
+import main.java.dto.ElevatorRequest;
 import main.java.elevator.ElevatorContext;
 
 /**
@@ -19,13 +20,15 @@ public class DoorsStuckState extends IdleMotorState {
 		super(ctx);
 		StateTimeoutTask stt = new StateTimeoutTask(ctx, TimeoutEvent.DOORS_UNSTUCK);
 		ctx.setTimer(stt, ctx.getConfig().DOORS_OBSTRUCTED_TIME);
+		// XXX: should I return external requests here for them to be re-scheduled? Yes!
+		ctx.returnExternalRequests();
 	}
 
 	/**
 	 * handleRequestReceived
 	 */
 	@Override
-	public ElevatorState handleRequestReceived() {
+	public ElevatorState handleRequestReceived(ElevatorRequest request) {
 		return this;
 	}
 
@@ -44,7 +47,6 @@ public class DoorsStuckState extends IdleMotorState {
 	 */
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
 		return "DoorsStuck";
 	}
 
