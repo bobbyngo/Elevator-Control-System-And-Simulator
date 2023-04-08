@@ -3,6 +3,7 @@
  */
 package main.java.elevator.state;
 
+import main.java.dto.ElevatorRequest;
 import main.java.elevator.ElevatorContext;
 
 /**
@@ -39,7 +40,7 @@ public abstract class ElevatorState {
 	}
 	
 	// FIXME: Optimization - handleRequestReceived should take ElevatorRequest object as arg (why loop?)
-	public abstract ElevatorState handleRequestReceived();
+	public abstract ElevatorState handleRequestReceived(ElevatorRequest request);
 	public abstract ElevatorState handleTimeout();
 	public abstract String toString();
 	public abstract ElevatorStateEnum getElevatorStateEnum();
