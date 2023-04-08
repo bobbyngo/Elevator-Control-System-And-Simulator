@@ -67,7 +67,7 @@ public class GUI extends JFrame implements Runnable {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setBounds(100, 100, frameWidth, frameHeight + 165);
 		this.setPreferredSize(new Dimension(1080, 740));
-		this.setResizable(false);
+		this.setResizable(true);
 		this.setVisible(true);
 	
 		GridBagLayout gridBagLayout = new GridBagLayout();
