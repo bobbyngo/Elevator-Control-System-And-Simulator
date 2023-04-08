@@ -230,6 +230,7 @@ public class ElevatorContext {
 	 * @param d
 	 */
 	public void setDirection(Direction d) {
+		// TODO: set the direction lamps here
 		direction = d;
 	}
 	
@@ -519,7 +520,8 @@ public class ElevatorContext {
 	}
 	
 	public boolean shouldElevatorStop(ElevatorRequest request) {
-		if (request.getSourceFloor() == currentFloor && request.getDirection() == direction) {
+		if (request.getSourceFloor() == currentFloor && (request.getDirection() == direction 
+				|| direction == Direction.IDLE)) {
 			return true;
 		}
 		return false;

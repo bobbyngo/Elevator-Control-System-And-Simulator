@@ -3,6 +3,7 @@
  */
 package main.java.elevator.state;
 
+import main.java.dto.ElevatorRequest;
 import main.java.elevator.ElevatorContext;
 import main.java.elevator.Motor;
 
@@ -26,10 +27,10 @@ public class MovingDownState extends MovingState {
 	 * Override method for handling the receiving request of this state
 	 */
 	@Override
-	public ElevatorState handleRequestReceived() {
+	public ElevatorState handleRequestReceived(ElevatorRequest request) {
 		ElevatorContext ctx = this.getContext();
 		
-		if (ctx.shouldElevatorStop()) {
+		if (ctx.shouldElevatorStop(request)) {
 			ctx.killTimer();
 			return new StoppedState(ctx);
 		}
