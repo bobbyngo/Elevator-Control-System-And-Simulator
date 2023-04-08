@@ -3,6 +3,7 @@
  */
 package main.java.elevator.state;
 
+import main.java.dto.ElevatorRequest;
 import main.java.elevator.Direction;
 import main.java.elevator.Door;
 import main.java.elevator.ElevatorContext;
@@ -29,7 +30,7 @@ public class IdleState extends IdleMotorState {
 	 * handleRequestReceived
 	 */
 	@Override
-	public ElevatorState handleRequestReceived() {
+	public ElevatorState handleRequestReceived(ElevatorRequest request) {
 		ElevatorContext ctx = this.getContext();
 		ctx.unloadPassengers();
 		ctx.loadPassengers();
@@ -41,6 +42,7 @@ public class IdleState extends IdleMotorState {
 	 */
 	@Override
 	public ElevatorState handleTimeout() {
+		// there shouldn't be timeouts happening at this state
 		return this;
 	}
 
