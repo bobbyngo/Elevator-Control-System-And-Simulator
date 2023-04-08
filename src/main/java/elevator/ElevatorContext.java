@@ -281,11 +281,12 @@ public class ElevatorContext {
 		String externalReqStr = "";
 		String internalReqStr = "";
 		
-		for (ElevatorRequest req : externalRequests) {
-			externalReqStr += req + ", ";
+		for (int i = 0; i < externalRequests.size(); i ++) {
+			externalReqStr += externalRequests.get(i) + ", ";
 		}
-		for (ElevatorRequest req : internalRequests) {
-			internalReqStr += req + ", ";
+		
+		for (int i = 0; i < internalRequests.size(); i ++) {
+			externalReqStr += internalRequests.get(i) + ", ";
 		}
 		
 		return String.format(
