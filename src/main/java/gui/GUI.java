@@ -243,15 +243,20 @@ public class GUI extends JFrame implements Runnable {
 			switch (state) {
 			case IDLE: {
 				floors[currentElevatorNum][currentFloorNum - 1].setIcon(new ImageIcon("./src/main/resources/assets/closed.png"));
+				break;
 			}
 			case DOORS_OPEN: {
 				floors[currentElevatorNum][currentFloorNum - 1].setIcon(new ImageIcon("./src/main/resources/assets/open.png"));
+				break;
 			}
 			case DOORS_CLOSED: {
 				floors[currentElevatorNum][currentFloorNum - 1].setIcon(new ImageIcon("./src/main/resources/assets/closed.png"));
+				break;
 			}
+			
 			case DOORS_STUCK: {
 				floors[currentElevatorNum][currentFloorNum - 1].setIcon(new ImageIcon("./src/main/resources/assets/stuck.png"));
+				break;
 			}
 			case MOVING_DOWN: {
 				floors[currentElevatorNum][currentFloorNum - 1].setIcon(new ImageIcon("./src/main/resources/assets/moving.jpg"));
@@ -261,6 +266,7 @@ public class GUI extends JFrame implements Runnable {
 				if (currentFloorNum < floorNum) {
 					floors[currentElevatorNum][currentFloorNum].setIcon(new ImageIcon("./src/main/resources/assets/closed.png"));
 				}
+				break;
 			}
 			case MOVING_UP: {
 				floors[currentElevatorNum][currentFloorNum - 1].setIcon(new ImageIcon("./src/main/resources/assets/moving.jpg"));
@@ -270,11 +276,13 @@ public class GUI extends JFrame implements Runnable {
 				if (currentFloorNum < floorNum) {
 					floors[currentElevatorNum][currentFloorNum].setIcon(new ImageIcon("./src/main/resources/assets/closed.png"));
 				}
+				break;
 			}
 			case ELEVATOR_STUCK: {
 				for (int i = 0; i < floorNum; i++) {
 					floors[currentElevatorNum][i].setIcon(new ImageIcon("./src/main/resources/assets/shutdown.png"));
 				}
+				break;
 			}
 			default:
 				break;
