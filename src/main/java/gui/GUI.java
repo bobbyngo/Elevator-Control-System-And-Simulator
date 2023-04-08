@@ -17,6 +17,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
@@ -89,6 +90,10 @@ public class GUI extends JFrame implements Runnable {
 		gbcDisplayPanel.gridx = 0;
 		gbcDisplayPanel.gridy = 0;
 		this.add(displayPanel, gbcDisplayPanel);
+		
+		JScrollPane areaScrollPane = new JScrollPane(displayPanel);
+        areaScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        this.setContentPane(areaScrollPane);
 		
 		GridBagLayout gblDisplayPanel = new GridBagLayout();
 		int columns = 1 + elevatorNum + 1; // adds the floor column, elevator columns, then the data column
