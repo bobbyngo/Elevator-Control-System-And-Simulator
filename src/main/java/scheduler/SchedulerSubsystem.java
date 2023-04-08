@@ -13,6 +13,7 @@ import main.java.dto.AssignedElevatorRequest;
 import main.java.dto.ElevatorRequest;
 import main.java.dto.ElevatorStatus;
 import main.java.gui.GUI;
+import main.java.gui.LogConsole;
 
 /**
  * Representing the Scheduler Subsystem
@@ -33,7 +34,7 @@ public class SchedulerSubsystem implements Runnable {
 	private Thread arrivalRequestListenerThread;
 	private Thread completedRequestListenerThread;
 	
-	private JTextArea schedulerLog;
+	private LogConsole logConsole;
 	
 	public SchedulerSubsystem(SimulatorConfiguration config) {
 		simulatorConfiguration = config;
@@ -43,7 +44,7 @@ public class SchedulerSubsystem implements Runnable {
 		arrivalRequestSocket = new UDPClient(config.SCHEDULER_ARRIVAL_REQ_PORT);
 		completedRequestSocket = new UDPClient(config.SCHEDULER_COMPLETED_REQ_PORT);
 		
-		schedulerLog = new JTextArea();
+		logConsole = new LogConsole("Scheduler Log");
 	}
 	
 	/**
@@ -140,7 +141,7 @@ public class SchedulerSubsystem implements Runnable {
 						e.printStackTrace();
 					}
 					
-					print(String.format("Sent AssignedElevatorRequest: %s", request));
+					printLog(String.format("Sent AssignedElevatorRequest: %s", request));
 					schedulerContext.onRequestSent();
 					
 				}
@@ -271,9 +272,9 @@ public class SchedulerSubsystem implements Runnable {
 		sThread.start();
 	}
 	
-	public void print(String message) {
+	public void printLog(String message) {
 		System.out.println(message);
-		schedulerLog.append(" " + message + "\n");
+		logConsole.appendLog(" " + message + "\n");
 	}
 	
 }

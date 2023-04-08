@@ -18,6 +18,7 @@ import main.java.dto.ElevatorRequest;
 import main.java.dto.ElevatorStatus;
 import main.java.elevator.Direction;
 import main.java.floor.parser.Parser;
+import main.java.gui.LogConsole;
 
 /**
  * Responsible for sending elevator requests and handling 
@@ -35,6 +36,7 @@ public class FloorSubsystem implements Runnable {
 	private UDPClient udpCompletedRequestsReceiver;
 	private Floor[] floorArr;
 	private int numOfFloors;
+	private LogConsole logConsole;
 	
 	/**
 	 * Constructor for the FloorSubsystem class.
@@ -59,6 +61,8 @@ public class FloorSubsystem implements Runnable {
 		for (int i = 0; i < numOfFloors; i++) {
 			floorArr[i] = new Floor(i + 1); 
 		}
+		
+		logConsole = new LogConsole("Floor Subsystem Log");
 	}
 	
 	/**
@@ -183,6 +187,11 @@ public class FloorSubsystem implements Runnable {
 			System.exit(1);
 		}
 		return elevatorRequests;
+	}
+	
+	private void printLog(String message) {
+		logConsole.appendLog(message);
+		logConsole.appendLog(" " + message + "\n");
 	}
 	
 	/**

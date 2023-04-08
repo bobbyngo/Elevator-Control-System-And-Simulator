@@ -26,10 +26,11 @@ public class Main {
 		Thread schedulerThread = new Thread(schedulerSubsystem);
 		Thread floorThread = new Thread(floorSubsystem);
 		Thread elevatorThread = new Thread(elevatorSubsystem);
+		Thread guiThread = new Thread(gui);
 		
 		schedulerThread.start();
 		floorThread.start();
 		elevatorThread.start();
-		gui.displayGUI();
+		guiThread.start();
 	}
 }

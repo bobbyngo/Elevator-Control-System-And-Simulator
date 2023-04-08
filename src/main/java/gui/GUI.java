@@ -33,7 +33,7 @@ import main.java.elevator.state.ElevatorStateEnum;
  * @author Trong Nguyen
  * @version 1.0, 04/03/23
  */
-public class GUI extends JFrame {
+public class GUI extends JFrame implements Runnable {
 
 	private static final long serialVersionUID = 1L;
 	private static int elevatorNum;
@@ -226,7 +226,7 @@ public class GUI extends JFrame {
 		}
 	}
 	
-	public void displayConsole(String consolename, JTextArea consoleLog) {
+	public void displayConsole(String consolename, JTextArea consoleLog) { 
 		consoleLog.setFont(new Font("Arial", Font.ROMAN_BASELINE, 14));
 		consoleLog.setLineWrap(true);
 		consoleLog.setWrapStyleWord(true);
@@ -333,4 +333,15 @@ public class GUI extends JFrame {
 	public void print(JTextArea consoleLog, String message) {
 		consoleLog.append(" " + message + "\n");
 	}
+
+	@Override
+	public void run() {
+		displayGUI();	
+	}
+	
+	public static void main(String[] args) {
+		GUI gui = new GUI(new SimulatorConfiguration("./src/main/resources/config.properties"));
+		new Thread(gui).start();
+	}
+	
 }

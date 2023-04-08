@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.swing.JFrame;
 import javax.swing.JTextArea;
 
 import main.java.SimulatorConfiguration;
@@ -21,6 +22,7 @@ import main.java.dto.ElevatorStatus;
 import main.java.elevator.state.ElevatorState;
 import main.java.elevator.state.TimeoutEvent;
 import main.java.gui.GUI;
+import main.java.gui.LogConsole;
 
 /**
  * Entity class for Elevator 
@@ -40,7 +42,8 @@ public class ElevatorContext {
 	private Timer timer;
 	
 	private ElevatorSubsystem elevatorSubsystem;
-	private JTextArea elevatorLog;
+	//private JTextArea logConsole;
+	private LogConsole logConsole;
 	
 	/**
 	 * Constructor for Elevator Context
@@ -62,8 +65,8 @@ public class ElevatorContext {
 		for (int i = 1; i <= elevatorSubsystem.getConfig().NUM_FLOORS; i ++) {
 			elevatorButtonBoard.put(i, false);
 		}
-		currentState = ElevatorState.start(this);
-		elevatorLog = new JTextArea();
+
+		logConsole = new LogConsole(String.format("Elevator#%d Log", id));
 		// notify position & start state machine in another func
 		
 	}
@@ -562,7 +565,7 @@ public class ElevatorContext {
 	
 	private void printLog(String message) {
 		System.out.println(message);
-		elevatorLog.append(" " + message + "\n");
+		logConsole.appendLog(" " + message + "\n");
 	}
 	
 	public static void main(String[] args) throws ParseException, UnknownHostException, IOException, InterruptedException {
