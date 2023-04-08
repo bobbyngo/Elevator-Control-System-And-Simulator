@@ -63,6 +63,7 @@ public class FloorSubsystem implements Runnable {
 		}
 		
 		logConsole = new LogConsole("Floor Subsystem");
+		printLog("FLOOR_SUBSYSTEM_START");
 	}
 	
 	/**

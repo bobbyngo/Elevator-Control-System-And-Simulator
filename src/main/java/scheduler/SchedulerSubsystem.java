@@ -42,6 +42,7 @@ public class SchedulerSubsystem implements Runnable {
 		completedRequestSocket = new UDPClient(config.SCHEDULER_COMPLETED_REQ_PORT);
 		
 		logConsole = new LogConsole("Scheduler");
+		printLog("SCHEDULER_SUBSYSTEM_START");
 	}
 	
 	/**

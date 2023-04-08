@@ -1,6 +1,3 @@
-/**
- * 
- */
 package main.java.gui;
 
 import java.awt.BorderLayout;
@@ -54,7 +51,6 @@ public class LogConsole {
         Container newContentPane = schedulerPanel;
         frame.setContentPane(newContentPane);
         frame.setPreferredSize(new Dimension(500, 300));
-        frame.setLocation(100 + (425 * 3), 350);
         //Display the window.
         frame.pack();
         frame.setVisible(true);

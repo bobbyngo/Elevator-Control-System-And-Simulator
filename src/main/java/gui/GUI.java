@@ -157,7 +157,7 @@ public class GUI extends JFrame implements Runnable {
 		//create the elevator displays
 		for(int i = 1; i <= elevatorNum; i++) {
 			displays[i - 1] = new JPanel();
-			displays[i - 1].setBorder(new TitledBorder(new LineBorder(new Color(0, 0, 0)), new String("Elevator " + Integer.toString(i - 1)), TitledBorder.LEADING, TitledBorder.TOP, null, null));
+			displays[i - 1].setBorder(new TitledBorder(new LineBorder(new Color(0, 0, 0)), new String("Elevator " + Integer.toString(i)), TitledBorder.LEADING, TitledBorder.TOP, null, null));
 			GridBagConstraints gbc_elevatorDisplay = new GridBagConstraints();
 			gbc_elevatorDisplay.fill = GridBagConstraints.BOTH;
 			gbc_elevatorDisplay.insets = new Insets(0, 0, 0, 5);
@@ -208,7 +208,7 @@ public class GUI extends JFrame implements Runnable {
 		elevInfos = new JLabel[elevatorNum][4];
 		for(int i = 0; i < elevatorNum ; i++) {
 			elevInfoPanels[i] = new JPanel();
-			elevInfoPanels[i].setBorder(new TitledBorder(new LineBorder(new Color(0, 0, 0)),new String("Elevator "+ Integer.toString(i) +" Info"), TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+			elevInfoPanels[i].setBorder(new TitledBorder(new LineBorder(new Color(0, 0, 0)),new String("Elevator "+ Integer.toString(i+1) +" Info"), TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 			panel.add(elevInfoPanels[i]);
 			elevInfoPanels[i].setLayout(new GridLayout(0, 1, 0, 0));
 
