@@ -30,6 +30,7 @@ import javax.swing.text.DefaultCaret;
 import main.java.SimulatorConfiguration;
 import main.java.UDPClient;
 import main.java.dto.ElevatorGuiData;
+import main.java.dto.FloorGuiData;
 import main.java.elevator.state.ElevatorStateEnum;
 
 /**
@@ -347,19 +348,30 @@ public class GUI extends JFrame implements Runnable {
 	
 	private void listenForFloorData() {
 		DatagramPacket packet;
+		FloorGuiData data;
+		
 		System.out.println("Method not implemented yet.");
 		while (true) {
+			data = null;
 			packet = floorDtoSocket.receiveMessage();
+			try {
+				data = FloorGuiData.decode(UDPClient.readPacketData(packet));
+			} catch (ClassNotFoundException | IOException e) {
+				floorDtoSocket.close();
+				e.printStackTrace();
+				System.exit(1);
+			}
 			// TODO: read the data and then do something with it
 		}
 	}
 	
 	private void listenForElevatorData() {
 		DatagramPacket packet;
-		ElevatorGuiData data = null;
+		ElevatorGuiData data;
 		
 		System.out.println("Method not implemented yet.");
 		while (true) {
+			data = null;
 			packet = elevatorDtoSocket.receiveMessage();
 			try {
 				data = ElevatorGuiData.decode(UDPClient.readPacketData(packet));
