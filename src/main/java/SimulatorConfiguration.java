@@ -44,6 +44,11 @@ public class SimulatorConfiguration {
 	public final int FLOOR_SUBSYSTEM_COMPLETED_REQ_PORT;
 	public final int FLOOR_SUBSYSTEM_ARRIVAL_REQ_PORT;
 	
+	// GUI config
+	public final String GUI_HOST;
+	public final int GUI_FLOOR_DTO_PORT;
+	public final int GUI_ELEVATOR_DTO_PORT;
+	
 	// Test config, disables automataic state transitions via clock timeout
 	public final boolean TEST_MODE;
 	
@@ -84,6 +89,10 @@ public class SimulatorConfiguration {
 		FLOOR_SUBSYSTEM_HOST = prop.getProperty("FLOOR_SUBSYSTEM_HOST");
 		FLOOR_SUBSYSTEM_COMPLETED_REQ_PORT = Integer.parseInt(prop.getProperty("FLOOR_SUBSYSTEM_COMPLETED_REQ_PORT"));
 		FLOOR_SUBSYSTEM_ARRIVAL_REQ_PORT = Integer.parseInt(prop.getProperty("FLOOR_SUBSYSTEM_ARRIVAL_REQ_PORT"));
+		
+		GUI_HOST = prop.getProperty("GUI_HOST");
+		GUI_FLOOR_DTO_PORT = Integer.parseInt(prop.getProperty("GUI_FLOOR_DTO_PORT"));
+		GUI_ELEVATOR_DTO_PORT = Integer.parseInt(prop.getProperty("GUI_ELEVATOR_DTO_PORT"));
 		
 		TEST_MODE = Boolean.parseBoolean(prop.getProperty("TEST_MODE", "false"));
 	}

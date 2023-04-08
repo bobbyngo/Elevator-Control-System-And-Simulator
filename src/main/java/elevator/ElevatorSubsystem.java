@@ -89,6 +89,7 @@ public class ElevatorSubsystem implements Runnable {
 				routeElevatorRequest(assignedRequest);
 			}
 		});
+		
 		requestHandler.start();
 		return;
 	}

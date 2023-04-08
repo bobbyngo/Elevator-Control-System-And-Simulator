@@ -10,6 +10,8 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Toolkit;
+import java.io.IOException;
+import java.net.DatagramPacket;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
@@ -26,6 +28,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.text.DefaultCaret;
 
 import main.java.SimulatorConfiguration;
+import main.java.UDPClient;
 import main.java.dto.ElevatorGuiData;
 import main.java.elevator.state.ElevatorStateEnum;
 
@@ -40,13 +43,20 @@ public class GUI extends JFrame implements Runnable {
 	private static int floorNum;
 	private JLabel[][] floors;
 	private JLabel[][] elevInfos;
+	private UDPClient floorDtoSocket;
+	private UDPClient elevatorDtoSocket;
+	private SimulatorConfiguration config;
 	
 	public GUI(SimulatorConfiguration config) {
 		elevatorNum = config.NUM_ELEVATORS;
 		floorNum = config.NUM_FLOORS;
+		this.config = config;
+		// initialize sockets
+		floorDtoSocket = new UDPClient(config.GUI_FLOOR_DTO_PORT);
+		elevatorDtoSocket = new UDPClient(config.GUI_ELEVATOR_DTO_PORT);
 	}
 	
-	public void displayGUI() {
+	private void displayGUI() {
 		int frameHeight = 165 + 30 * floorNum;
 		int frameWidth = 50 + (50 * elevatorNum);
 		
@@ -334,10 +344,40 @@ public class GUI extends JFrame implements Runnable {
 	public void print(JTextArea consoleLog, String message) {
 		consoleLog.append(" " + message + "\n");
 	}
+	
+	private void listenForFloorData() {
+		DatagramPacket packet;
+		System.out.println("Method not implemented yet.");
+		while (true) {
+			packet = floorDtoSocket.receiveMessage();
+			// TODO: read the data and then do something with it
+		}
+	}
+	
+	private void listenForElevatorData() {
+		DatagramPacket packet;
+		ElevatorGuiData data = null;
+		
+		System.out.println("Method not implemented yet.");
+		while (true) {
+			packet = elevatorDtoSocket.receiveMessage();
+			try {
+				data = ElevatorGuiData.decode(UDPClient.readPacketData(packet));
+			} catch (ClassNotFoundException | IOException e) {
+				elevatorDtoSocket.close();
+				e.printStackTrace();
+				System.exit(1);
+			}
+			// TODO: do something with the data
+		}
+	}
 
 	@Override
 	public void run() {
 		displayGUI();	
+		// initialize socket listeners
+		new Thread(this::listenForFloorData).start();
+		new Thread(this::listenForElevatorData).start();
 	}
 	
 	public static void main(String[] args) {
