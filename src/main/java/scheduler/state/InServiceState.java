@@ -1,11 +1,7 @@
-/**
- * 
- */
 package main.java.scheduler.state;
 
 import java.io.IOException;
 
-import main.java.dto.AssignedElevatorRequest;
 import main.java.scheduler.SchedulerContext;
 
 /**

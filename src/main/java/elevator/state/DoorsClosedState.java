@@ -1,9 +1,4 @@
-/**
- * 
- */
 package main.java.elevator.state;
-
-import java.util.TimerTask;
 
 import main.java.elevator.Direction;
 import main.java.elevator.Door;

@@ -1,8 +1,6 @@
 package main.java.gui;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -14,18 +12,15 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.util.ArrayList;
 
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
-import javax.swing.text.DefaultCaret;
 
 import main.java.SimulatorConfiguration;
 import main.java.UDPClient;
@@ -46,12 +41,10 @@ public class GUI extends JFrame implements Runnable {
 	private JLabel[][] elevInfos;
 	private UDPClient floorDtoSocket;
 	private UDPClient elevatorDtoSocket;
-	private SimulatorConfiguration config;
 	
 	public GUI(SimulatorConfiguration config) {
 		elevatorNum = config.NUM_ELEVATORS;
 		floorNum = config.NUM_FLOORS;
-		this.config = config;
 		// initialize sockets
 		floorDtoSocket = new UDPClient(config.GUI_FLOOR_DTO_PORT);
 		elevatorDtoSocket = new UDPClient(config.GUI_ELEVATOR_DTO_PORT);
@@ -70,7 +63,7 @@ public class GUI extends JFrame implements Runnable {
 		frameWidth += 160;
 		
 		this.setTitle("ELEVATOR-CONTROL-SYSTEM-AND-SIMULATOR");
-		this.setIconImage(Toolkit.getDefaultToolkit().getImage("resource/assets/images/favicon.png"));
+		this.setIconImage(Toolkit.getDefaultToolkit().getImage("./src/main/resource/assets/favicon.png"));
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setBounds(100, 100, frameWidth, frameHeight + 165);
 		this.setPreferredSize(new Dimension(1080, 740));
@@ -181,7 +174,7 @@ public class GUI extends JFrame implements Runnable {
 			//create the floors for the elevator
 			for (int j = 0; j < floorNum; j++) {
 				floors[i-1][floorNum - 1 - j] = new JLabel("");
-				floors[i-1][floorNum - 1 - j].setIcon(new ImageIcon("resources/assets/images/closed.png"));
+				floors[i-1][floorNum - 1 - j].setIcon(new ImageIcon("./src/main/resources/assets/closed.png"));
 				floors[i-1][floorNum - 1 - j].setHorizontalAlignment(SwingConstants.CENTER);
 				GridBagConstraints gbc_floor = new GridBagConstraints();
 				gbc_floor.fill = GridBagConstraints.BOTH;
@@ -191,7 +184,7 @@ public class GUI extends JFrame implements Runnable {
 				displays[i - 1].add(floors[i-1][floorNum - 1 - j], gbc_floor);
 			}
 			
-			floors[i-1][0].setIcon(new ImageIcon("resources/assets/images/moving.jpg"));
+			floors[i-1][0].setIcon(new ImageIcon("./src/main/resources/assets/moving.jpg"));
 		}
 		
 		JPanel panel = new JPanel();
@@ -215,7 +208,7 @@ public class GUI extends JFrame implements Runnable {
 		elevInfos = new JLabel[elevatorNum][4];
 		for(int i = 0; i < elevatorNum ; i++) {
 			elevInfoPanels[i] = new JPanel();
-			elevInfoPanels[i].setBorder(new TitledBorder(new LineBorder(new Color(0, 0, 0)),new String( "Elevator "+ Integer.toString(i) +" Info"), TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+			elevInfoPanels[i].setBorder(new TitledBorder(new LineBorder(new Color(0, 0, 0)),new String("Elevator "+ Integer.toString(i) +" Info"), TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 			panel.add(elevInfoPanels[i]);
 			elevInfoPanels[i].setLayout(new GridLayout(0, 1, 0, 0));
 
@@ -237,82 +230,49 @@ public class GUI extends JFrame implements Runnable {
 		}
 	}
 	
-	@Deprecated
-	public void displayConsole(String consolename, JTextArea consoleLog) { 
-		consoleLog.setFont(new Font("Arial", Font.ROMAN_BASELINE, 14));
-		consoleLog.setLineWrap(true);
-		consoleLog.setWrapStyleWord(true);
-        JScrollPane areaScrollPane = new JScrollPane(consoleLog);
-        areaScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        areaScrollPane.setPreferredSize(new Dimension(800, 500));
-        areaScrollPane.setBorder(
-            BorderFactory.createCompoundBorder(
-                BorderFactory.createCompoundBorder(
-                                BorderFactory.createEmptyBorder(),
-                                BorderFactory.createEmptyBorder(5,5,5,5)),
-                areaScrollPane.getBorder()));
-        
-        DefaultCaret caret = (DefaultCaret) consoleLog.getCaret();
-        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
- 
-		JPanel schedulerPanel = new JPanel(new BorderLayout());
-		schedulerPanel.add(areaScrollPane, BorderLayout.CENTER);
-		//Create and set up the window.
-        JFrame frame = new JFrame(consolename + " Log");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        //Create and set up the content pane.
-        Container newContentPane = schedulerPanel;
-        frame.setContentPane(newContentPane);
-        frame.setPreferredSize(new Dimension(500, 300));
-        frame.setLocation(100 + (425 * 3), 350);
-        //Display the window.
-        frame.pack();
-        frame.setVisible(true);
-	}
-	
 	public void handleElevatorEvent(int currentElevatorNum, int currentFloorNum, ElevatorStateEnum state) {
 		if (currentElevatorNum <= elevatorNum && currentFloorNum <= floorNum) {
 			switch (state) {
 			case DOORS_OPEN: {
-				floors[currentElevatorNum][currentFloorNum - 1].setIcon(new ImageIcon("assets\\images\\open.png"));
+				floors[currentElevatorNum][currentFloorNum - 1].setIcon(new ImageIcon("./src/main/resources/assets/open.png"));
 				elevInfos[currentElevatorNum][0].setText("Current Floor: " + currentFloorNum);
 				elevInfos[currentElevatorNum][3].setText("Doors: OPEN");
 			}
 			case DOORS_CLOSED: {
-				floors[currentElevatorNum][currentFloorNum - 1].setIcon(new ImageIcon("assets\\images\\closed.png"));
+				floors[currentElevatorNum][currentFloorNum - 1].setIcon(new ImageIcon("./src/main/resources/assets/closed.png"));
 				elevInfos[currentElevatorNum][0].setText("Current Floor: " + currentFloorNum);
 				elevInfos[currentElevatorNum][3].setText("Doors: CLOSED");
 			}
 			case DOORS_STUCK: {
-				floors[currentElevatorNum][currentFloorNum - 1].setIcon(new ImageIcon("assets\\images\\stuck.png"));
+				floors[currentElevatorNum][currentFloorNum - 1].setIcon(new ImageIcon("./src/main/resources/assets/stuck.png"));
 				elevInfos[currentElevatorNum][0].setText("Current Floor: " + currentFloorNum);
 				elevInfos[currentElevatorNum][3].setText("Doors: STUCK");
 			}
 			case MOVING_DOWN: {
-				floors[currentElevatorNum][currentFloorNum - 1].setIcon(new ImageIcon("assets\\images\\moving.jpg"));
+				floors[currentElevatorNum][currentFloorNum - 1].setIcon(new ImageIcon("./src/main/resources/assets/moving.jpg"));
 				if (currentFloorNum > 1) {
-					floors[currentElevatorNum][currentFloorNum - 2].setIcon(new ImageIcon("assets\\images\\closed.png"));
+					floors[currentElevatorNum][currentFloorNum - 2].setIcon(new ImageIcon("./src/main/resources/assets/closed.png"));
 				}
 				if (currentFloorNum < floorNum) {
-					floors[currentElevatorNum][currentFloorNum].setIcon(new ImageIcon("assets\\images\\closed.png"));
+					floors[currentElevatorNum][currentFloorNum].setIcon(new ImageIcon("./src/main/resources/assets/closed.png"));
 				}
 				elevInfos[currentElevatorNum][0].setText("Current Floor: " + currentFloorNum);
 				elevInfos[currentElevatorNum][1].setText("Direction: MOVING_DOWN");
 			}
 			case MOVING_UP: {
-				floors[currentElevatorNum][currentFloorNum - 1].setIcon(new ImageIcon("assets\\images\\moving.jpg"));
+				floors[currentElevatorNum][currentFloorNum - 1].setIcon(new ImageIcon("./src/main/resources/assets/moving.jpg"));
 				if (currentFloorNum > 1) {
-					floors[currentElevatorNum][currentFloorNum - 2].setIcon(new ImageIcon("assets\\images\\closed.png"));
+					floors[currentElevatorNum][currentFloorNum - 2].setIcon(new ImageIcon("./src/main/resources/assets/closed.png"));
 				}
 				if (currentFloorNum < floorNum) {
-					floors[currentElevatorNum][currentFloorNum].setIcon(new ImageIcon("assets\\images\\closed.png"));
+					floors[currentElevatorNum][currentFloorNum].setIcon(new ImageIcon("./src/main/resources/assets/closed.png"));
 				}
 				elevInfos[currentElevatorNum][0].setText("Current Floor: " + currentFloorNum);
-				elevInfos[currentElevatorNum][1].setText("Direction: MOVING_DOWN");
+				elevInfos[currentElevatorNum][1].setText("Direction: MOVING_UP");
 			}
 			case ELEVATOR_STUCK: {
 				for (int i = 0; i < floorNum; i++) {
-					floors[currentElevatorNum][i].setIcon(new ImageIcon("assets\\images\\shutdown.png"));
+					floors[currentElevatorNum][i].setIcon(new ImageIcon("./src/main/resources/assets/shutdown.png"));
 				}
 				elevInfos[currentElevatorNum][3].setText("Doors: SHUTDOWN");
 			}
@@ -325,7 +285,7 @@ public class GUI extends JFrame implements Runnable {
 	public void handleRequestsInfo(int currentElevatorNum, ArrayList<Integer> arr) {
 		String temp = "Requests: ";
 		if (arr.isEmpty()) {
-			temp += "STANDING BY";
+			temp += "IDLE";
 		}
 			
 		else {
@@ -362,6 +322,7 @@ public class GUI extends JFrame implements Runnable {
 				System.exit(1);
 			}
 			// TODO: read the data and then do something with it
+			System.out.println(data.toString());
 		}
 	}
 	
@@ -381,6 +342,7 @@ public class GUI extends JFrame implements Runnable {
 				System.exit(1);
 			}
 			// TODO: do something with the data
+			System.out.println(data.toString());
 		}
 	}
 

@@ -1,9 +1,6 @@
 package main.java;
 
-import javax.swing.JOptionPane;
-
 import main.java.elevator.ElevatorSubsystem;
-import main.java.floor.Floor;
 import main.java.floor.FloorSubsystem;
 import main.java.gui.GUI;
 import main.java.scheduler.SchedulerSubsystem;

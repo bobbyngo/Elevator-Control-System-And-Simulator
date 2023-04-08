@@ -5,14 +5,11 @@ import java.net.DatagramPacket;
 import java.net.UnknownHostException;
 import java.text.ParseException;
 
-import javax.swing.JTextArea;
-
 import main.java.SimulatorConfiguration;
 import main.java.UDPClient;
 import main.java.dto.AssignedElevatorRequest;
 import main.java.dto.ElevatorRequest;
 import main.java.dto.ElevatorStatus;
-import main.java.gui.GUI;
 import main.java.gui.LogConsole;
 
 /**
@@ -197,11 +194,10 @@ public class SchedulerSubsystem implements Runnable {
 	 * @throws IOException
 	 */
 	public void receiveCompletedElevatorRequest() throws ClassNotFoundException, IOException {
-		Thread task;
 		DatagramPacket packetFromElevator =  completedRequestSocket.receiveMessage();
 		byte[] completedRequestData = UDPClient.readPacketData(packetFromElevator);
 		ElevatorRequest completedRequest = ElevatorRequest.decode(completedRequestData);
-		System.out.println("Received completed request " + completedRequest);
+		printLog("Received completed request " + completedRequest);
 		schedulerContext.addCompletedElevatorRequests(completedRequest);
 	}
 	

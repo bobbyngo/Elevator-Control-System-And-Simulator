@@ -1,6 +1,3 @@
-/**
- * 
- */
 package main.java.dto;
 
 import java.io.IOException;
@@ -10,7 +7,6 @@ import main.java.elevator.Direction;
 import main.java.elevator.Door;
 import main.java.elevator.ElevatorContext;
 import main.java.elevator.Motor;
-import main.java.elevator.state.ElevatorState;
 import main.java.elevator.state.ElevatorStateEnum;
 
 /**

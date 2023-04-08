@@ -1,12 +1,8 @@
-/**
- * 
- */
 package main.java.elevator.state;
 
 import main.java.elevator.Direction;
 import main.java.elevator.Door;
 import main.java.elevator.ElevatorContext;
-import main.java.elevator.Motor;
 
 /**
  * @author Zakaria Ismail

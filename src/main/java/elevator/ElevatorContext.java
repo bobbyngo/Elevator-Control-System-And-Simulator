@@ -11,9 +11,6 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.swing.JFrame;
-import javax.swing.JTextArea;
-
 import main.java.SimulatorConfiguration;
 import main.java.UDPClient;
 import main.java.dto.AssignedElevatorRequest;
@@ -21,7 +18,6 @@ import main.java.dto.ElevatorRequest;
 import main.java.dto.ElevatorStatus;
 import main.java.elevator.state.ElevatorState;
 import main.java.elevator.state.TimeoutEvent;
-import main.java.gui.GUI;
 import main.java.gui.LogConsole;
 
 /**
@@ -374,7 +370,7 @@ public class ElevatorContext {
 		// if going down, you want to keep going down
 		//	stop going down when there are no more requests below you going DOWN
 		// if idle, ... TBD
-		Direction newDirection, directionIfIdle;
+		Direction directionIfIdle;
 		boolean continueSweepingUp, continueSweepingDown;
 		
 		continueSweepingUp = shouldContinueSweepingUp();
@@ -574,7 +570,6 @@ public class ElevatorContext {
 		// small visual test
 		System.out.println("--small little elevator context test");
 		SimulatorConfiguration sc = new SimulatorConfiguration("./src/main/resources/config.properties");
-		ElevatorSubsystem s = new ElevatorSubsystem(sc);
 		//s.startElevatorSubsystem(); TODO: update this lil test
 		UDPClient testServer = new UDPClient();
 		UDPClient arrivalNotifRcv = new UDPClient(sc.SCHEDULER_ARRIVAL_REQ_PORT);

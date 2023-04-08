@@ -1,11 +1,7 @@
-/**
- * 
- */
 package main.java.elevator.state;
 
 import main.java.elevator.ElevatorContext;
 import main.java.elevator.ElevatorError;
-import main.java.elevator.Motor;
 
 /**
  * @author Zakaria Ismail

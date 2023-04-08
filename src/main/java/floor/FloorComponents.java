@@ -1,10 +1,8 @@
 package main.java.floor;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import main.java.SimulatorConfiguration;
-import main.java.dto.ElevatorStatus;
 import main.java.elevator.Direction;
 /**
  * An wrapper class containing all the information of components of the floor

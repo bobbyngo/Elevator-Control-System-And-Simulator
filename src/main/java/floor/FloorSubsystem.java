@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -17,7 +16,6 @@ import main.java.UDPClient;
 import main.java.dto.ElevatorRequest;
 import main.java.dto.ElevatorStatus;
 import main.java.elevator.Direction;
-import main.java.elevator.state.ElevatorState;
 import main.java.elevator.state.ElevatorStateEnum;
 import main.java.floor.parser.Parser;
 import main.java.gui.LogConsole;
@@ -134,15 +132,15 @@ public class FloorSubsystem implements Runnable {
 								floor.setFloorDownLamp(true);
 							}
 							
-							System.out.println(floor.toString());
+							printLog(floor.toString());
 							
 						} catch (ClassNotFoundException | IOException e) {
 							e.printStackTrace();
 						}
 						
-						System.out.println("Sending request " + req.toString());
+						printLog("Sending request " + req.toString());
 						
-						System.out.println("--------------------------------------------------");
+						printLog("--------------------------------------------------");
 					}
 				}, new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS").parse(req.getTimestamp().toString()));
 			}
@@ -169,11 +167,11 @@ public class FloorSubsystem implements Runnable {
 		updateAllElevatorLamps(elevatorId, elevatorDirection);
 		
 		if (elevatorState == ElevatorStateEnum.DOORS_OPEN) {
-			System.out.println("Elevator " + elevatorNum + " arrived at floor " + floorNum);
+			printLog("Elevator " + elevatorNum + " arrived at floor " + floorNum);
 			if (elevatorDirection == Direction.DOWN) floor.setFloorDownLamp(false);
 			else floor.setFloorUpLamp(false);
-			System.out.println(floor.toString());
-			System.out.println("--------------------------------------------------");
+			printLog(floor.toString());
+			printLog("--------------------------------------------------");
 		}	
 	}
 	
@@ -205,9 +203,9 @@ public class FloorSubsystem implements Runnable {
 		// TODO: Fix the issue with receiving the same completed request multiple times
 		DatagramPacket receivedReqPacket = udpCompletedRequestsReceiver.receiveMessage();
 		ElevatorRequest elevatorRequest = ElevatorRequest.decode(receivedReqPacket.getData());
-		System.out.println("Request " + elevatorRequest.toString() + " has been completed");
-		System.out.println(floorArr[elevatorRequest.getDestinationFloor() - 1].toString());
-		System.out.println("--------------------------------------------------");
+		printLog("Request " + elevatorRequest.toString() + " has been completed");
+		printLog(floorArr[elevatorRequest.getDestinationFloor() - 1].toString());
+		printLog("--------------------------------------------------");
 	}
 
 	/**
