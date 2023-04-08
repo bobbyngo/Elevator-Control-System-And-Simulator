@@ -34,6 +34,7 @@ public class IdleState extends IdleMotorState {
 		ElevatorContext ctx = this.getContext();
 		ctx.unloadPassengers();
 		ctx.loadPassengers();
+		ctx.setDirection(request.getDirection());
 		return new DoorsClosedState(ctx);
 	}
 

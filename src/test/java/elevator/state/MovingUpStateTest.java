@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import main.java.dto.ElevatorRequest;
 import main.java.elevator.Direction;
 import main.java.elevator.Door;
 import main.java.elevator.ElevatorContext;
@@ -45,8 +46,8 @@ public class MovingUpStateTest {
 	public void testHandleRequestReceived() throws ParseException {
 		// Case: elevator is passing by floor with request going in the UP direction
 		ElevatorContext ctx = elevatorState.getContext();
-		ctx.addExternalRequest(ElevatorStateTestUtil.initElevatorRequest(1, Direction.UP, 2));
-		assert elevatorState.handleRequestReceived() instanceof StoppedState;
+		ElevatorRequest req = ElevatorStateTestUtil.initElevatorRequest(1, Direction.UP, 2);
+		assert elevatorState.handleRequestReceived(req) instanceof StoppedState;
 		assertEquals(1, ctx.getCurrentFloor());
 	}
 	
@@ -55,10 +56,11 @@ public class MovingUpStateTest {
 		// Case: elevator is passing by floor with request going in DOWN direction
 		// and it has no other UP requests to serve
 		ElevatorContext ctx = elevatorState.getContext();
+		ElevatorRequest req;
 		assertTrue(ctx.incrementCurrentFloor());
 		assertEquals(2, ctx.getCurrentFloor());
-		ctx.addExternalRequest(ElevatorStateTestUtil.initElevatorRequest(2, Direction.DOWN, 1));
-		assert elevatorState.handleRequestReceived() instanceof StoppedState;
+		req = ElevatorStateTestUtil.initElevatorRequest(2, Direction.DOWN, 1);
+		assert elevatorState.handleRequestReceived(req) instanceof StoppedState;
 		assertEquals(2, ctx.getCurrentFloor());
 	}
 	
@@ -67,11 +69,13 @@ public class MovingUpStateTest {
 		// Case: elevator is passing by floor with request going in the DOWN direction while it still requests
 		// to sweep up toward
 		ElevatorContext ctx = elevatorState.getContext();
+		ElevatorRequest req;
+		ElevatorState expectedState = elevatorState;
 		assertTrue(ctx.incrementCurrentFloor());
 		assertEquals(2, ctx.getCurrentFloor());
 		ctx.addExternalRequest(ElevatorStateTestUtil.initElevatorRequest(3, Direction.UP, 4));
-		ctx.addExternalRequest(ElevatorStateTestUtil.initElevatorRequest(2, Direction.DOWN, 1));
-		assertSame(elevatorState, elevatorState.handleRequestReceived());
+		req = ElevatorStateTestUtil.initElevatorRequest(2, Direction.DOWN, 1);
+		assertSame(expectedState, elevatorState.handleRequestReceived(req));
 		assertEquals(2, ctx.getCurrentFloor());
 	}
 

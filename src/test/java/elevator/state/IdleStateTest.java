@@ -5,11 +5,14 @@ package test.java.elevator.state;
 
 import static org.junit.Assert.*;
 
+import java.text.ParseException;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import main.java.dto.ElevatorRequest;
 import main.java.elevator.Direction;
 import main.java.elevator.Door;
 import main.java.elevator.ElevatorContext;
@@ -50,11 +53,14 @@ public class IdleStateTest {
 	}
 
 	/**
-	 * Test method for {@link main.java.elevator.state.IdleState#handleRequestReceived()}.
+	 * Test method for {@link main.java.elevator.state.IdleState#handleRequestReceived(ElevatorRequest)}.
+	 * @throws ParseException 
 	 */
 	@Test
-	public void testHandleRequestReceived() {
-		assert elevatorState.handleRequestReceived() instanceof DoorsClosedState;
+	public void testHandleRequestReceivedUp() throws ParseException {
+		assert elevatorState.handleRequestReceived(
+				ElevatorStateTestUtil.initElevatorRequest(1, Direction.UP, 2)) instanceof DoorsClosedState;
+		assertEquals(Direction.UP, elevatorState.getContext().getDirection());
 	}
 
 	/**
