@@ -17,6 +17,8 @@ import main.java.UDPClient;
 import main.java.dto.ElevatorRequest;
 import main.java.dto.ElevatorStatus;
 import main.java.elevator.Direction;
+import main.java.elevator.state.ElevatorState;
+import main.java.elevator.state.ElevatorStateEnum;
 import main.java.floor.parser.Parser;
 import main.java.gui.LogConsole;
 
@@ -127,11 +129,9 @@ public class FloorSubsystem implements Runnable {
 							// If the lamp associated with that direction is off, turn it on
 							if (elevatorRequest.getDirection() == Direction.UP && floor.getFloorUpLamp() == false) {
 								floor.setFloorUpLamp(true);
-								System.out.println("Turned floor up lamp on");
 							}
 							else if (elevatorRequest.getDirection() == Direction.DOWN && floor.getFloorDownLamp() == false){
 								floor.setFloorDownLamp(true);
-								System.out.println("Turned floor down lamp on");
 							}
 							
 							System.out.println(floor.toString());
@@ -150,18 +150,52 @@ public class FloorSubsystem implements Runnable {
 	}
 	
 	/**
-	 * Listens to arrival requests from the scheduler
+	 * Listens to arrival requests from the scheduler and updates the floor components
 	 */
 	private void listenToArrivalRequests() throws ClassNotFoundException, IOException {
-		// TODO: Only listen to requests that arrive at a waiting floor
 		DatagramPacket receivedReqPacket = udpArrivalRequestsReceiver.receiveMessage();
-		int elevatorNum = ElevatorStatus.decode(receivedReqPacket.getData()).getElevatorId();
-		int floorNum = ElevatorStatus.decode(receivedReqPacket.getData()).getFloor();
-		// Check for elevator direction and turn off the lamp associated with it
-		// System.out.println("Elevator " + elevatorNum + " arrived at floor " + floorNum + ". Turning off lamp [determine lamp to turn off]");
-		// floorArr[floorNum - 1].setFloorUpLamp(false);
-		// floorArr[floorNum - 1].setFloorDownLamp(false);
-		// System.out.println("--------------------------------------------------");
+		ElevatorStatus elevatorStatus = ElevatorStatus.decode(receivedReqPacket.getData());
+		
+		int elevatorNum = elevatorStatus.getElevatorId();
+		int floorNum = elevatorStatus.getFloor();
+		Floor floor = floorArr[floorNum - 1];
+		ElevatorStateEnum elevatorState = elevatorStatus.getState();
+		Direction elevatorDirection = elevatorStatus.getDirection();
+		int elevatorId = elevatorStatus.getElevatorId();
+		
+		updateAllSensorsStatus(elevatorId); // Sets the sensors of the same shaft to false on all floors 
+		floor.setFloorSensor(elevatorId, true);
+		
+		updateAllElevatorLamps(elevatorId, elevatorDirection);
+		
+		if (elevatorState == ElevatorStateEnum.DOORS_OPEN) {
+			System.out.println("Elevator " + elevatorNum + " arrived at floor " + floorNum);
+			if (elevatorDirection == Direction.DOWN) floor.setFloorDownLamp(false);
+			else floor.setFloorUpLamp(false);
+			System.out.println(floor.toString());
+			System.out.println("--------------------------------------------------");
+		}	
+	}
+	
+	/**
+	 * Updates the direction lamp for an elevator shaft on all the floors
+	 * @param elevatorId the int of the elevator id 
+	 * @param direction the Direction enum to change the lamp's status to
+	 */
+	private void updateAllElevatorLamps(int elevatorId, Direction elevatorDirection) {
+		for(int i = 0; i < floorArr.length; i++) {
+			floorArr[i].setElevatorDirectionLamp(elevatorId, elevatorDirection);
+		}
+	}
+	
+	/**
+	 * Sets the sensor status of a sensor id to false on all floors
+	 * @param sensorId the int of the sensor ID (equal to the elevator ID)
+	 */
+	private void updateAllSensorsStatus(int sensorId) {
+		for(int i = 0; i < floorArr.length; i++) {
+			floorArr[i].setFloorSensor(sensorId, false);
+		}
 	}
 	
 	/**
@@ -170,7 +204,9 @@ public class FloorSubsystem implements Runnable {
 	private void listenToCompletedRequests() throws ClassNotFoundException, IOException {
 		// TODO: Fix the issue with receiving the same completed request multiple times
 		DatagramPacket receivedReqPacket = udpCompletedRequestsReceiver.receiveMessage();
-		System.out.println("Request " + ElevatorRequest.decode(receivedReqPacket.getData()).toString() + " has been completed");
+		ElevatorRequest elevatorRequest = ElevatorRequest.decode(receivedReqPacket.getData());
+		System.out.println("Request " + elevatorRequest.toString() + " has been completed");
+		System.out.println(floorArr[elevatorRequest.getDestinationFloor() - 1].toString());
 		System.out.println("--------------------------------------------------");
 	}
 
