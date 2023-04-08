@@ -2,6 +2,7 @@ package main.java.dto;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.List;
 
 import main.java.elevator.Direction;
 import main.java.elevator.Door;
@@ -25,6 +26,7 @@ public class ElevatorGuiData implements Serializable {
 	private Motor motor;
 	private Direction direction;
 	private Door door;
+	private int internalRequests;
 	// XXX: might include external & internal requests if it is needed
 	
 	public ElevatorGuiData(ElevatorContext ctx) {
@@ -34,6 +36,7 @@ public class ElevatorGuiData implements Serializable {
 		direction = ctx.getDirection();
 		door = ctx.getDoors();
 		motor = ctx.getMotor();
+		internalRequests = ctx.getInternalRequests().size();
 	}
 	
 	/**
@@ -81,6 +84,8 @@ public class ElevatorGuiData implements Serializable {
 	public Door getDoor() {
 		return door;
 	}
-	
 
+	public int getQueueSize() {
+		return internalRequests;
+	}
 }

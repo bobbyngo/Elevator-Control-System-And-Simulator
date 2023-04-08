@@ -11,6 +11,7 @@ import java.awt.Toolkit;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -25,7 +26,9 @@ import javax.swing.border.TitledBorder;
 import main.java.SimulatorConfiguration;
 import main.java.UDPClient;
 import main.java.dto.ElevatorGuiData;
+import main.java.dto.ElevatorRequest;
 import main.java.dto.FloorGuiData;
+import main.java.elevator.Direction;
 import main.java.elevator.state.ElevatorStateEnum;
 
 /**
@@ -63,7 +66,7 @@ public class GUI extends JFrame implements Runnable {
 		frameWidth += 160;
 		
 		this.setTitle("ELEVATOR-CONTROL-SYSTEM-AND-SIMULATOR");
-		this.setIconImage(Toolkit.getDefaultToolkit().getImage("./src/main/resource/assets/favicon.png"));
+		this.setIconImage(Toolkit.getDefaultToolkit().getImage("./src/main/resources/assets/favicon.png"));
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setBounds(100, 100, frameWidth, frameHeight + 165);
 		this.setPreferredSize(new Dimension(1080, 740));
@@ -230,23 +233,20 @@ public class GUI extends JFrame implements Runnable {
 		}
 	}
 	
-	public void handleElevatorEvent(int currentElevatorNum, int currentFloorNum, ElevatorStateEnum state) {
+	public void handleElevatorEvent(int currentElevatorNum, int currentFloorNum, Direction direction, int currentQueue, ElevatorStateEnum state) {
 		if (currentElevatorNum <= elevatorNum && currentFloorNum <= floorNum) {
 			switch (state) {
+			case IDLE: {
+				floors[currentElevatorNum][currentFloorNum - 1].setIcon(new ImageIcon("./src/main/resources/assets/closed.png"));
+			}
 			case DOORS_OPEN: {
 				floors[currentElevatorNum][currentFloorNum - 1].setIcon(new ImageIcon("./src/main/resources/assets/open.png"));
-				elevInfos[currentElevatorNum][0].setText("Current Floor: " + currentFloorNum);
-				elevInfos[currentElevatorNum][3].setText("Doors: OPEN");
 			}
 			case DOORS_CLOSED: {
 				floors[currentElevatorNum][currentFloorNum - 1].setIcon(new ImageIcon("./src/main/resources/assets/closed.png"));
-				elevInfos[currentElevatorNum][0].setText("Current Floor: " + currentFloorNum);
-				elevInfos[currentElevatorNum][3].setText("Doors: CLOSED");
 			}
 			case DOORS_STUCK: {
 				floors[currentElevatorNum][currentFloorNum - 1].setIcon(new ImageIcon("./src/main/resources/assets/stuck.png"));
-				elevInfos[currentElevatorNum][0].setText("Current Floor: " + currentFloorNum);
-				elevInfos[currentElevatorNum][3].setText("Doors: STUCK");
 			}
 			case MOVING_DOWN: {
 				floors[currentElevatorNum][currentFloorNum - 1].setIcon(new ImageIcon("./src/main/resources/assets/moving.jpg"));
@@ -256,8 +256,6 @@ public class GUI extends JFrame implements Runnable {
 				if (currentFloorNum < floorNum) {
 					floors[currentElevatorNum][currentFloorNum].setIcon(new ImageIcon("./src/main/resources/assets/closed.png"));
 				}
-				elevInfos[currentElevatorNum][0].setText("Current Floor: " + currentFloorNum);
-				elevInfos[currentElevatorNum][1].setText("Direction: MOVING_DOWN");
 			}
 			case MOVING_UP: {
 				floors[currentElevatorNum][currentFloorNum - 1].setIcon(new ImageIcon("./src/main/resources/assets/moving.jpg"));
@@ -267,31 +265,20 @@ public class GUI extends JFrame implements Runnable {
 				if (currentFloorNum < floorNum) {
 					floors[currentElevatorNum][currentFloorNum].setIcon(new ImageIcon("./src/main/resources/assets/closed.png"));
 				}
-				elevInfos[currentElevatorNum][0].setText("Current Floor: " + currentFloorNum);
-				elevInfos[currentElevatorNum][1].setText("Direction: MOVING_UP");
 			}
 			case ELEVATOR_STUCK: {
 				for (int i = 0; i < floorNum; i++) {
 					floors[currentElevatorNum][i].setIcon(new ImageIcon("./src/main/resources/assets/shutdown.png"));
 				}
-				elevInfos[currentElevatorNum][3].setText("Doors: SHUTDOWN");
 			}
 			default:
 				break;
 			}
+			elevInfos[currentElevatorNum][0].setText("Current Floor: " + currentFloorNum);
+			elevInfos[currentElevatorNum][1].setText("Direction: " + direction.toString());
+			elevInfos[currentElevatorNum][2].setText("Requests Queue Size: " + currentQueue);
+			elevInfos[currentElevatorNum][3].setText("State: " + state.toString());
 		}
-	}
-	
-	public void handleRequestsInfo(int currentElevatorNum, ArrayList<Integer> arr) {
-		String temp = "Requests: ";
-		if (arr.isEmpty()) {
-			temp += "IDLE";
-		}
-			
-		else {
-			temp += arr.toString();
-		}
-		elevInfos[currentElevatorNum][2].setText(temp);
 	}
 	
 	public int getNumElevators() {
@@ -330,7 +317,6 @@ public class GUI extends JFrame implements Runnable {
 		DatagramPacket packet;
 		ElevatorGuiData data;
 		
-		System.out.println("Method not implemented yet.");
 		while (true) {
 			data = null;
 			packet = elevatorDtoSocket.receiveMessage();
@@ -341,8 +327,7 @@ public class GUI extends JFrame implements Runnable {
 				e.printStackTrace();
 				System.exit(1);
 			}
-			// TODO: do something with the data
-			System.out.println(data.toString());
+			handleElevatorEvent(data.getId()-1, data.getCurrentFloor(), data.getDirection(), data.getQueueSize(), data.getCurrentState());
 		}
 	}
 
