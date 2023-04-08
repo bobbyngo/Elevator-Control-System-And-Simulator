@@ -7,6 +7,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import main.java.elevator.Direction;
+import main.java.elevator.ElevatorError;
 
 /**
  * The ElevatorRequest class is responsible for storing all the
@@ -24,6 +25,39 @@ public class ElevatorRequest implements Serializable {
 	private Integer sourceFloor;
 	private Direction direction;
 	private Integer destinationFloor;
+	private ElevatorError elevatorError;
+		
+	/**
+	 * Constructor of the ElevatorRequest class.
+	 * @param timestamp Timestamp, a point in time which the passenger pressed the floor button
+	 * @param sourceFloor Integer, the floor which the passenger declared his/her traveling intention
+	 * @param direction Direction, passenger's declared traveling direction
+	 * @param destinationFloor Integer, the destination floor which the passenger entered inside the elevator cart
+	 * @param elevatorError ElevatorError, error enum representing fault
+	 */
+	public ElevatorRequest(Timestamp timestamp, Integer sourceFloor, Direction direction, Integer destinationFloor,
+			ElevatorError elevatorError) {
+		this.timestamp = timestamp;
+		this.sourceFloor = sourceFloor;
+		this.direction = direction;
+		this.destinationFloor = destinationFloor;
+		this.elevatorError = elevatorError; 
+	}
+	
+	/**
+	 * Constructor of the ElevatorRequest class. Takes string timestamp as input.
+	 * @param timestampString String, a point in time which the passenger pressed the floor button
+	 * @param sourceFloor Integer, the floor which the passenger declared his/her traveling intention
+	 * @param direction Direction, passenger's declared traveling direction
+	 * @param destinationFloor Integer, the destination floor which the passenger entered inside the elevator cart
+	 * @param elevatorError ElevatorError, error enum representing fault
+	 * @throws ParseException
+	 * @author Zakaria Ismail
+	 */
+	public ElevatorRequest(String timestampString, Integer sourceFloor, Direction direction, Integer destinationFloor,
+			ElevatorError elevatorError) throws ParseException {
+		this(stringToTimestamp(timestampString), sourceFloor, direction, destinationFloor, elevatorError);
+	}
 	
 	/**
 	 * Constructor of the ElevatorRequest class.
@@ -33,23 +67,19 @@ public class ElevatorRequest implements Serializable {
 	 * @param destinationFloor Integer, the destination floor which the passenger entered inside the elevator cart
 	 */
 	public ElevatorRequest(Timestamp timestamp, Integer sourceFloor, Direction direction, Integer destinationFloor) {
-		this.timestamp = timestamp;
-		this.sourceFloor = sourceFloor;
-		this.direction = direction;
-		this.destinationFloor = destinationFloor;
+		this(timestamp, sourceFloor, direction, destinationFloor, null);
 	}
 	
 	/**
-	 * Constructor of the ElevatorRequest class. Takes string timestamp as input.
-	 * @param timestampString String, a point in time which the passenger pressed the floor button
+	 * Constructor of the ElevatorRequest class.
+	 * @param timestamp Timestamp, a point in time which the passenger pressed the floor button
 	 * @param sourceFloor Integer, the floor which the passenger declared his/her traveling intention
 	 * @param direction Direction, passenger's declared traveling direction
 	 * @param destinationFloor Integer, the destination floor which the passenger entered inside the elevator cart
-	 * @throws ParseException
-	 * @author Zakaria Ismail
+	 * @throws ParseException 
 	 */
 	public ElevatorRequest(String timestampString, Integer sourceFloor, Direction direction, Integer destinationFloor) throws ParseException {
-		this(stringToTimestamp(timestampString), sourceFloor, direction, destinationFloor);
+		this(stringToTimestamp(timestampString), sourceFloor, direction, destinationFloor, null);
 	}
 	
 	/**
@@ -86,13 +116,26 @@ public class ElevatorRequest implements Serializable {
 	}
 	
 	/**
+	 * Get the elevator error of the request, if there is no error, the return value is null
+	 * @return ElevatorError, the error of the request
+	 */
+	public ElevatorError getElevatorError() {
+		return elevatorError;
+	}
+	
+	/**
 	 * toString method for a readable form of object attributes
 	 * @return String, output in console
 	 */
 	@Override
-	public String toString(){ 
-		  return timestamp.toString().split(" ")[1] + " " + + sourceFloor + " " +
-				  direction + " " + destinationFloor;
+	public String toString(){
+		if (elevatorError == null) {
+			return timestamp.toString().split(" ")[1] + " " + sourceFloor + " " +
+					  direction + " " + destinationFloor;
+		}else {
+			return timestamp.toString().split(" ")[1] + " " + sourceFloor + " " +
+					  direction + " " + destinationFloor + " " + elevatorError.toString();
+		}
 	} 
   
     /**

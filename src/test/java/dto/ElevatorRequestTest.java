@@ -29,7 +29,7 @@ public class ElevatorRequestTest {
 	@Before
 	public void setUp() throws ParseException {
 		timestamp = new Timestamp(new SimpleDateFormat("hh:mm:ss.SSS").parse("07:01:15.000").getTime());
-		elevatorRequest = new ElevatorRequest(timestamp, 1, Direction.UP, 5);
+		elevatorRequest = new ElevatorRequest(timestamp, 1, Direction.UP, 5, null);
 	}
 	
 	/**
@@ -79,7 +79,7 @@ public class ElevatorRequestTest {
 	 */
 	@Test
 	public void testEquals() {
-		ElevatorRequest elevatorRequest2 = new ElevatorRequest(timestamp, 1, Direction.UP, 5);
+		ElevatorRequest elevatorRequest2 = new ElevatorRequest(timestamp, 1, Direction.UP, 5, null);
 		assertEquals(true, elevatorRequest2.equals(elevatorRequest));
 	}
 	

@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.text.ParseException;
 
 import main.java.elevator.Direction;
+import main.java.elevator.ElevatorError;
 
 /**
  * 
@@ -22,10 +23,26 @@ public class AssignedElevatorRequest extends ElevatorRequest implements Serializ
 	/**
 	 * Constructor method
 	 * @param assignedElevatorId
+	 * @param timestampString
+	 * @param sourceFloor
+	 * @param direction
+	 * @param destinationFloor
+	 * @param elevatorError
+	 * @throws ParseException
+	 */
+	public AssignedElevatorRequest(int assignedElevatorId, String timestampString, Integer sourceFloor, 
+			Direction direction, Integer destinationFloor, ElevatorError elevatorError) throws ParseException {
+		super(timestampString, sourceFloor, direction, destinationFloor, elevatorError);
+		elevatorId = assignedElevatorId;
+	}
+	
+	/**
+	 * Constructor method
+	 * @param assignedElevatorId
 	 * @param request
 	 */
 	public AssignedElevatorRequest(int assignedElevatorId, ElevatorRequest request) {
-		super(request.getTimestamp(), request.getSourceFloor(), request.getDirection(), request.getDestinationFloor());
+		super(request.getTimestamp(), request.getSourceFloor(), request.getDirection(), request.getDestinationFloor(), request.getElevatorError());
 		elevatorId = assignedElevatorId;
 	}
 	
@@ -40,8 +57,7 @@ public class AssignedElevatorRequest extends ElevatorRequest implements Serializ
 	 */
 	public AssignedElevatorRequest(int assignedElevatorId, String timestampString, Integer sourceFloor, 
 			Direction direction, Integer destinationFloor) throws ParseException {
-		super(timestampString, sourceFloor, direction, destinationFloor);
-		elevatorId = assignedElevatorId;
+		this(assignedElevatorId, timestampString, sourceFloor, direction, destinationFloor, null);
 	}
 	
 	/**
@@ -75,7 +91,7 @@ public class AssignedElevatorRequest extends ElevatorRequest implements Serializ
 	public static void main(String[] args) throws ParseException, IOException, ClassNotFoundException {
 		// small test
 		AssignedElevatorRequest testObj = new AssignedElevatorRequest(
-				1, "07:01:15.000", 3, Direction.UP, 5
+				1, "07:01:15.000", 3, Direction.UP, 5, null
 			);
 		AssignedElevatorRequest rcvObj;
 		byte[] data = testObj.encode();

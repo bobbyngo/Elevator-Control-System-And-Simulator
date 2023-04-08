@@ -15,6 +15,7 @@ import java.sql.Timestamp;
 
 import main.java.dto.ElevatorRequest;
 import main.java.elevator.Direction;
+import main.java.elevator.ElevatorError;
 import main.java.exception.*;
 
 /**
@@ -93,15 +94,22 @@ public class Parser {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
             Date parsedDate = dateFormat.parse(currentTime.toString().split(" ")[0] + " " + line[0]);
             timestamp = new Timestamp(parsedDate.getTime());
-            
-            if(line.length != 4) {
+
+            if(line.length == 4) {
+            	elevatorRequest = new ElevatorRequest(timestamp, 
+		    			Integer.valueOf(line[1]), 
+			    		Direction.valueOf(line[2]), 
+			    		Integer.valueOf(line[3]),
+			    		null);
+	    	}else if(line.length == 5) {
+	    		elevatorRequest = new ElevatorRequest(timestamp, 
+		    			Integer.valueOf(line[1]), 
+			    		Direction.valueOf(line[2]), 
+			    		Integer.valueOf(line[3]),
+			    		ElevatorError.valueOf(line[4]));
+	    	}else {
 	    		throw new ElevatorReqParamException("");
 	    	}
-            
-            elevatorRequest = new ElevatorRequest(timestamp, 
-                    Integer.valueOf(line[1]), 
-                    Direction.valueOf(line[2]), 
-                    Integer.valueOf(line[3]));
         
         } catch (ParseException e) {
 	    	logger.severe(e.getMessage());
@@ -158,15 +166,23 @@ public class Parser {
 		        Date parsedDate = dateFormat.parse(currentTime.toString().split(" ")[0] + " " + line[0]);
 		        timestamp = new Timestamp(parsedDate.getTime());
 		    	
-		    	if(line.length != 4) {
+		    	if(line.length == 4) {
+		    		request = new ElevatorRequest(timestamp, 
+			    			Integer.valueOf(line[1]), 
+				    		Direction.valueOf(line[2]), 
+				    		Integer.valueOf(line[3]),
+				    		null);
+		    	}else if(line.length == 5) {
+		    		request = new ElevatorRequest(timestamp, 
+			    			Integer.valueOf(line[1]), 
+				    		Direction.valueOf(line[2]), 
+				    		Integer.valueOf(line[3]),
+				    		ElevatorError.valueOf(line[4]));
+		    	}else {
 		    		throw new ElevatorReqParamException(
 		    				"Line " + lineNumber);
 		    	}
 		    	
-		    	request = new ElevatorRequest(timestamp, 
-		    			Integer.valueOf(line[1]), 
-			    		Direction.valueOf(line[2]), 
-			    		Integer.valueOf(line[3]));
 		    	elevatorRequestList.add(request);
 		    	
 		    } catch (ParseException e) {

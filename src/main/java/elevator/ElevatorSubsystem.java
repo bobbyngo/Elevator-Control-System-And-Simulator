@@ -10,6 +10,7 @@ import javax.swing.JTextArea;
 import main.java.SimulatorConfiguration;
 import main.java.UDPClient;
 import main.java.dto.AssignedElevatorRequest;
+import main.java.dto.ElevatorGuiData;
 import main.java.dto.ElevatorRequest;
 import main.java.dto.ElevatorStatus;
 import main.java.gui.GUI;
@@ -27,13 +28,12 @@ public class ElevatorSubsystem implements Runnable {
 	private SimulatorConfiguration simulatorConfiguration;
 	private Thread requestListenerThread;
 	private UDPClient udpRequestReceiver;
-	private GUI gui;
 
 	/**
 	 * Constructor for Elevator Subsystem
 	 * @param config
 	 */
-	public ElevatorSubsystem(SimulatorConfiguration config, int numElevators) {
+	public ElevatorSubsystem(SimulatorConfiguration config) {
 		ElevatorContext elevator;
 		
 		elevators = new HashMap<>();
@@ -42,14 +42,11 @@ public class ElevatorSubsystem implements Runnable {
 		
 		// 1-index elevator identification
 		// FIXME: change to concurrent initialization? (TBD)
-		for (int i=1; i<=numElevators; i++) {
+		for (int i=1; i<=config.NUM_ELEVATORS; i++) {
 			elevator = new ElevatorContext(this, i);
 			elevator.startElevator();
 			elevators.put(i, elevator);
 		}
-		
-		gui = new GUI(simulatorConfiguration);
-		gui.displayGUI();
 	}
 	
 	/**
@@ -93,6 +90,7 @@ public class ElevatorSubsystem implements Runnable {
 				routeElevatorRequest(assignedRequest);
 			}
 		});
+		
 		requestHandler.start();
 		return;
 	}
@@ -123,13 +121,20 @@ public class ElevatorSubsystem implements Runnable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		messageClient.close();
+	}
+	
+	public void notifyContextUpdate(ElevatorContext ctx) {
+		new Thread(() -> sendArrivalNotification(new ElevatorStatus(ctx))).start();
+		new Thread(() -> sendGuiNotification(new ElevatorGuiData(ctx))).start();
+		return;
 	}
 	
 	/**
 	 * Sending arrival notification method to the Scheduler
 	 * @param status
 	 */
-	public void sendArrivalNotification(ElevatorStatus status) {
+	private void sendArrivalNotification(ElevatorStatus status) {
 		// send arrival notification: 
 		// TODO: spin up a new thread to run this code
 		UDPClient messageClient = new UDPClient();
@@ -138,6 +143,17 @@ public class ElevatorSubsystem implements Runnable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		messageClient.close();
+	}
+	
+	private void sendGuiNotification(ElevatorGuiData data) {
+		UDPClient messageClient = new UDPClient();
+		try {
+			messageClient.sendMessage(data.encode(), simulatorConfiguration.GUI_HOST, simulatorConfiguration.GUI_ELEVATOR_DTO_PORT);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		messageClient.close();
 	}
 	
 	/**
@@ -154,6 +170,7 @@ public class ElevatorSubsystem implements Runnable {
 				e.printStackTrace();
 			}
 		}
+		messageClient.close();
 	}
 	
 	/**
@@ -165,7 +182,7 @@ public class ElevatorSubsystem implements Runnable {
 		Thread subsystemThread;
 		
 		configuration = new SimulatorConfiguration("./src/main/resources/config.properties");
-		subsystem = new ElevatorSubsystem(configuration, configuration.NUM_ELEVATORS);
+		subsystem = new ElevatorSubsystem(configuration);
 		subsystemThread = new Thread(subsystem);
 		subsystemThread.start();
 	}
