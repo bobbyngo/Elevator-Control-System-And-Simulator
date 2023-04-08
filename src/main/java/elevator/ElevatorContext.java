@@ -134,7 +134,7 @@ public class ElevatorContext {
 			for (int i=0; i<externalRequests.size(); i++) {
 				req = externalRequests.get(i);
 				if (req.getSourceFloor() == currentFloor) {
-					//externalRequests.remove(req);
+					// FIXME: shouldn't it check for same direction?
 					toRemove.add(req);
 					internalRequests.add(req);
 					pressElevatorButton(req.getDestinationFloor());
@@ -143,6 +143,20 @@ public class ElevatorContext {
 			externalRequests.removeAll(toRemove);
 		}
 		return;
+	}
+	
+	/**
+	 * Load single passenger if at floor & is going in same direction
+	 * @param request	ElevatorRequest, passenger request to board
+	 * @return boolean, request was boarded onto elevator
+	 */
+	public boolean loadPassengers(ElevatorRequest request) {
+		if (request.getSourceFloor() == currentFloor && request.getDirection() == direction) {
+			externalRequests.remove(request); // already sync'd
+			internalRequests.add(request);
+			return true;
+		}
+		return false;
 	}
 	
 	/**
@@ -383,9 +397,11 @@ public class ElevatorContext {
 		case UP:
 			if (continueSweepingUp) return Direction.UP;
 			if (continueSweepingDown) return Direction.DOWN;
+			break;
 		case DOWN:
 			if (continueSweepingDown) return Direction.DOWN;
 			if (continueSweepingUp) return Direction.UP;
+			break;
 		case IDLE:
 			// TODO: pick based on # of jobs? copying UP for now
 			// to keep as simple as possible... "when picking up"

@@ -3,10 +3,13 @@
  */
 package main.java.elevator.state;
 
+import main.java.dto.ElevatorRequest;
+import main.java.elevator.Direction;
 import main.java.elevator.Door;
 import main.java.elevator.ElevatorContext;
 
 /**
+ * Doors Open state. Loads and unloads passengers
  * @author Zakaria Ismail
  *
  */
@@ -30,7 +33,13 @@ public class DoorsOpenState extends IdleMotorState {
 	 * handleRequestReceived
 	 */
 	@Override
-	public ElevatorState handleRequestReceived() {
+	public ElevatorState handleRequestReceived(ElevatorRequest request) {
+		// during the loading time period, appropriate passengers should be able
+		// to board the elevator
+		// note to test: if passenger is trolling and boards and elevator to request the same
+		// floor, the elevator will go Open->Closed->Stopped->Open
+		ElevatorContext ctx = this.getContext();
+		ctx.loadPassengers(request);
 		return this;
 	}
 
@@ -40,11 +49,17 @@ public class DoorsOpenState extends IdleMotorState {
 	@Override
 	public ElevatorState handleTimeout() {
 		ElevatorContext ctx = this.getContext();
+		Direction nextDirection = ctx.calculateNextDirection();
 		ctx.killTimer();
-		if (ctx.getInternalRequests().isEmpty() && ctx.getExternalRequests().isEmpty()) {
+		
+		if (nextDirection == Direction.IDLE) 
 			return new IdleState(ctx);
+		if (ctx.getDirection() != nextDirection) {
+			// no more requests in current direction, go opposite & load passengers
+			ctx.setDirection(nextDirection);
+			return new DoorsOpenState(ctx);
 		}
-		return new DoorsClosedState(ctx);
+		return new DoorsClosedState(ctx); // elevator continues in current direction
 	}
 
 	/**
