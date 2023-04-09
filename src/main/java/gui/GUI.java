@@ -328,14 +328,14 @@ public class GUI extends JFrame implements Runnable {
 	 */
 	public void handleFloorEvent(FloorGuiData data) {
 		if (data.getUpButtonLamp()) {
-			floorTitles[0][data.getFloorNum() - 1].setIcon(new ImageIcon("./src/main/resources/assets/active-floor-up.png"));
+			floorTitles[0][floorNum - data.getFloorNum()].setIcon(new ImageIcon("./src/main/resources/assets/active-floor-up.png"));
 		} else {
-			floorTitles[0][data.getFloorNum() - 1].setIcon(new ImageIcon("./src/main/resources/assets/inactive-floor-up.png"));
+			floorTitles[0][floorNum - data.getFloorNum()].setIcon(new ImageIcon("./src/main/resources/assets/inactive-floor-up.png"));
 		}
 		if (data.getDownButtonLamp()) {
-			floorTitles[2][data.getFloorNum() - 1].setIcon(new ImageIcon("./src/main/resources/assets/active-floor-down.png"));
+			floorTitles[2][floorNum - data.getFloorNum()].setIcon(new ImageIcon("./src/main/resources/assets/active-floor-down.png"));
 		} else {
-			floorTitles[2][data.getFloorNum() - 1].setIcon(new ImageIcon("./src/main/resources/assets/inactive-floor-down.png"));
+			floorTitles[2][floorNum - data.getFloorNum()].setIcon(new ImageIcon("./src/main/resources/assets/inactive-floor-down.png"));
 		}
 	}
 	
