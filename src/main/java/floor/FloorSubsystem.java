@@ -13,7 +13,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import main.java.SimulatorConfiguration;
 import main.java.UDPClient;
-import main.java.dto.ElevatorGuiData;
 import main.java.dto.ElevatorRequest;
 import main.java.dto.ElevatorStatus;
 import main.java.dto.FloorGuiData;

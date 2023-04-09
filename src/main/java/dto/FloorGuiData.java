@@ -3,11 +3,9 @@ package main.java.dto;
 import java.io.IOException;
 import java.io.Serializable;
 
-import main.java.floor.Floor;
-
 /**
- * Floor entity DTO object to send to GUI
- * @author Zakaria Ismail
+ * Floor entity DTO object to send to GUI.
+ * @author Hussein El Mokdad
  */
 public class FloorGuiData implements Serializable {
 
@@ -71,5 +69,4 @@ public class FloorGuiData implements Serializable {
 		byte[] encodedData = SerializableEncoder.encode(this);
 		return encodedData;
 	}
-
 }

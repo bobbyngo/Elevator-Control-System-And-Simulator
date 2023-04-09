@@ -37,6 +37,7 @@ public class GUI extends JFrame implements Runnable {
 	private static int elevatorNum;
 	private static int floorNum;
 	private JLabel[][] floors;
+	private JLabel[][] floorTitles;
 	private JLabel[][] elevInfos;
 	private UDPClient floorDtoSocket;
 	private UDPClient elevatorDtoSocket;
@@ -128,39 +129,48 @@ public class GUI extends JFrame implements Runnable {
 		floorTitlePanel.setBackground(UIManager.getColor("Button.background"));
 		floorTitlePanel.setBorder(new TitledBorder(new LineBorder(new Color(0, 0, 0)), "Floors", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		
-		GridBagConstraints gbc_floorTitlePanel = new GridBagConstraints();
-		gbc_floorTitlePanel.fill = GridBagConstraints.VERTICAL;
-		gbc_floorTitlePanel.insets = new Insets(0, 0, 0, 5);
-		gbc_floorTitlePanel.gridx = 0;
-		gbc_floorTitlePanel.gridy = 0;
-		displayPanel.add(floorTitlePanel, gbc_floorTitlePanel);
+		GridBagConstraints gbcFloorTitlePanel = new GridBagConstraints();
+		gbcFloorTitlePanel.fill = GridBagConstraints.VERTICAL;
+		gbcFloorTitlePanel.insets = new Insets(0, 0, 0, 5);
+		gbcFloorTitlePanel.gridx = 0;
+		gbcFloorTitlePanel.gridy = 0;
+		displayPanel.add(floorTitlePanel, gbcFloorTitlePanel);
 		
-		GridBagLayout gbl_floorTitlePanel = new GridBagLayout();
-		gbl_floorTitlePanel.columnWidths = new int[] {50};
+		GridBagLayout gblFloorTitlePanel = new GridBagLayout();
+		gblFloorTitlePanel.columnWidths = new int[] {70};
 		int[] tempArr = new int[floorNum];
 		// Initialize the temp array for the floor
 		for (int j = 0; j < floorNum; j++) {
 			tempArr[j] = 30;
 		}
-		gbl_floorTitlePanel.rowHeights = tempArr;
-		gbl_floorTitlePanel.columnWeights = new double[]{0.0};
+		gblFloorTitlePanel.rowHeights = tempArr;
+		gblFloorTitlePanel.columnWeights = new double[]{0.0};
 		double[] temp = new double[floorNum];
 		for (int j = 0; j < floorNum; j++) {
 			temp[j] = 1.0;
 		}
-		gbl_floorTitlePanel.rowWeights = temp;
-		floorTitlePanel.setLayout(gbl_floorTitlePanel);
+		gblFloorTitlePanel.rowWeights = temp;
+		floorTitlePanel.setLayout(gblFloorTitlePanel);
 		
-		JLabel[] floorTitles = new JLabel[floorNum];
+		floorTitles = new JLabel[3][floorNum];
 		for(int i = 1; i <= floorNum; i++) {
-			floorTitles[i - 1] = new JLabel(Integer.toString(floorNum - i + 1));
-			floorTitles[i - 1].setHorizontalAlignment(SwingConstants.CENTER);
-			GridBagConstraints floorTitle = new GridBagConstraints();
-			floorTitle.fill = GridBagConstraints.BOTH;
-			floorTitle.insets = new Insets(0, 0, 5, 0);
-			floorTitle.gridx = 0;
-			floorTitle.gridy = i - 1;
-			floorTitlePanel.add(floorTitles[i - 1], floorTitle);
+			floorTitles[0][i - 1] = new JLabel("");
+			floorTitles[0][i - 1].setIcon(new ImageIcon("./src/main/resources/assets/inactive-floor-up.png"));
+			floorTitles[0][i - 1].setHorizontalAlignment(SwingConstants.LEFT);
+			floorTitles[1][i - 1] = new JLabel(Integer.toString(floorNum - i + 1));
+			floorTitles[1][i - 1].setHorizontalAlignment(SwingConstants.CENTER);
+			floorTitles[2][i - 1] = new JLabel("");
+			floorTitles[2][i - 1].setIcon(new ImageIcon("./src/main/resources/assets/inactive-floor-down.png"));
+			floorTitles[2][i - 1].setHorizontalAlignment(SwingConstants.RIGHT);
+			
+			GridBagConstraints gbcFloorTitle = new GridBagConstraints();
+			gbcFloorTitle.fill = GridBagConstraints.BOTH;
+			gbcFloorTitle.insets = new Insets(0, 0, 5, 0);
+			gbcFloorTitle.gridx = 0;
+			gbcFloorTitle.gridy = i - 1;
+			floorTitlePanel.add(floorTitles[0][i - 1], gbcFloorTitle);
+			floorTitlePanel.add(floorTitles[1][i - 1], gbcFloorTitle);
+			floorTitlePanel.add(floorTitles[2][i - 1], gbcFloorTitle);
 		}
 	
 		// Create elevator shafts
@@ -169,41 +179,41 @@ public class GUI extends JFrame implements Runnable {
 		for(int i = 1; i <= elevatorNum; i++) {
 			displays[i - 1] = new JPanel();
 			displays[i - 1].setBorder(new TitledBorder(new LineBorder(new Color(0, 0, 0)), new String("Elevator " + Integer.toString(i)), TitledBorder.LEADING, TitledBorder.TOP, null, null));
-			GridBagConstraints gbc_elevatorDisplay = new GridBagConstraints();
-			gbc_elevatorDisplay.fill = GridBagConstraints.BOTH;
-			gbc_elevatorDisplay.insets = new Insets(0, 0, 0, 5);
-			gbc_elevatorDisplay.gridx = i;
-			gbc_elevatorDisplay.gridy = 0;
-			displayPanel.add(displays[i - 1], gbc_elevatorDisplay);
-			GridBagLayout gbl_elevatorDisplay = new GridBagLayout();
-			gbl_elevatorDisplay.columnWidths = new int[] {70};
-			gbl_elevatorDisplay.rowHeights = tempArr;
-			gbl_elevatorDisplay.columnWeights = new double[]{0.0};
-			gbl_elevatorDisplay.rowWeights = temp;
-			displays[i - 1].setLayout(gbl_elevatorDisplay);
+			GridBagConstraints gbcElevatorDisplay = new GridBagConstraints();
+			gbcElevatorDisplay.fill = GridBagConstraints.BOTH;
+			gbcElevatorDisplay.insets = new Insets(0, 0, 0, 5);
+			gbcElevatorDisplay.gridx = i;
+			gbcElevatorDisplay.gridy = 0;
+			displayPanel.add(displays[i - 1], gbcElevatorDisplay);
+			GridBagLayout gblElevatorDisplay = new GridBagLayout();
+			gblElevatorDisplay.columnWidths = new int[] {70};
+			gblElevatorDisplay.rowHeights = tempArr;
+			gblElevatorDisplay.columnWeights = new double[]{0.0};
+			gblElevatorDisplay.rowWeights = temp;
+			displays[i - 1].setLayout(gblElevatorDisplay);
 	
 			// Create the floors for the elevator
 			for (int j = 0; j < floorNum; j++) {
 				floors[i-1][floorNum - 1 - j] = new JLabel("");
 				floors[i-1][floorNum - 1 - j].setIcon(new ImageIcon("./src/main/resources/assets/blank.png"));
 				floors[i-1][floorNum - 1 - j].setHorizontalAlignment(SwingConstants.CENTER);
-				GridBagConstraints gbc_floor = new GridBagConstraints();
-				gbc_floor.fill = GridBagConstraints.BOTH;
-				gbc_floor.insets = new Insets(0, 0, 5, 0);
-				gbc_floor.gridx = 0;
-				gbc_floor.gridy = j;
-				displays[i - 1].add(floors[i-1][floorNum - 1 - j], gbc_floor);
+				GridBagConstraints gbcFloor = new GridBagConstraints();
+				gbcFloor.fill = GridBagConstraints.BOTH;
+				gbcFloor.insets = new Insets(0, 0, 5, 0);
+				gbcFloor.gridx = 0;
+				gbcFloor.gridy = j;
+				displays[i - 1].add(floors[i-1][floorNum - 1 - j], gbcFloor);
 			}
 			floors[i-1][0].setIcon(new ImageIcon("./src/main/resources/assets/idle.png"));
 		}
 
 		JPanel panel = new JPanel();
-		GridBagConstraints gbc_panel = new GridBagConstraints();
-		gbc_panel.insets = new Insets(0, 0, 0, 5);
-		gbc_panel.fill = GridBagConstraints.BOTH;
-		gbc_panel.gridx = columns - 1;
-		gbc_panel.gridy = 0;
-		displayPanel.add(panel, gbc_panel);
+		GridBagConstraints gbcPanel = new GridBagConstraints();
+		gbcPanel.insets = new Insets(0, 0, 0, 5);
+		gbcPanel.fill = GridBagConstraints.BOTH;
+		gbcPanel.gridx = columns - 1;
+		gbcPanel.gridy = 0;
+		displayPanel.add(panel, gbcPanel);
 
 		// Create grid layout if even or odd
 		int x;
@@ -317,6 +327,19 @@ public class GUI extends JFrame implements Runnable {
 		}
 	}
 	
+	public void handleFloorEvent(FloorGuiData data) {
+		if (data.getUpButtonLamp()) {
+			floorTitles[0][data.getFloorNum()].setIcon(new ImageIcon("./src/main/resources/assets/active-floor-up.png"));
+		} else {
+			floorTitles[0][data.getFloorNum()].setIcon(new ImageIcon("./src/main/resources/assets/inactive-floor-up.png"));
+		}
+		if (data.getDownButtonLamp()) {
+			floorTitles[2][data.getFloorNum()].setIcon(new ImageIcon("./src/main/resources/assets/active-floor-down.png"));
+		} else {
+			floorTitles[2][data.getFloorNum()].setIcon(new ImageIcon("./src/main/resources/assets/inactive-floor-down.png"));
+		}
+	}
+	
 	/**
 	 * Listener for floor data.
 	 */
@@ -324,7 +347,6 @@ public class GUI extends JFrame implements Runnable {
 		DatagramPacket packet;
 		FloorGuiData data;
 		
-		System.out.println("Method not implemented yet.");
 		while (true) {
 			data = null;
 			packet = floorDtoSocket.receiveMessage();
@@ -335,6 +357,7 @@ public class GUI extends JFrame implements Runnable {
 				e.printStackTrace();
 				System.exit(1);
 			}
+			handleFloorEvent(data);
 		}
 	}
 	
