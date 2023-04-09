@@ -276,12 +276,15 @@ public class ElevatorContext {
 	public String toString() {
 		String externalReqStr = "";
 		String internalReqStr = "";
-		
-		for (ElevatorRequest req : externalRequests) {
-			externalReqStr += req + ", ";
+		synchronized (externalRequests) {
+			for (int i = 0; i < externalRequests.size(); i ++) {
+				externalReqStr += externalRequests.get(i) + ", ";
+			}	
 		}
-		for (ElevatorRequest req : internalRequests) {
-			internalReqStr += req + ", ";
+		synchronized (internalRequests) {
+			for (int i = 0; i < internalRequests.size(); i ++) {
+				internalReqStr += internalRequests.get(i) + ", ";
+			}
 		}
 		
 		return String.format(
