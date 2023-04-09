@@ -13,8 +13,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import main.java.SimulatorConfiguration;
 import main.java.UDPClient;
+import main.java.dto.ElevatorGuiData;
 import main.java.dto.ElevatorRequest;
 import main.java.dto.ElevatorStatus;
+import main.java.dto.FloorGuiData;
 import main.java.elevator.Direction;
 import main.java.elevator.state.ElevatorStateEnum;
 import main.java.floor.parser.Parser;
@@ -134,6 +136,7 @@ public class FloorSubsystem implements Runnable {
 							}
 							
 							printLog(floor.toString());
+							sendGuiNotification(new FloorGuiData(floor.getFloorNum(), floor.getUpButtonLamp(), floor.getDownButtonLamp()));
 							
 						} catch (ClassNotFoundException | IOException e) {
 							e.printStackTrace();
@@ -176,6 +179,8 @@ public class FloorSubsystem implements Runnable {
 			printLog(floor.toString());
 			printLog("--------------------------------------------------");
 		}	
+		
+		sendGuiNotification(new FloorGuiData(floor.getFloorNum(), floor.getUpButtonLamp(), floor.getDownButtonLamp()));
 	}
 	
 	/**
@@ -226,6 +231,20 @@ public class FloorSubsystem implements Runnable {
 			System.exit(1);
 		}
 		return elevatorRequests;
+	}
+	
+	/**
+	 * Sends notification to the graphical user interface.
+	 * @param data FloorGuiData, data for the floor GUI
+	 */
+	private void sendGuiNotification(FloorGuiData data) {
+		UDPClient messageClient = new UDPClient();
+		try {
+			messageClient.sendMessage(data.encode(), simulatorConfiguration.GUI_HOST, simulatorConfiguration.GUI_FLOOR_DTO_PORT);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		messageClient.close();
 	}
 	
 	/**

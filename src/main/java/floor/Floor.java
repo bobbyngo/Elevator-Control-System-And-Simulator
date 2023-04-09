@@ -72,6 +72,30 @@ public class Floor {
 	}
 	
 	/**
+	 * Get the state of the button pointing in the upwards direction.
+	 * @return the boolean of whether the button is on (true) or off (false) 
+	 */
+	public boolean getUpButtonLamp() {
+		return components.getButtonLampStatus(Direction.UP);
+	}
+	
+	/**
+	 * Get the state of the button pointing in the downwards direction.
+	 * @return the boolean of whether the button is on (true) or off (false) 
+	 */
+	public boolean getDownButtonLamp() {
+		return components.getButtonLampStatus(Direction.UP);
+	}
+	
+	/**
+	 * Gets the floor number
+	 * @return the int of the floor number
+	 */
+	public int getFloorNum() {
+		return floorNum;
+	}
+	
+	/**
 	 * toString method.
 	 */
 	@Override
