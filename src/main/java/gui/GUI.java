@@ -335,8 +335,6 @@ public class GUI extends JFrame implements Runnable {
 				e.printStackTrace();
 				System.exit(1);
 			}
-			// TODO: read the data and then do something with it
-			System.out.println(data.toString());
 		}
 	}
 	

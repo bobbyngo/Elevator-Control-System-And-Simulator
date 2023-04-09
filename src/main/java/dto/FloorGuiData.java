@@ -13,13 +13,17 @@ public class FloorGuiData implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private int floorNum;
+	private boolean upButtonLamp;
+	private boolean downButtonLamp;
 	
 	/**
 	 * Constructor for floor GUI data.
 	 * @param floor, the Floor object
 	 */
-	public FloorGuiData(Floor floor) {
-		// TODO: implement stub - not implemented yet
+	public FloorGuiData(int floorNum, boolean upButtonLamp, boolean downButtonLamp) {
+		this.floorNum = floorNum;
+		this.upButtonLamp = upButtonLamp;
+		this.downButtonLamp = downButtonLamp;
 	}
 	
 	/**
@@ -28,6 +32,22 @@ public class FloorGuiData implements Serializable {
 	 */
 	public int getFloorNum() {
 		return floorNum;
+	}
+	
+	/**
+	 * Get the state of the button pointing in the upwards direction.
+	 * @return the boolean of whether the button is on (true) or off (false) 
+	 */
+	public boolean getUpButtonLamp() {
+		return upButtonLamp;
+	}
+	
+	/**
+	 * Get the state of the button pointing in the downwards direction.
+	 * @return the boolean of whether the button is on (true) or off (false) 
+	 */
+	public boolean getDownButtonLamp() {
+		return downButtonLamp;
 	}
 	
 	/**
