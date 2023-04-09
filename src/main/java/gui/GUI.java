@@ -258,14 +258,10 @@ public class GUI extends JFrame implements Runnable {
 			elevInfoPanels[i].add(elevInfos[i][5]);
 		}
 	}
-	
+		
 	/**
 	 * Handle the elevator request and updates the GUI.
-	 * @param currentElevatorNum int, the current elevator number
-	 * @param currentFloorNum int, the current floor number
-	 * @param direction Direction, the direction of the elevator
-	 * @param currentQueue int, the current elevator queue size
-	 * @param state ElevatorStateEnum, the elevator state
+	 * @param data ElevatorGuiData, elevator GUI data
 	 */
 	public void handleElevatorEvent(ElevatorGuiData data) {
 		int currentElevatorNum = data.getId()-1;
@@ -326,17 +322,20 @@ public class GUI extends JFrame implements Runnable {
 			elevInfos[currentElevatorNum][5].setText("State: " + currentState);
 		}
 	}
-	
+	/**
+	 * Handle the floor request and updates the GUI.
+	 * @param data FloorGuiData, floor GUI data
+	 */
 	public void handleFloorEvent(FloorGuiData data) {
 		if (data.getUpButtonLamp()) {
-			floorTitles[0][data.getFloorNum()].setIcon(new ImageIcon("./src/main/resources/assets/active-floor-up.png"));
+			floorTitles[0][data.getFloorNum() - 1].setIcon(new ImageIcon("./src/main/resources/assets/active-floor-up.png"));
 		} else {
-			floorTitles[0][data.getFloorNum()].setIcon(new ImageIcon("./src/main/resources/assets/inactive-floor-up.png"));
+			floorTitles[0][data.getFloorNum() - 1].setIcon(new ImageIcon("./src/main/resources/assets/inactive-floor-up.png"));
 		}
 		if (data.getDownButtonLamp()) {
-			floorTitles[2][data.getFloorNum()].setIcon(new ImageIcon("./src/main/resources/assets/active-floor-down.png"));
+			floorTitles[2][data.getFloorNum() - 1].setIcon(new ImageIcon("./src/main/resources/assets/active-floor-down.png"));
 		} else {
-			floorTitles[2][data.getFloorNum()].setIcon(new ImageIcon("./src/main/resources/assets/inactive-floor-down.png"));
+			floorTitles[2][data.getFloorNum() - 1].setIcon(new ImageIcon("./src/main/resources/assets/inactive-floor-down.png"));
 		}
 	}
 	
