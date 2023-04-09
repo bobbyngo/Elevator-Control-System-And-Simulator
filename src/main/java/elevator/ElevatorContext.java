@@ -280,13 +280,15 @@ public class ElevatorContext {
 	public String toString() {
 		String externalReqStr = "";
 		String internalReqStr = "";
-		
-		for (int i = 0; i < externalRequests.size(); i ++) {
-			externalReqStr += externalRequests.get(i) + ", ";
+		synchronized (externalRequests) {
+			for (int i = 0; i < externalRequests.size(); i ++) {
+				externalReqStr += externalRequests.get(i) + ", ";
+			}	
 		}
-		
-		for (int i = 0; i < internalRequests.size(); i ++) {
-			externalReqStr += internalRequests.get(i) + ", ";
+		synchronized (internalRequests) {
+			for (int i = 0; i < internalRequests.size(); i ++) {
+				internalReqStr += internalRequests.get(i) + ", ";
+			}
 		}
 		
 		return String.format(
