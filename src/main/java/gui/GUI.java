@@ -358,6 +358,7 @@ public class GUI extends JFrame implements Runnable {
 				System.exit(1);
 			}
 			handleFloorEvent(data);
+			System.out.println(data.getFloorNum()+ " " + data.getUpButtonLamp() + data.getDownButtonLamp());
 		}
 	}
 	

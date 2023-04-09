@@ -41,7 +41,6 @@ public class FloorComponents {
 	 * @return true if down button is pressed, else false
 	 */
 	public boolean getButtonLampStatus(Direction direction) {
-		
 		return buttonLamp.get(direction);
 	}
 	/**
@@ -85,7 +84,6 @@ public class FloorComponents {
 	 * @param direction UP or DOWN
 	 */
 	public void updateButtonDirectionStatus(Direction direction, boolean status) {
-		
 		buttonLamp.put(direction, status);
 	}
 	
