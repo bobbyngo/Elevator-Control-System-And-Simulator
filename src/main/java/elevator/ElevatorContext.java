@@ -21,9 +21,8 @@ import main.java.elevator.state.TimeoutEvent;
 import main.java.gui.LogConsole;
 
 /**
- * Entity class for Elevator 
+ * Entity class for Elevator.
  * @author Zakaria Ismail
- *
  */
 public class ElevatorContext {
 	private int id;
@@ -43,8 +42,8 @@ public class ElevatorContext {
 	
 	/**
 	 * Constructor for Elevator Context
-	 * @param subsystem
-	 * @param id
+	 * @param subsystem ElevatorSubsystem, the elevator subsystem
+	 * @param id int, the elevator id
 	 */
 	public ElevatorContext(ElevatorSubsystem subsystem, int id) {
 		elevatorSubsystem = subsystem;
@@ -63,7 +62,6 @@ public class ElevatorContext {
 		}
 
 		logConsole = new LogConsole(String.format("Elevator#%d", id));
-		// notify position & start state machine in another func
 		
 	}
 	
@@ -558,7 +556,7 @@ public class ElevatorContext {
 	
 	public Door getDoors() {
 		return door;
-	}
+	} 
 	
 	public Motor getMotor() {
 		return motor;

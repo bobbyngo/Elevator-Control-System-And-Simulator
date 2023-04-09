@@ -13,18 +13,26 @@ import javax.swing.JTextArea;
 import javax.swing.text.DefaultCaret;
 
 /**
- *
+ * Creates a TextArea for subsystem print logs.
+ * @author Trong Nguyen
  */
 public class LogConsole {
 	private JTextArea console;
 	private String title;
 	
+	/**
+	 * Constructor for LogConsole.
+	 * @param name String, to identify the frame
+	 */
 	public LogConsole(String name) {
 		this.title = name;
 		console = new JTextArea();
 		initConsole();
 	}
 	
+	/**
+	 * Creates a frame text area for console log output.
+	 */
 	private void initConsole() {
 		console.setFont(new Font("Arial", Font.ROMAN_BASELINE, 14));
 		console.setLineWrap(true);
@@ -56,6 +64,10 @@ public class LogConsole {
         frame.setVisible(true);
 	}
 	
+	/**
+	 * Updates the console log with each print statement.
+	 * @param log String, the text to be displayed
+	 */
 	public void appendLog(String log) {
 		console.append(log);
 	}

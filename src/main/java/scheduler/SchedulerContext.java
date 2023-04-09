@@ -17,7 +17,6 @@ import main.java.scheduler.state.SchedulerState;
  * waiting times for people moving between floors (avoiding starvation).
  * @author Bobby Ngo, Patrick Liu
  */
-
 public class SchedulerContext {
 	
 	private SchedulerSubsystem schedulerSubsystem;
@@ -32,8 +31,8 @@ public class SchedulerContext {
 	private SchedulerState currentState;
 	
 	/**
-	 * Constructor for Scheduler Context
-	 * @param schedulerSubsystem
+	 * Constructor for Scheduler Context.
+	 * @param schedulerSubsystem SchedulerSubsystem, the elevator subsystem
 	 */
 	public SchedulerContext(SchedulerSubsystem schedulerSubsystem) {
 		this.schedulerSubsystem = schedulerSubsystem;
@@ -46,13 +45,17 @@ public class SchedulerContext {
 		for (int i = 1; i <= schedulerSubsystem.getSimulatorConfiguration().NUM_ELEVATORS; i++) {
 			availableElevatorStatus.add(new ElevatorStatus(i));
 		}
-		
 		currentState = SchedulerState.start(this);
 		System.out.println(String.format("Current state: %s", currentState));
-		
 	}
 	
-	private ElevatorStatus findTheClosestElevatorToRequestFloor(ArrayList<ElevatorStatus>elevators, int sourceFloor) {
+	/**
+	 * Finds the closest elevator to the requested floor.
+	 * @param elevators ArrayList, the list of elevators
+	 * @param sourceFloor int, the source floor number
+	 * @return ElevatorStatus, the status of the elevator
+	 */
+	private ElevatorStatus findTheClosestElevatorToRequestFloor(ArrayList<ElevatorStatus> elevators, int sourceFloor) {
 		ElevatorStatus chosenElevatorStatus = null;
 		// init the min value to the total floors
 		int closestElevator = schedulerSubsystem.getSimulatorConfiguration().NUM_FLOORS;

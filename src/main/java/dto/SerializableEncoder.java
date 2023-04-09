@@ -1,6 +1,3 @@
-/**
- * 
- */
 package main.java.dto;
 
 import java.io.ByteArrayInputStream;
@@ -12,10 +9,17 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 /**
+ * This class is responsible for the method to encode and decode serializable data.
  * @author Zakaria Ismail
- *
  */
 public class SerializableEncoder {
+	
+	/**
+	 * Encode data method.
+	 * @param object Serializable, a serializable object to be encoded
+	 * @return byte[], the encoded data
+	 * @throws IOException
+	 */
 	public static byte[] encode(Serializable object) throws IOException {
 		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
 		ObjectOutputStream out = null;
@@ -28,6 +32,13 @@ public class SerializableEncoder {
 		return encodedArray;
 	}
 	
+	/**
+	 * Decode data method
+	 * @param data byte[], the data to be decoded
+	 * @return Object, the decoded object
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
 	public static Object decode(byte[] data) throws IOException, ClassNotFoundException {
 		Object decodedObject = null;
 		ObjectInput in = null;

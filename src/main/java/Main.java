@@ -9,22 +9,26 @@ import main.java.scheduler.SchedulerSubsystem;
 import main.resources.GenerateEvents;
 
 /**
+ * Main execution of the elevator control system and simulator application.
  * @author Trong Nguyen
- * @since 03/04/23
  */
 public class Main {
 	
+	/**
+	 * Main method.
+	 * @param args, default parameters
+	 */
 	public static void main(String[] args) {
 
+		SimulatorConfiguration configuration = new SimulatorConfiguration("./src/main/resources/config.properties");
+		
 		try {
 			new GenerateEvents();
-			GenerateEvents.generateEvents();
+			GenerateEvents.generateEvents(configuration);
 			Thread.sleep(2000);
 		} catch (InterruptedException | IOException e) {
 
 		}
-		
-		SimulatorConfiguration configuration = new SimulatorConfiguration("./src/main/resources/config.properties");
 		
 		SchedulerSubsystem schedulerSubsystem = new SchedulerSubsystem(configuration);
 		ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem(configuration);

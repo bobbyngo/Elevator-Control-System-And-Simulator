@@ -10,15 +10,12 @@ import java.awt.Insets;
 import java.awt.Toolkit;
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.LineBorder;
@@ -27,14 +24,13 @@ import javax.swing.border.TitledBorder;
 import main.java.SimulatorConfiguration;
 import main.java.UDPClient;
 import main.java.dto.ElevatorGuiData;
-import main.java.dto.ElevatorRequest;
 import main.java.dto.FloorGuiData;
 import main.java.elevator.Direction;
 import main.java.elevator.state.ElevatorStateEnum;
 
 /**
+ * Graphical user interface for the elevator control system and simulation.
  * @author Trong Nguyen
- * @version 1.0, 04/03/23
  */
 public class GUI extends JFrame implements Runnable {
 
@@ -46,6 +42,10 @@ public class GUI extends JFrame implements Runnable {
 	private UDPClient floorDtoSocket;
 	private UDPClient elevatorDtoSocket;
 	
+	/**
+	 * Constructor for the graphical user interface.
+	 * @param config
+	 */
 	public GUI(SimulatorConfiguration config) {
 		elevatorNum = config.NUM_ELEVATORS;
 		floorNum = config.NUM_FLOORS;
@@ -54,6 +54,9 @@ public class GUI extends JFrame implements Runnable {
 		elevatorDtoSocket = new UDPClient(config.GUI_ELEVATOR_DTO_PORT);
 	}
 	
+	/**
+	 * Displays the main graphic user interface frame.
+	 */
 	private void displayGUI() {
 		int frameHeight = 165 + 30 * floorNum;
 		int frameWidth = 50 + (50 * elevatorNum);
@@ -65,7 +68,7 @@ public class GUI extends JFrame implements Runnable {
 		}
 
 		frameWidth += 160;
-		
+		// Create main frame
 		this.setTitle("ELEVATOR-CONTROL-SYSTEM-AND-SIMULATOR");
 		this.setIconImage(Toolkit.getDefaultToolkit().getImage("./src/main/resources/assets/favicon.png"));
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -73,7 +76,7 @@ public class GUI extends JFrame implements Runnable {
 		this.setPreferredSize(new Dimension(1080, 740));
 		this.setResizable(true);
 		this.setVisible(true);
-	
+		// Set main frame layout and constraints
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] {frameWidth};
 		gridBagLayout.rowHeights = new int[] {frameHeight};
@@ -120,7 +123,7 @@ public class GUI extends JFrame implements Runnable {
 		displayPanel.setLayout(gblDisplayPanel);
 		
 		
-		//initialize floor titles
+		// Initialize floor panels
 		JPanel floorTitlePanel = new JPanel();
 		floorTitlePanel.setBackground(UIManager.getColor("Button.background"));
 		floorTitlePanel.setBorder(new TitledBorder(new LineBorder(new Color(0, 0, 0)), "Floors", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
@@ -135,7 +138,7 @@ public class GUI extends JFrame implements Runnable {
 		GridBagLayout gbl_floorTitlePanel = new GridBagLayout();
 		gbl_floorTitlePanel.columnWidths = new int[] {50};
 		int[] tempArr = new int[floorNum];
-		//initialize the temp array
+		// Initialize the temp array for the floor
 		for (int j = 0; j < floorNum; j++) {
 			tempArr[j] = 30;
 		}
@@ -160,9 +163,9 @@ public class GUI extends JFrame implements Runnable {
 			floorTitlePanel.add(floorTitles[i - 1], floorTitle);
 		}
 	
+		// Create elevator shafts
 		JPanel[] displays = new JPanel[elevatorNum];
 		floors = new JLabel[elevatorNum][floorNum];
-		//create the elevator displays
 		for(int i = 1; i <= elevatorNum; i++) {
 			displays[i - 1] = new JPanel();
 			displays[i - 1].setBorder(new TitledBorder(new LineBorder(new Color(0, 0, 0)), new String("Elevator " + Integer.toString(i)), TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -179,7 +182,7 @@ public class GUI extends JFrame implements Runnable {
 			gbl_elevatorDisplay.rowWeights = temp;
 			displays[i - 1].setLayout(gbl_elevatorDisplay);
 	
-			//create the floors for the elevator
+			// Create the floors for the elevator
 			for (int j = 0; j < floorNum; j++) {
 				floors[i-1][floorNum - 1 - j] = new JLabel("");
 				floors[i-1][floorNum - 1 - j].setIcon(new ImageIcon("./src/main/resources/assets/closed.png"));
@@ -191,10 +194,9 @@ public class GUI extends JFrame implements Runnable {
 				gbc_floor.gridy = j;
 				displays[i - 1].add(floors[i-1][floorNum - 1 - j], gbc_floor);
 			}
-			
-			floors[i-1][0].setIcon(new ImageIcon("./src/main/resources/assets/moving.jpg"));
+			floors[i-1][0].setIcon(new ImageIcon("./src/main/resources/assets/open.png"));
 		}
-		
+
 		JPanel panel = new JPanel();
 		GridBagConstraints gbc_panel = new GridBagConstraints();
 		gbc_panel.insets = new Insets(0, 0, 0, 5);
@@ -203,15 +205,16 @@ public class GUI extends JFrame implements Runnable {
 		gbc_panel.gridy = 0;
 		displayPanel.add(panel, gbc_panel);
 
+		// Create grid layout if even or odd
 		int x;
-		if (elevatorNum % 2 == 0) {//create grid layout if even or odd
+		if (elevatorNum % 2 == 0) {
 			x = elevatorNum / 2;
 		}else {
 			x = (elevatorNum  / 2) + 1;
 		}
-
 		panel.setLayout(new GridLayout(2, x, 0, 0));
 
+		// Create elevator information panels
 		JPanel[] elevInfoPanels = new JPanel[elevatorNum];
 		elevInfos = new JLabel[elevatorNum][4];
 		for(int i = 0; i < elevatorNum ; i++) {
@@ -232,17 +235,25 @@ public class GUI extends JFrame implements Runnable {
 			elevInfos[i][2].setFont(new Font("Tahoma", Font.PLAIN, 17));
 			elevInfoPanels[i].add(elevInfos[i][2]);
 
-			elevInfos[i][3] = new JLabel("Doors: CLOSED");
+			elevInfos[i][3] = new JLabel("Doors: OPEN");
 			elevInfos[i][3].setFont(new Font("Tahoma", Font.PLAIN, 17));
 			elevInfoPanels[i].add(elevInfos[i][3]);
 		}
 	}
 	
+	/**
+	 * Handle the elevator request and updates the GUI.
+	 * @param currentElevatorNum int, the current elevator number
+	 * @param currentFloorNum int, the current floor number
+	 * @param direction Direction, the direction of the elevator
+	 * @param currentQueue int, the current elevator queue size
+	 * @param state ElevatorStateEnum, the elevator state
+	 */
 	public void handleElevatorEvent(int currentElevatorNum, int currentFloorNum, Direction direction, int currentQueue, ElevatorStateEnum state) {
 		if (currentElevatorNum <= elevatorNum && currentFloorNum <= floorNum) {
 			switch (state) {
 			case IDLE: {
-				floors[currentElevatorNum][currentFloorNum - 1].setIcon(new ImageIcon("./src/main/resources/assets/closed.png"));
+				floors[currentElevatorNum][currentFloorNum - 1].setIcon(new ImageIcon("./src/main/resources/assets/open.png"));
 				break;
 			}
 			case DOORS_OPEN: {
@@ -294,18 +305,9 @@ public class GUI extends JFrame implements Runnable {
 		}
 	}
 	
-	public int getNumElevators() {
-		return elevatorNum;
-	}
-	
-	public int getNumFloors() {
-		return floorNum;
-	}
-
-	public void print(JTextArea consoleLog, String message) {
-		consoleLog.append(" " + message + "\n");
-	}
-	
+	/**
+	 * Listener for floor data.
+	 */
 	private void listenForFloorData() {
 		DatagramPacket packet;
 		FloorGuiData data;
@@ -326,6 +328,9 @@ public class GUI extends JFrame implements Runnable {
 		}
 	}
 	
+	/**
+	 * Listener for elevator data.
+	 */
 	private void listenForElevatorData() {
 		DatagramPacket packet;
 		ElevatorGuiData data;
@@ -344,6 +349,10 @@ public class GUI extends JFrame implements Runnable {
 		}
 	}
 
+	/**
+	 * Thread run method.
+	 * @see java.lang.Runnable#run()
+	 */
 	@Override
 	public void run() {
 		displayGUI();	
@@ -352,9 +361,12 @@ public class GUI extends JFrame implements Runnable {
 		new Thread(this::listenForElevatorData).start();
 	}
 	
+	/**
+	 * Main method to execute own thread.
+	 * @param args, default parameter
+	 */
 	public static void main(String[] args) {
 		GUI gui = new GUI(new SimulatorConfiguration("./src/main/resources/config.properties"));
 		new Thread(gui).start();
 	}
-	
 }

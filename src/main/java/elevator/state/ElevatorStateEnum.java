@@ -3,8 +3,8 @@ package main.java.elevator.state;
 import java.io.Serializable;
 
 /**
+ * This class represent the elevator state enum.
  * @author Zakaria Ismail
- *
  */
 public enum ElevatorStateEnum implements Serializable {
 	DOORS_OPEN,

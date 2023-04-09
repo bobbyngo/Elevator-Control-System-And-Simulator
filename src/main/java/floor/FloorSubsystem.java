@@ -40,6 +40,7 @@ public class FloorSubsystem implements Runnable {
 	
 	/**
 	 * Constructor for the FloorSubsystem class.
+	 * @param config SimulatorConfiguration, simulator configuration parameters
 	 */
 	public FloorSubsystem(SimulatorConfiguration config) {
 		simulatorConfiguration = config;
@@ -61,7 +62,6 @@ public class FloorSubsystem implements Runnable {
 		for (int i = 0; i < numOfFloors; i++) {
 			floorArr[i] = new Floor(i + 1); 
 		}
-		
 		logConsole = new LogConsole("Floor Subsystem");
 		printLog("FLOOR_SUBSYSTEM_START");
 	}
@@ -107,8 +107,8 @@ public class FloorSubsystem implements Runnable {
 	}
 	
 	/**
-	 * Sends the series of elevator requests to the SchedulerOld.
-	 * @param elevatorRequests
+	 * Sends the series of elevator requests to the Scheduler
+	 * @param elevatorRequests ArrayList, the list of elevator request object
 	 * @throws IOException 
 	 * @throws InterruptedException 
 	 */
@@ -149,7 +149,9 @@ public class FloorSubsystem implements Runnable {
 	}
 	
 	/**
-	 * Listens to arrival requests from the scheduler and updates the floor components
+	 * Listens to arrival requests from the scheduler and updates the floor components.
+	 * @throws ClassNotFoundException
+	 * @throws IOException
 	 */
 	private void listenToArrivalRequests() throws ClassNotFoundException, IOException {
 		DatagramPacket receivedReqPacket = udpArrivalRequestsReceiver.receiveMessage();
@@ -198,7 +200,9 @@ public class FloorSubsystem implements Runnable {
 	}
 	
 	/**
-	 * Listens to completed requests from the scheduler
+	 * Listens to completed requests from the scheduler.
+	 * @throws ClassNotFoundException
+	 * @throws IOException
 	 */
 	private void listenToCompletedRequests() throws ClassNotFoundException, IOException {
 		// TODO: Fix the issue with receiving the same completed request multiple times
@@ -211,7 +215,7 @@ public class FloorSubsystem implements Runnable {
 
 	/**
 	 * Parse user requests.
-	 * @return elevatorRequests ArrayList<>, a list of elevator requests
+	 * @return elevatorRequests ArrayList, a list of elevator requests
 	 */
 	private ArrayList<ElevatorRequest> getElevatorRequests() {
 		ArrayList<ElevatorRequest> elevatorRequests = null;
@@ -224,13 +228,18 @@ public class FloorSubsystem implements Runnable {
 		return elevatorRequests;
 	}
 	
+	/**
+	 * Print the logs to the console text area.
+	 * @param message String, the message to the displayed
+	 */
 	private void printLog(String message) {
 		System.out.println(message);
 		logConsole.appendLog(" " + message + "\n");
 	}
 	
 	/**
-	 * @param args
+	 * Main method.
+	 * @param args, default parameters
 	 */
 	public static void main(String[] args) {
 		SimulatorConfiguration configuration;

@@ -5,11 +5,10 @@ import java.io.IOException;
 import java.util.Properties;
 
 /**
+ * Takes the values of the config.properties files and creates variable instances.
  * @author Zakaria Ismail
- *
  */
 public class SimulatorConfiguration {
-	// XXX: do i make config object or read directly from config...
 	// node topology configuration
 	public final int NUM_ELEVATORS;
 	public final int NUM_FLOORS;
@@ -48,6 +47,10 @@ public class SimulatorConfiguration {
 	// Test config, disables automataic state transitions via clock timeout
 	public final boolean TEST_MODE;
 	
+	/**
+	 * Constructor for the simulator configuration.
+	 * @param configFilePath String, file path name
+	 */
 	public SimulatorConfiguration(String configFilePath) {
 		FileInputStream propsInput;
 		Properties prop = null;
@@ -92,7 +95,4 @@ public class SimulatorConfiguration {
 		
 		TEST_MODE = Boolean.parseBoolean(prop.getProperty("TEST_MODE", "false"));
 	}
-	
-	
-	
 }

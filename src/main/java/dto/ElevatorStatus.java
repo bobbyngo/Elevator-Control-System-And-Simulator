@@ -1,6 +1,3 @@
-/**
- * 
- */
 package main.java.dto;
 
 import java.io.IOException;
@@ -13,7 +10,6 @@ import main.java.elevator.state.ElevatorStateEnum;
 /**
  * The Elevator Object that is used to share the information of Elevator Context with the Scheduler through UDP Communication
  * @author Zakaria Ismail
- *
  */
 public class ElevatorStatus implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -24,8 +20,8 @@ public class ElevatorStatus implements Serializable {
 	int numRequests;
 	
 	/**
-	 * Constructor Elevator Status
-	 * @param ctx
+	 * Constructor for Elevator Status
+	 * @param ctx ElevatorContext, the elevator context
 	 */
 	public ElevatorStatus(ElevatorContext ctx) {
 		elevatorId = ctx.getId();
@@ -37,7 +33,7 @@ public class ElevatorStatus implements Serializable {
 	
 	/**
 	 * Constructor Elevator Status
-	 * @param id
+	 * @param id int, the elevator id
 	 */
 	public ElevatorStatus(int id) {
 		elevatorId = id;
@@ -49,11 +45,11 @@ public class ElevatorStatus implements Serializable {
 	
 	/**
 	 * Constructor Elevator Status
-	 * @param id
-	 * @param floor
-	 * @param direction
-	 * @param numRequests
-	 * @param state
+	 * @param id int, the elevator id
+	 * @param floor int, the floor number
+	 * @param direction Direction, the elevator direction
+	 * @param numRequests int, the number of requests
+	 * @param state ElevatorStateEnum, the state of the elevator
 	 */
 	public ElevatorStatus(int id, int floor, Direction direction, int numRequests, ElevatorStateEnum state) {
 		elevatorId = id;
@@ -89,9 +85,9 @@ public class ElevatorStatus implements Serializable {
 	public ElevatorStateEnum getState() {return state;}
 	
 	/**
-	 * Decoding method
-	 * @param data
-	 * @return
+	 * Decoding method.
+	 * @param data byte[], data to be encoded
+	 * @return ElevatorStatus, the decode data object
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
@@ -101,8 +97,8 @@ public class ElevatorStatus implements Serializable {
 	}
 	
 	/**
-	 * Encoding method
-	 * @return
+	 * Encoding method.
+	 * @return byte[], the data to be encode
 	 * @throws IOException
 	 */
 	public byte[] encode() throws IOException {

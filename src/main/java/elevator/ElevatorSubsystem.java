@@ -16,7 +16,6 @@ import main.java.dto.ElevatorStatus;
  * Controller. Routes requests to respective elevators.
  * Handles communication aspect.
  * @author Zakaria Ismail
- *
  */
 public class ElevatorSubsystem implements Runnable {
 	// TODO: change to hashmap to not deal with indexing issues
@@ -27,7 +26,7 @@ public class ElevatorSubsystem implements Runnable {
 
 	/**
 	 * Constructor for Elevator Subsystem
-	 * @param config
+	 * @param config SimulatorConfiguration, the simulator configurations
 	 */
 	public ElevatorSubsystem(SimulatorConfiguration config) {
 		ElevatorContext elevator;
@@ -55,15 +54,15 @@ public class ElevatorSubsystem implements Runnable {
 	}
 	
 	/**
-	 * Getter for the configuration of this class
-	 * @return
+	 * Getter for the configuration of this class.
+	 * @return SimulatorConfiguration, the simulator configurations 
 	 */
 	public SimulatorConfiguration getConfig() {
 		return simulatorConfiguration;
 	}
 	
 	/**
-	 * Receiving request method
+	 * Receiving request method.
 	 * @throws ClassNotFoundException
 	 * @throws IOException
 	 */
@@ -92,8 +91,8 @@ public class ElevatorSubsystem implements Runnable {
 	}
 	
 	/**
-	 * Update the request to the Elevator context
-	 * @param request
+	 * Update the request to the Elevator context.
+	 * @param request AssignedElevatorRequest, the assigned elevator request object
 	 */
 	private void routeElevatorRequest(AssignedElevatorRequest request) {
 		int elevatorId;
@@ -105,8 +104,8 @@ public class ElevatorSubsystem implements Runnable {
 	}
 	
 	/**
-	 * Sending completed request message method to the Scheduler
-	 * @param request
+	 * Sending completed request message method to the Scheduler.
+	 * @param request ElevatorRequest, the elevator request object
 	 */
 	public void sendCompletedElevatorRequest(ElevatorRequest request) {
 		// send elevator request: called by context
@@ -120,6 +119,10 @@ public class ElevatorSubsystem implements Runnable {
 		messageClient.close();
 	}
 	
+	/**
+	 * Notify the elevator context of updates.
+	 * @param ctx ElevatorContext, the context of the elevator
+	 */
 	public void notifyContextUpdate(ElevatorContext ctx) {
 		new Thread(() -> sendArrivalNotification(new ElevatorStatus(ctx))).start();
 		new Thread(() -> sendGuiNotification(new ElevatorGuiData(ctx))).start();
@@ -127,8 +130,8 @@ public class ElevatorSubsystem implements Runnable {
 	}
 	
 	/**
-	 * Sending arrival notification method to the Scheduler
-	 * @param status
+	 * Sending arrival notification method to the Scheduler.
+	 * @param status ElevatorStatus, the status of the elevator
 	 */
 	private void sendArrivalNotification(ElevatorStatus status) {
 		// send arrival notification: 
@@ -142,6 +145,10 @@ public class ElevatorSubsystem implements Runnable {
 		messageClient.close();
 	}
 	
+	/**
+	 * Sends notification to the graphical user interface.
+	 * @param data ElevatorGuiData, data for the elevator GUI
+	 */
 	private void sendGuiNotification(ElevatorGuiData data) {
 		UDPClient messageClient = new UDPClient();
 		try {
@@ -153,8 +160,8 @@ public class ElevatorSubsystem implements Runnable {
 	}
 	
 	/**
-	 * Send the elevator requests to the Scheduler
-	 * @param requests
+	 * Send the elevator requests to the Scheduler.
+	 * @param requests List, the list of elevator requests
 	 */
 	public void returnElevatorRequests(List<ElevatorRequest> requests) {
 		UDPClient messageClient = new UDPClient();
@@ -170,7 +177,8 @@ public class ElevatorSubsystem implements Runnable {
 	}
 	
 	/**
-	 * @param args
+	 * Main method.
+	 * @param args, default parameters
 	 */
 	public static void main(String[] args) {
 		SimulatorConfiguration configuration;
@@ -182,5 +190,4 @@ public class ElevatorSubsystem implements Runnable {
 		subsystemThread = new Thread(subsystem);
 		subsystemThread.start();
 	}
-
 }

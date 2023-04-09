@@ -1,6 +1,3 @@
-/**
- * 
- */
 package main.java.floor;
 
 import main.java.elevator.Direction;
@@ -15,6 +12,10 @@ public class Floor {
 	private int floorNum;
 	private FloorComponents components;
 	
+	/**
+	 * Constructor of the Floor class.
+	 * @param floorNum int, the number of floors
+	 */
 	public Floor(int floorNum) {
 		this.floorNum = floorNum;
 		this.components = new FloorComponents();	
@@ -70,6 +71,9 @@ public class Floor {
 		components.updateDirectionLamp(elevatorId, direction);
 	}
 	
+	/**
+	 * toString method.
+	 */
 	@Override
 	public String toString() {
 		return "Floor " + floorNum + "\n" + components.toString();

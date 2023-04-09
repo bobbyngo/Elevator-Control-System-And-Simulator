@@ -16,10 +16,7 @@ import main.java.elevator.ElevatorError;
  * @version 1.0, 02/04/23
  */
 public class ElevatorRequest implements Serializable {
-	
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
 	private Timestamp timestamp;
 	private Integer sourceFloor;
@@ -177,9 +174,9 @@ public class ElevatorRequest implements Serializable {
 	}
 	
 	/**
-	 * decode
-	 * @param data
-	 * @return
+	 * Decoding method.
+	 * @param data byte[], data to be encoded
+	 * @return ElevatorRequest, the decode data object
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
@@ -189,13 +186,12 @@ public class ElevatorRequest implements Serializable {
 	}
 	
 	/**
-	 * encode
-	 * @return
+	 * Encoding method.
+	 * @return byte[], the data to be encode
 	 * @throws IOException
 	 */
 	public byte[] encode() throws IOException {
 		byte[] encodedData = SerializableEncoder.encode(this);
 		return encodedData;
 	}
-
 }

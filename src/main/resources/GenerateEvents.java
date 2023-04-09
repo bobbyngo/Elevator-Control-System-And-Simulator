@@ -10,27 +10,35 @@ import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import main.java.SimulatorConfiguration;
+
 /**
  * Generates random elevator request events.
  * @author Trong Nguyen
  */
 public class GenerateEvents {
 	
+	/**
+	 * Main method for GenerateEvent class.
+	 * @param args, default arguments
+	 */
 	public static void main (String[] args) {
+		SimulatorConfiguration configuration = new SimulatorConfiguration("./src/main/resources/config.properties");
 		try {
-			generateEvents();
+			generateEvents(configuration);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	/**
-	 * Generates .txt file with random elevator request events.
+	 * Generates txt file with random elevator request events start from current local time.
+	 * @param config SimulatorConfiguration, configuration parameters
 	 * @throws IOException
 	 */
-	public static void generateEvents() throws IOException {
-		int NUM_EVENT = 100;
-		int MAX_FLOOR = 22;
+	public static void generateEvents(SimulatorConfiguration config) throws IOException {
+		int NUM_EVENT = 200;
+		int MAX_FLOOR = config.NUM_FLOORS;
 		int MIN_FLOOR = 1;
 		int RANGE_FLOOR = MAX_FLOOR - MIN_FLOOR + 1;
 		
@@ -56,7 +64,7 @@ public class GenerateEvents {
         int RANGE_SSS = MAX_SSS - MIN_SSS + 1;
         NumberFormat formatter_xxx = new DecimalFormat("000");
 
-        File file = new File("./src/main/resources/input.txt");
+        File file = new File(config.INPUT_PATH);
         FileOutputStream fos = new FileOutputStream(file);
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
 
@@ -77,7 +85,6 @@ public class GenerateEvents {
         		
             bw.write(event);
             bw.newLine();
-        		System.out.println(event);
         }
         bw.close();
 	}
