@@ -1,20 +1,17 @@
-/**
- * 
- */
 package main.java.elevator.state;
 
 import main.java.elevator.Door;
 import main.java.elevator.ElevatorContext;
 
 /**
+ * This substate represent the doors open state.
  * @author Zakaria Ismail
- *
  */
 public class DoorsOpenState extends IdleMotorState {
 
 	/**
-	 * Constructor
-	 * @param ctx
+	 * Constructor for this state.
+	 * @param ctx ElevatorContext, the context of the elevator
 	 */
 	public DoorsOpenState(ElevatorContext ctx) {
 		super(ctx);

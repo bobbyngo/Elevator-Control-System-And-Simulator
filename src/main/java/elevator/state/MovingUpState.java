@@ -1,20 +1,17 @@
-/**
- * 
- */
 package main.java.elevator.state;
 
 import main.java.elevator.ElevatorContext;
 import main.java.elevator.Motor;
 
 /**
+ * This class represent the elevator moving up state.
  * @author Zakaria Ismail
- *
  */
 public class MovingUpState extends MovingState {
 
 	/**
-	 * Constructor
-	 * @param ctx
+	 * Constructor for this state.
+	 * @param ctx ElevatorContext, the context of the elevator
 	 */
 	public MovingUpState(ElevatorContext ctx) {
 		super(ctx);
@@ -22,7 +19,8 @@ public class MovingUpState extends MovingState {
 	}
 
 	/**
-	 * handleRequestReceived
+	 * Handle the request received
+	 * @return ElevatorState, the state of the elevator
 	 */
 	@Override
 	public ElevatorState handleRequestReceived() {
@@ -34,9 +32,10 @@ public class MovingUpState extends MovingState {
 		}
 		return this;
 	}
-
+	
 	/**
-	 * handleTimeout
+	 * Handle the Timeout event.
+	 * @return ElevatorState, the stateo of the elevator
 	 */
 	@Override
 	public ElevatorState handleTimeout() {
@@ -56,7 +55,8 @@ public class MovingUpState extends MovingState {
 	}
 
 	/**
-	 * toString
+	 * toString method
+	 * @return String
 	 */
 	@Override
 	public String toString() {
@@ -65,7 +65,8 @@ public class MovingUpState extends MovingState {
 	}
 
 	/**
-	 * getElevatorStateEnum
+	 * Get the ElevatorStateEnum.
+	 * @return ElevatorStateEnum, the state of the elevator
 	 */
 	@Override
 	public ElevatorStateEnum getElevatorStateEnum() {

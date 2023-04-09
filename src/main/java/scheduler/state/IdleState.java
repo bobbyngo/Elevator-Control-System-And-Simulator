@@ -1,19 +1,16 @@
-/**
- * 
- */
 package main.java.scheduler.state;
 
 import main.java.scheduler.SchedulerContext;
 
 /**
+ * Scheduler idle state.
  * @author Zakaria Ismail
- *
  */
 public class IdleState extends SchedulerState {
 
 	/**
-	 * Constructor
-	 * @param ctx
+	 * Constructor for SchedulerState.
+	 * @param ctx SchedulerContext, the context of the scheduler
 	 */
 	public IdleState(SchedulerContext ctx) {
 		super(ctx);
@@ -24,7 +21,8 @@ public class IdleState extends SchedulerState {
 	}
 
 	/**
-	 * handleRequestReceived
+	 * Handle the requests received.
+	 * @return SchedulerState, the state of the scheduler
 	 */
 	@Override
 	public SchedulerState handleRequestReceived() {
@@ -37,19 +35,19 @@ public class IdleState extends SchedulerState {
 	}
 
 	/**
-	 * toString
-	 */
-	@Override
-	public String toString() {
-		return "IdleState";
-	}
-
-	/**
-	 * handleRequestSent 
+	 * Handle the requests sent.
+	 * @return SchedulerState, the state of the scheduler
 	 */
 	@Override
 	public SchedulerState handleRequestSent() {
 		return this;
 	}
-
+	
+	/**
+	 * toString method
+	 */
+	@Override
+	public String toString() {
+		return "IdleState";
+	}
 }

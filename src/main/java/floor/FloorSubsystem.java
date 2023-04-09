@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -17,9 +16,9 @@ import main.java.UDPClient;
 import main.java.dto.ElevatorRequest;
 import main.java.dto.ElevatorStatus;
 import main.java.elevator.Direction;
-import main.java.elevator.state.ElevatorState;
 import main.java.elevator.state.ElevatorStateEnum;
 import main.java.floor.parser.Parser;
+import main.java.gui.LogConsole;
 
 /**
  * Responsible for sending elevator requests and handling 
@@ -37,9 +36,11 @@ public class FloorSubsystem implements Runnable {
 	private UDPClient udpCompletedRequestsReceiver;
 	private Floor[] floorArr;
 	private int numOfFloors;
+	private LogConsole logConsole;
 	
 	/**
 	 * Constructor for the FloorSubsystem class.
+	 * @param config SimulatorConfiguration, simulator configuration parameters
 	 */
 	public FloorSubsystem(SimulatorConfiguration config) {
 		simulatorConfiguration = config;
@@ -61,6 +62,8 @@ public class FloorSubsystem implements Runnable {
 		for (int i = 0; i < numOfFloors; i++) {
 			floorArr[i] = new Floor(i + 1); 
 		}
+		logConsole = new LogConsole("Floor Subsystem");
+		printLog("FLOOR_SUBSYSTEM_START");
 	}
 	
 	/**
@@ -104,8 +107,8 @@ public class FloorSubsystem implements Runnable {
 	}
 	
 	/**
-	 * Sends the series of elevator requests to the SchedulerOld.
-	 * @param elevatorRequests
+	 * Sends the series of elevator requests to the Scheduler
+	 * @param elevatorRequests ArrayList, the list of elevator request object
 	 * @throws IOException 
 	 * @throws InterruptedException 
 	 */
@@ -130,15 +133,15 @@ public class FloorSubsystem implements Runnable {
 								floor.setFloorDownLamp(true);
 							}
 							
-							System.out.println(floor.toString());
+							printLog(floor.toString());
 							
 						} catch (ClassNotFoundException | IOException e) {
 							e.printStackTrace();
 						}
 						
-						System.out.println("Sending request " + req.toString());
+						printLog("Sending request " + req.toString());
 						
-						System.out.println("--------------------------------------------------");
+						printLog("--------------------------------------------------");
 					}
 				}, new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS").parse(req.getTimestamp().toString()));
 			}
@@ -146,7 +149,9 @@ public class FloorSubsystem implements Runnable {
 	}
 	
 	/**
-	 * Listens to arrival requests from the scheduler and updates the floor components
+	 * Listens to arrival requests from the scheduler and updates the floor components.
+	 * @throws ClassNotFoundException
+	 * @throws IOException
 	 */
 	private void listenToArrivalRequests() throws ClassNotFoundException, IOException {
 		DatagramPacket receivedReqPacket = udpArrivalRequestsReceiver.receiveMessage();
@@ -165,11 +170,11 @@ public class FloorSubsystem implements Runnable {
 		updateAllElevatorLamps(elevatorId, elevatorDirection);
 		
 		if (elevatorState == ElevatorStateEnum.DOORS_OPEN) {
-			System.out.println("Elevator " + elevatorNum + " arrived at floor " + floorNum);
+			printLog("Elevator " + elevatorNum + " arrived at floor " + floorNum);
 			if (elevatorDirection == Direction.DOWN) floor.setFloorDownLamp(false);
 			else floor.setFloorUpLamp(false);
-			System.out.println(floor.toString());
-			System.out.println("--------------------------------------------------");
+			printLog(floor.toString());
+			printLog("--------------------------------------------------");
 		}	
 	}
 	
@@ -195,20 +200,22 @@ public class FloorSubsystem implements Runnable {
 	}
 	
 	/**
-	 * Listens to completed requests from the scheduler
+	 * Listens to completed requests from the scheduler.
+	 * @throws ClassNotFoundException
+	 * @throws IOException
 	 */
 	private void listenToCompletedRequests() throws ClassNotFoundException, IOException {
 		// TODO: Fix the issue with receiving the same completed request multiple times
 		DatagramPacket receivedReqPacket = udpCompletedRequestsReceiver.receiveMessage();
 		ElevatorRequest elevatorRequest = ElevatorRequest.decode(receivedReqPacket.getData());
-		System.out.println("Request " + elevatorRequest.toString() + " has been completed");
-		System.out.println(floorArr[elevatorRequest.getDestinationFloor() - 1].toString());
-		System.out.println("--------------------------------------------------");
+		printLog("Request " + elevatorRequest.toString() + " has been completed");
+		printLog(floorArr[elevatorRequest.getDestinationFloor() - 1].toString());
+		printLog("--------------------------------------------------");
 	}
 
 	/**
 	 * Parse user requests.
-	 * @return elevatorRequests ArrayList<>, a list of elevator requests
+	 * @return elevatorRequests ArrayList, a list of elevator requests
 	 */
 	private ArrayList<ElevatorRequest> getElevatorRequests() {
 		ArrayList<ElevatorRequest> elevatorRequests = null;
@@ -222,7 +229,17 @@ public class FloorSubsystem implements Runnable {
 	}
 	
 	/**
-	 * @param args
+	 * Print the logs to the console text area.
+	 * @param message String, the message to the displayed
+	 */
+	private void printLog(String message) {
+		System.out.println(message);
+		logConsole.appendLog(" " + message + "\n");
+	}
+	
+	/**
+	 * Main method.
+	 * @param args, default parameters
 	 */
 	public static void main(String[] args) {
 		SimulatorConfiguration configuration;

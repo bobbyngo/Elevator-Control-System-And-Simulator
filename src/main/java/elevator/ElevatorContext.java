@@ -1,6 +1,3 @@
-/**
- * 
- */
 package main.java.elevator;
 
 import java.io.IOException;
@@ -8,15 +5,11 @@ import java.net.DatagramPacket;
 import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import javax.security.auth.login.ConfigurationSpi;
 
 import main.java.SimulatorConfiguration;
 import main.java.UDPClient;
@@ -25,11 +18,11 @@ import main.java.dto.ElevatorRequest;
 import main.java.dto.ElevatorStatus;
 import main.java.elevator.state.ElevatorState;
 import main.java.elevator.state.TimeoutEvent;
+import main.java.gui.LogConsole;
 
 /**
- * Entity class for Elevator 
+ * Entity class for Elevator.
  * @author Zakaria Ismail
- *
  */
 public class ElevatorContext {
 	private int id;
@@ -44,11 +37,13 @@ public class ElevatorContext {
 	private Timer timer;
 	
 	private ElevatorSubsystem elevatorSubsystem;
+	//private JTextArea logConsole;
+	private LogConsole logConsole;
 	
 	/**
 	 * Constructor for Elevator Context
-	 * @param subsystem
-	 * @param id
+	 * @param subsystem ElevatorSubsystem, the elevator subsystem
+	 * @param id int, the elevator id
 	 */
 	public ElevatorContext(ElevatorSubsystem subsystem, int id) {
 		elevatorSubsystem = subsystem;
@@ -65,8 +60,9 @@ public class ElevatorContext {
 		for (int i = 1; i <= elevatorSubsystem.getConfig().NUM_FLOORS; i ++) {
 			elevatorButtonBoard.put(i, false);
 		}
+
+		logConsole = new LogConsole(String.format("Elevator#%d", id));
 		
-		// notify position & start state machine in another func
 	}
 	
 	/**
@@ -76,7 +72,7 @@ public class ElevatorContext {
 		// XXX: make this a run() function? something to think about...
 		// MUST CALL THIS FUNCTION TO START STATE MACHINE		
 		currentState = ElevatorState.start(this);
-		System.out.println(this);
+		printLog(this.toString());
 		// notify starting position
 		notifyArrivalSensor();
 	}
@@ -98,11 +94,11 @@ public class ElevatorContext {
 	 */
 	public void onRequestReceived(ElevatorRequest request) {
 		synchronized (currentState) {
-			System.out.println(String.format("Elevator#%d Event: Request Received", id));
-			System.out.println(String.format("Elevator#%d will handle request going %s from floor %d to floor %d at %s" ,
+			printLog(String.format("Elevator#%d Event: Request Received", id));
+			printLog(String.format("Elevator#%d will handle request going %s from floor %d to floor %d at %s" ,
 					id , request.getDirection(), request.getSourceFloor(), request.getDestinationFloor(), request.getTimestamp()));
 			currentState = currentState.handleRequestReceived();
-			System.out.println(this);
+			printLog(this.toString());
 			// update view...
 			notifyArrivalSensor();
 		}
@@ -115,9 +111,9 @@ public class ElevatorContext {
 	public void onTimeout(TimeoutEvent event) {
 		synchronized (currentState) {
 			//System.out.println(String.format("Elevator#%d %s", id, event));
-			System.out.println(String.format("Elevator#%d Event: Timeout", id));
+			printLog(String.format("Elevator#%d Event: Timeout", id));
 			currentState = currentState.handleTimeout();
-			System.out.println(this);
+			printLog(this.toString());
 			// update view...
 			notifyArrivalSensor();
 		}
@@ -144,7 +140,6 @@ public class ElevatorContext {
 			}
 			externalRequests.removeAll(toRemove);
 		}
-		return;
 	}
 	
 	/**
@@ -161,13 +156,12 @@ public class ElevatorContext {
 			if (req.getDestinationFloor() == currentFloor) {
 				//internalRequests.remove(req);
 				toRemove.add(req);
-				System.out.println("Completed ElevatorRequest... sending back to scheduler: " + req);
+				printLog("Completed ElevatorRequest... sending back to scheduler: " + req);
 				elevatorSubsystem.sendCompletedElevatorRequest(req);
 			}
 		}
 		internalRequests.removeAll(toRemove);
 		clearElevatorButton(currentFloor);
-		return;
 	}
 	
 	/**
@@ -377,7 +371,7 @@ public class ElevatorContext {
 		// if going down, you want to keep going down
 		//	stop going down when there are no more requests below you going DOWN
 		// if idle, ... TBD
-		Direction newDirection, directionIfIdle;
+		Direction directionIfIdle;
 		boolean continueSweepingUp, continueSweepingDown;
 		
 		continueSweepingUp = shouldContinueSweepingUp();
@@ -542,13 +536,15 @@ public class ElevatorContext {
 		return error;
 	}
 	
-	public void notifyArrivalSensor() {
-		elevatorSubsystem.sendArrivalNotification(new ElevatorStatus(this));
+	// XXX: this method name is misleading...
+	private void notifyArrivalSensor() {
+		elevatorSubsystem.notifyContextUpdate(this);
+		
 	}
 	
 	public void returnExternalRequests() {
 		synchronized (externalRequests) {
-			System.out.println("Elevator crashed: returning externalRequests to scheduler");
+			printLog("Elevator crashed: returning externalRequests to scheduler");
 			elevatorSubsystem.returnElevatorRequests(externalRequests);
 			externalRequests.removeAll(externalRequests);
 		}
@@ -560,17 +556,21 @@ public class ElevatorContext {
 	
 	public Door getDoors() {
 		return door;
-	}
+	} 
 	
 	public Motor getMotor() {
 		return motor;
+	}
+	
+	private void printLog(String message) {
+		System.out.println(message);
+		logConsole.appendLog(" " + message + "\n");
 	}
 	
 	public static void main(String[] args) throws ParseException, UnknownHostException, IOException, InterruptedException {
 		// small visual test
 		System.out.println("--small little elevator context test");
 		SimulatorConfiguration sc = new SimulatorConfiguration("./src/main/resources/config.properties");
-		ElevatorSubsystem s = new ElevatorSubsystem(sc);
 		//s.startElevatorSubsystem(); TODO: update this lil test
 		UDPClient testServer = new UDPClient();
 		UDPClient arrivalNotifRcv = new UDPClient(sc.SCHEDULER_ARRIVAL_REQ_PORT);

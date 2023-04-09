@@ -1,18 +1,16 @@
-/**
- * 
- */
 package main.java.elevator.state;
 
 import main.java.elevator.ElevatorContext;
 
 /**
+ * This substate represent the moving state.
  * @author Zakaria Ismail
- *
  */
 public abstract class MovingState extends ElevatorState {
+	
 	/**
-	 * Constructor
-	 * @param ctx
+	 * Constructor for this state.
+	 * @param ctx  ElevatorContext, the context of the elevator
 	 */
 	public MovingState(ElevatorContext ctx) {
 		super(ctx);
