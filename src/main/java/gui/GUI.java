@@ -266,25 +266,16 @@ public class GUI extends JFrame implements Runnable {
 		String door = data.getDoor().toString();
 		ElevatorStateEnum currentState = data.getCurrentState();
 		if (currentElevatorNum <= elevatorNum && currentFloorNum <= floorNum) {
+			for(int floor = 0; floor < floorNum; floor++) {
+				floors[currentElevatorNum][floor].setIcon(new ImageIcon("./src/main/resources/assets/blank.png"));
+			}
 			switch (currentState) {
 			case IDLE: {
 				floors[currentElevatorNum][currentFloorNum - 1].setIcon(new ImageIcon("./src/main/resources/assets/idle.png"));
-				if (currentFloorNum > 1) {
-					floors[currentElevatorNum][currentFloorNum - 2].setIcon(new ImageIcon("./src/main/resources/assets/blank.png"));
-				}
-				if (currentFloorNum < floorNum) {
-					floors[currentElevatorNum][currentFloorNum].setIcon(new ImageIcon("./src/main/resources/assets/blank.png"));
-				}
 				break;
 			}
 			case DOORS_OPEN: {
 				floors[currentElevatorNum][currentFloorNum - 1].setIcon(new ImageIcon("./src/main/resources/assets/open.png"));
-				if (currentFloorNum > 1) {
-					floors[currentElevatorNum][currentFloorNum - 2].setIcon(new ImageIcon("./src/main/resources/assets/blank.png"));
-				}
-				if (currentFloorNum < floorNum) {
-					floors[currentElevatorNum][currentFloorNum].setIcon(new ImageIcon("./src/main/resources/assets/blank.png"));
-				}
 				break;
 			}
 			case DOORS_CLOSED: {
@@ -293,42 +284,18 @@ public class GUI extends JFrame implements Runnable {
 			}
 			case MOVING_DOWN: {
 				floors[currentElevatorNum][currentFloorNum - 1].setIcon(new ImageIcon("./src/main/resources/assets/down.png"));
-				if (currentFloorNum > 1) {
-					floors[currentElevatorNum][currentFloorNum - 2].setIcon(new ImageIcon("./src/main/resources/assets/blank.png"));
-				}
-				if (currentFloorNum < floorNum) {
-					floors[currentElevatorNum][currentFloorNum].setIcon(new ImageIcon("./src/main/resources/assets/blank.png"));
-				}
 				break;
 			}
 			case MOVING_UP: {
 				floors[currentElevatorNum][currentFloorNum - 1].setIcon(new ImageIcon("./src/main/resources/assets/up.png"));
-				if (currentFloorNum > 1) {
-					floors[currentElevatorNum][currentFloorNum - 2].setIcon(new ImageIcon("./src/main/resources/assets/blank.png"));
-				}
-				if (currentFloorNum < floorNum) {
-					floors[currentElevatorNum][currentFloorNum].setIcon(new ImageIcon("./src/main/resources/assets/blank.png"));
-				}
 				break;
 			}
 			case STOPPED: {
 				floors[currentElevatorNum][currentFloorNum - 1].setIcon(new ImageIcon("./src/main/resources/assets/stop.png"));
-				if (currentFloorNum > 1) {
-					floors[currentElevatorNum][currentFloorNum - 2].setIcon(new ImageIcon("./src/main/resources/assets/blank.png"));
-				}
-				if (currentFloorNum < floorNum) {
-					floors[currentElevatorNum][currentFloorNum].setIcon(new ImageIcon("./src/main/resources/assets/blank.png"));
-				}
 				break;
 			}
 			case DOORS_STUCK: {
 				floors[currentElevatorNum][currentFloorNum - 1].setIcon(new ImageIcon("./src/main/resources/assets/stuck.png"));
-				if (currentFloorNum > 1) {
-					floors[currentElevatorNum][currentFloorNum - 2].setIcon(new ImageIcon("./src/main/resources/assets/blank.png"));
-				}
-				if (currentFloorNum < floorNum) {
-					floors[currentElevatorNum][currentFloorNum].setIcon(new ImageIcon("./src/main/resources/assets/blank.png"));
-				}
 				break;
 			}
 			case ELEVATOR_STUCK: {
