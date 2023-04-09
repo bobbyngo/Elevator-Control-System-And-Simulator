@@ -37,7 +37,7 @@ public class GenerateEvents {
 	 * @throws IOException
 	 */
 	public static void generateEvents(SimulatorConfiguration config) throws IOException {
-		int NUM_EVENT = 200;
+		int NUM_EVENT = 1000;
 		int MAX_FLOOR = config.NUM_FLOORS;
 		int MIN_FLOOR = 1;
 		int RANGE_FLOOR = MAX_FLOOR - MIN_FLOOR + 1;
@@ -63,8 +63,8 @@ public class GenerateEvents {
         int MIN_SSS = 000;
         int RANGE_SSS = MAX_SSS - MIN_SSS + 1;
         NumberFormat formatter_xxx = new DecimalFormat("000");
-
-        File file = new File(config.INPUT_PATH);
+        
+        File file = new File("./src/main/resources/input.txt");
         FileOutputStream fos = new FileOutputStream(file);
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
 

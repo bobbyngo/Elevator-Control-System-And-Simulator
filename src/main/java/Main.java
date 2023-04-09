@@ -25,7 +25,7 @@ public class Main {
 		try {
 			new GenerateEvents();
 			GenerateEvents.generateEvents(configuration);
-			Thread.sleep(2000);
+			Thread.sleep(500);
 		} catch (InterruptedException | IOException e) {
 
 		}
