@@ -84,7 +84,7 @@ public class Floor {
 	 * @return the boolean of whether the button is on (true) or off (false) 
 	 */
 	public boolean getDownButtonLamp() {
-		return components.getButtonLampStatus(Direction.UP);
+		return components.getButtonLampStatus(Direction.DOWN);
 	}
 	
 	/**

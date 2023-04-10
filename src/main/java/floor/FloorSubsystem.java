@@ -13,7 +13,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import main.java.SimulatorConfiguration;
 import main.java.UDPClient;
-import main.java.dto.ElevatorGuiData;
 import main.java.dto.ElevatorRequest;
 import main.java.dto.ElevatorStatus;
 import main.java.dto.FloorGuiData;
@@ -213,9 +212,9 @@ public class FloorSubsystem implements Runnable {
 		// TODO: Fix the issue with receiving the same completed request multiple times
 		DatagramPacket receivedReqPacket = udpCompletedRequestsReceiver.receiveMessage();
 		ElevatorRequest elevatorRequest = ElevatorRequest.decode(receivedReqPacket.getData());
-		printLog("Request " + elevatorRequest.toString() + " has been completed");
-		printLog(floorArr[elevatorRequest.getDestinationFloor() - 1].toString());
-		printLog("--------------------------------------------------");
+		//printLog("Request " + elevatorRequest.toString() + " has been completed");
+		//printLog(floorArr[elevatorRequest.getDestinationFloor() - 1].toString());
+		//printLog("--------------------------------------------------");
 	}
 
 	/**
