@@ -76,14 +76,12 @@ public class SchedulerSubsystem implements Runnable {
 				while (true) {
 					try {
 						receivePendingRequest();
-						// sendPendingRequest();
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				}
 			}
 		});
-
 		arrivalRequestListenerThread = new Thread(new Runnable() {
 
 			@Override
@@ -140,20 +138,19 @@ public class SchedulerSubsystem implements Runnable {
 	/**
 	 * Sending pending request to the elevator method.
 	 * 
+	 * @param assignedRequest AssignedElevatorRequest, an assigned elevator request object
 	 * @throws IOException
 	 */
-	public void sendPendingRequest(AssignedElevatorRequest request) throws IOException {
-		// AssignedElevatorRequest request =
-		// schedulerContext.findBestElevatorToAssignRequest();
+	public void sendPendingRequest(AssignedElevatorRequest assignedRequest) throws IOException {
 		Thread task;
 
 		task = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				if (request != null) {
+				if (assignedRequest != null) {
 					byte[] data;
 					try {
-						data = request.encode();
+						data = assignedRequest.encode();
 						UDPClient socket = new UDPClient();
 						socket.sendMessage(data, simulatorConfiguration.ELEVATOR_SUBSYSTEM_HOST,
 								simulatorConfiguration.ELEVATOR_SUBSYSTEM_REQ_PORT);
@@ -161,10 +158,8 @@ public class SchedulerSubsystem implements Runnable {
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-
-					logConsole.appendLog(String.format("Sent AssignedElevatorRequest: %s", request));
+					printLog(String.format("sentAssignedElevatorRequest     -- %s", assignedRequest));
 					schedulerContext.onRequestSent();
-
 				}
 			}
 		});
@@ -223,7 +218,7 @@ public class SchedulerSubsystem implements Runnable {
 		DatagramPacket packetFromElevator = completedRequestSocket.receiveMessage();
 		byte[] completedRequestData = UDPClient.readPacketData(packetFromElevator);
 		ElevatorRequest completedRequest = ElevatorRequest.decode(completedRequestData);
-		logConsole.appendLog("Received completed request " + completedRequest);
+		printLog(String.format("receiveCompletedElevatorRequest -- %s, completedRequest"));
 		schedulerContext.addCompletedElevatorRequests(completedRequest);
 	}
 
@@ -290,4 +285,15 @@ public class SchedulerSubsystem implements Runnable {
 		return simulatorConfiguration;
 	}
 
+	/**
+	 * Prints the console log to a text area.
+	 * 
+	 * @param message String, the string to be displayed
+	 */
+	private void printLog(String message) {
+		System.out.println(message);
+		logConsole.appendLog(" " + message + "\n");
+	}
+
+	
 }
