@@ -3,6 +3,8 @@
  */
 package test.java.elevator.state;
 
+import static org.junit.Assert.fail;
+
 import java.text.ParseException;
 
 import main.java.SimulatorConfiguration;
@@ -43,7 +45,13 @@ public class ElevatorStateTestUtil {
 		return subsystem;
 	}
 	
-	public static ElevatorRequest initElevatorRequest(int srcFloor, Direction direction, int destFloor) throws ParseException {
-		return new ElevatorRequest("07:01:15.000", srcFloor, direction, destFloor);
+	public static ElevatorRequest initElevatorRequest(int srcFloor, Direction direction, int destFloor) {
+		try {
+			return new ElevatorRequest("07:01:15.000", srcFloor, direction, destFloor);
+		} catch (ParseException e) {
+			fail();
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

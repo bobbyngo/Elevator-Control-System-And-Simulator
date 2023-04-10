@@ -46,12 +46,8 @@ public class MovingDownState extends MovingState {
 		ElevatorContext ctx = this.getContext();
 		ctx.killTimer();
 		// arrival notif called here
-		if (!ctx.decrementCurrentFloor()) {
+		if (!ctx.decrementCurrentFloor() && ctx.shouldElevatorStop()) {
 			return new StoppedState(ctx);
-		}
-
-		if (ctx.shouldElevatorStop()) {
-		return new StoppedState(ctx);
 		}
 		return new MovingDownState(ctx);
 	}

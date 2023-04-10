@@ -24,9 +24,12 @@ public class DoorsOpenState extends IdleMotorState {
 		StateTimeoutTask stt = new StateTimeoutTask(ctx, TimeoutEvent.DOORS_CLOSE);
 		ctx.setTimer(stt, ctx.getConfig().LOADING_TIME);
 		ctx.setDoors(Door.OPEN);
-		// TODO: load/unload passengers
 		ctx.unloadPassengers();
 		ctx.loadPassengers();
+		// FIXME: unload invalid request passengers (or don't let them in? idk)
+		// -> example: elevator is going UP and detects a request going past max floor
+		// -> example: elevator is going DOWN and detects a request going below floor 1
+		// these requests shouldn't be entertained. return them immediately?
 	}
 
 	/**

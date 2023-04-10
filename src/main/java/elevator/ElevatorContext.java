@@ -483,6 +483,7 @@ public class ElevatorContext {
 		// if you were to go in the same direction, then stop for the request @ the current floor?
 		//	-> can you stop sweeping? violate the check of having to accept a request going in same direction
 		//	-> essentially, the goal is to sweep until you hit the bottom-most or top-most request source?
+		// FIXME: consider stopping when you are at either lowest floor going down or highest floor going up -> TEST THIS
 		if (getElevatorLampStatus(currentFloor)) {
 			return true;
 		}

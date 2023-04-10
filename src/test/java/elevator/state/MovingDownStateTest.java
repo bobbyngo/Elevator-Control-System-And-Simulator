@@ -56,20 +56,42 @@ public class MovingDownStateTest {
 	 * @throws ParseException 
 	 */
 	@Test
-	public void testHandleRequestReceived() throws ParseException {
+	public void testHandleRequestReceivedDownToStopped() throws ParseException {
 		// Case: elevator is passing by floor with request going in the DOWN direction
 		ElevatorContext ctx = elevatorState.getContext();
 		ElevatorRequest req = ElevatorStateTestUtil.initElevatorRequest(2, Direction.DOWN, 1);
 		assert elevatorState.handleRequestReceived(req) instanceof StoppedState;
 		assertEquals(2, ctx.getCurrentFloor());
 	}
+	
+	public void testHandleRequestReceivedUpToMovingDown() throws ParseException {
+		// Case: elevator is passing by floor with request going in the UP direction
+		ElevatorContext ctx = elevatorState.getContext();
+		ElevatorRequest req = ElevatorStateTestUtil.initElevatorRequest(2, Direction.UP, 3);
+		ElevatorState expectedState = elevatorState;
+		assertSame(expectedState, elevatorState.handleRequestReceived(req));
+		assertEquals(2, ctx.getCurrentFloor());
+	}
 
 	/**
 	 * Test method for {@link main.java.elevator.state.MovingDownState#handleTimeout()}.
+	 * @throws ParseException 
 	 */
 	@Test
-	public void testHandleTimeout() {
-		fail("Not yet implemented");
+	public void testHandleTimeoutToStopped() throws ParseException {
+		// Case: elevator is passing by floor with a DOWN request
+		
+		elevatorState.getContext().addExternalRequest(ElevatorStateTestUtil.initElevatorRequest(1, Direction.DOWN, 1));
+	}
+	
+	@Test
+	public void testHandleTimeoutAtMinFloorToStopped() {
+		
+	}
+	
+	@Test
+	public void testHandleTimeoutToMovingDown() {
+		
 	}
 
 	/**
