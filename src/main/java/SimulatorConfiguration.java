@@ -1,19 +1,14 @@
-/**
- * 
- */
 package main.java;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Properties;
 
 /**
+ * Takes the values of the config.properties files and creates variable instances.
  * @author Zakaria Ismail
- *
  */
 public class SimulatorConfiguration {
-	// XXX: do i make config object or read directly from config...
 	// node topology configuration
 	public final int NUM_ELEVATORS;
 	public final int NUM_FLOORS;
@@ -44,9 +39,18 @@ public class SimulatorConfiguration {
 	public final int FLOOR_SUBSYSTEM_COMPLETED_REQ_PORT;
 	public final int FLOOR_SUBSYSTEM_ARRIVAL_REQ_PORT;
 	
+	// GUI config
+	public final String GUI_HOST;
+	public final int GUI_FLOOR_DTO_PORT;
+	public final int GUI_ELEVATOR_DTO_PORT;
+	
 	// Test config, disables automataic state transitions via clock timeout
 	public final boolean TEST_MODE;
 	
+	/**
+	 * Constructor for the simulator configuration.
+	 * @param configFilePath String, file path name
+	 */
 	public SimulatorConfiguration(String configFilePath) {
 		FileInputStream propsInput;
 		Properties prop = null;
@@ -85,9 +89,10 @@ public class SimulatorConfiguration {
 		FLOOR_SUBSYSTEM_COMPLETED_REQ_PORT = Integer.parseInt(prop.getProperty("FLOOR_SUBSYSTEM_COMPLETED_REQ_PORT"));
 		FLOOR_SUBSYSTEM_ARRIVAL_REQ_PORT = Integer.parseInt(prop.getProperty("FLOOR_SUBSYSTEM_ARRIVAL_REQ_PORT"));
 		
+		GUI_HOST = prop.getProperty("GUI_HOST");
+		GUI_FLOOR_DTO_PORT = Integer.parseInt(prop.getProperty("GUI_FLOOR_DTO_PORT"));
+		GUI_ELEVATOR_DTO_PORT = Integer.parseInt(prop.getProperty("GUI_ELEVATOR_DTO_PORT"));
+		
 		TEST_MODE = Boolean.parseBoolean(prop.getProperty("TEST_MODE", "false"));
 	}
-	
-	
-	
 }

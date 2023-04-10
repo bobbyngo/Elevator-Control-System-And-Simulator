@@ -9,6 +9,10 @@ package main.java.exception;
 @SuppressWarnings("serial")
 public class ElevatorReqParamException extends Exception {
 	
+	/**
+	 * Elevator required parameter exception.
+	 * @param errorMessage String, error message
+	 */
 	public ElevatorReqParamException (String errorMessage) {
 		super("Invalid number of elevator request parameters. " +  errorMessage);
 		

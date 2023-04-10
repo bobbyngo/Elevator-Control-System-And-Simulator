@@ -1,10 +1,8 @@
 package main.java.floor;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import main.java.SimulatorConfiguration;
-import main.java.dto.ElevatorStatus;
 import main.java.elevator.Direction;
 /**
  * An wrapper class containing all the information of components of the floor
@@ -22,14 +20,12 @@ public class FloorComponents {
 	private HashMap<Integer, Boolean> arrivalSensor = new HashMap<>();
 	// Denote the arrival and direction of an elevator at a floor
 	private HashMap<Integer, Direction> directionLamp = new HashMap<>();
-	// Detecting elevator arrived to the floor
 	
 	/**
 	 * Constructor for FloorComponents
-	 * @param direction
 	 */
 	public FloorComponents() {
-		// init all the component is not selected
+		// Initialize all the component is not selected
 		buttonLamp.put(Direction.UP, false);
 		buttonLamp.put(Direction.DOWN, false);
 		
@@ -45,7 +41,6 @@ public class FloorComponents {
 	 * @return true if down button is pressed, else false
 	 */
 	public boolean getButtonLampStatus(Direction direction) {
-		
 		return buttonLamp.get(direction);
 	}
 	/**
@@ -56,6 +51,11 @@ public class FloorComponents {
 		return this.directionLamp;
 	}
 	
+	/**
+	 * Get the direction of elevator lamp.
+	 * @param elevatorID int, the elevator id
+	 * @return Direction, the direction of the elevator
+	 */
 	public Direction getDirectionLamp(int elevatorID) {
 		return this.directionLamp.get(elevatorID);
 	}
@@ -68,6 +68,11 @@ public class FloorComponents {
 		return this.arrivalSensor;
 	}
 	
+	/**
+	 * Get the arrival sensor.
+	 * @param elevatorID int, the elevator id
+	 * @return Boolean, true if the sensor has been triggered
+	 */
 	public Boolean getArrivalSensor(int elevatorID) {
 		return this.arrivalSensor.get(elevatorID);
 	}
@@ -79,7 +84,6 @@ public class FloorComponents {
 	 * @param direction UP or DOWN
 	 */
 	public void updateButtonDirectionStatus(Direction direction, boolean status) {
-		
 		buttonLamp.put(direction, status);
 	}
 	
@@ -92,23 +96,31 @@ public class FloorComponents {
 	}
 	
 	/**
-	 * Flipping the arrival sensor
+	 * Flip the arrival sensor
 	 * @param true if the elevator present at the floor, else false
 	 */
 	public void updateArrivalSensor(int elevatorID, boolean arrivalSensor) {
 		this.arrivalSensor.put(elevatorID, arrivalSensor);
 	}
 	
+	/**
+	 * toString method.
+	 */
 	@Override
 	public String toString() {
-		String stringedObject = "";
+		String floorButtonsStr = "";
+		String directionLampsStr = "{";
+		String floorSesnsorsStr = "{";
 		
-		stringedObject += "Up ButtonLamp: " + buttonLamp.get(Direction.UP).toString() + ", Down ButtonLamp: " + buttonLamp.get(Direction.DOWN).toString();
+		floorButtonsStr = "{Up ButtonLamp: " + buttonLamp.get(Direction.UP).toString() + ", Down ButtonLamp: " + buttonLamp.get(Direction.DOWN).toString() + "} \n";
 		
 		for (int i = 1; i <= simulatorConfiguration.NUM_ELEVATORS; i++) {
-			stringedObject += "; \n\tElevator# " + (i) + " arrival sensor: " + getArrivalSensor(i) + ", direction lamp: " + getDirectionLamp(i);
+			directionLampsStr += "Elevator# " + (i) + " direction lamp: " + getDirectionLamp(i) + ", ";
+			floorSesnsorsStr += "Elevator# " + (i) + " arrival sensor: " + getArrivalSensor(i) + ", ";
 		}
-		
-		return stringedObject;
+		directionLampsStr += "} \n";
+		floorSesnsorsStr += "}";
+
+		return floorButtonsStr + directionLampsStr + floorSesnsorsStr;
 	}
 }

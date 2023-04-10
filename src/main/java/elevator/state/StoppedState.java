@@ -1,22 +1,18 @@
-/**
- * 
- */
 package main.java.elevator.state;
 
 import main.java.dto.ElevatorRequest;
 import main.java.elevator.ElevatorContext;
 import main.java.elevator.ElevatorError;
-import main.java.elevator.Motor;
 
 /**
+ * This substate represents the motor stopped state.
  * @author Zakaria Ismail
- *
  */
 public class StoppedState extends IdleMotorState {
 
 	/**
-	 * Constructor
-	 * @param ctx
+	 * Constructor for this state.
+	 * @param ctx ElevatorContext, the context of the elevator
 	 */
 	public StoppedState(ElevatorContext ctx) {
 		super(ctx);
@@ -25,7 +21,8 @@ public class StoppedState extends IdleMotorState {
 	}
 
 	/**
-	 * handleRequestReceived
+	 * Handle the request received
+	 * @return ElevatorState, the state of the elevator
 	 */
 	@Override
 	public ElevatorState handleRequestReceived(ElevatorRequest request) {
@@ -33,7 +30,8 @@ public class StoppedState extends IdleMotorState {
 	}
 
 	/**
-	 * handleTimeout
+	 * Handle the Timeout event.
+	 * @return ElevatorState, the state of the elevator
 	 */
 	@Override
 	public ElevatorState handleTimeout() {
@@ -51,7 +49,8 @@ public class StoppedState extends IdleMotorState {
 	}
 
 	/**
-	 * toString
+	 * toString method
+	 * @return String
 	 */
 	@Override
 	public String toString() {
@@ -59,11 +58,11 @@ public class StoppedState extends IdleMotorState {
 	}
 
 	/**
-	 * getElevatorStateEnum
+	 * Get the ElevatorStateEnum.
+	 * @return ElevatorStateEnum, the state of the elevator
 	 */
 	@Override
 	public ElevatorStateEnum getElevatorStateEnum() {
 		return ElevatorStateEnum.STOPPED;
 	}
-
 }

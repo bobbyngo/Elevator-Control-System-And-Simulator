@@ -1,20 +1,14 @@
-/**
- * 
- */
 package main.java.elevator;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import javax.security.auth.login.ConfigurationSpi;
 
 import main.java.SimulatorConfiguration;
 import main.java.UDPClient;
 import main.java.dto.AssignedElevatorRequest;
+import main.java.dto.ElevatorGuiData;
 import main.java.dto.ElevatorRequest;
 import main.java.dto.ElevatorStatus;
 
@@ -22,7 +16,6 @@ import main.java.dto.ElevatorStatus;
  * Controller. Routes requests to respective elevators.
  * Handles communication aspect.
  * @author Zakaria Ismail
- *
  */
 public class ElevatorSubsystem implements Runnable {
 	// TODO: change to hashmap to not deal with indexing issues
@@ -30,10 +23,10 @@ public class ElevatorSubsystem implements Runnable {
 	private SimulatorConfiguration simulatorConfiguration;
 	private Thread requestListenerThread;
 	private UDPClient udpRequestReceiver;
-	
+
 	/**
 	 * Constructor for Elevator Subsystem
-	 * @param config
+	 * @param config SimulatorConfiguration, the simulator configurations
 	 */
 	public ElevatorSubsystem(SimulatorConfiguration config) {
 		ElevatorContext elevator;
@@ -44,10 +37,10 @@ public class ElevatorSubsystem implements Runnable {
 		
 		// 1-index elevator identification
 		// FIXME: change to concurrent initialization? (TBD)
-		for (int i=1; i<=simulatorConfiguration.NUM_ELEVATORS; i++) {
+		for (int i=1; i<=config.NUM_ELEVATORS; i++) {
 			elevator = new ElevatorContext(this, i);
 			elevator.startElevator();
-			elevators.put(i, elevator);	
+			elevators.put(i, elevator);
 		}
 	}
 	
@@ -61,15 +54,15 @@ public class ElevatorSubsystem implements Runnable {
 	}
 	
 	/**
-	 * Getter for the configuration of this class
-	 * @return
+	 * Getter for the configuration of this class.
+	 * @return SimulatorConfiguration, the simulator configurations 
 	 */
 	public SimulatorConfiguration getConfig() {
 		return simulatorConfiguration;
 	}
 	
 	/**
-	 * Receiving request method
+	 * Receiving request method.
 	 * @throws ClassNotFoundException
 	 * @throws IOException
 	 */
@@ -92,13 +85,14 @@ public class ElevatorSubsystem implements Runnable {
 				routeElevatorRequest(assignedRequest);
 			}
 		});
+		
 		requestHandler.start();
 		return;
 	}
 	
 	/**
-	 * Update the request to the Elevator context
-	 * @param request
+	 * Update the request to the Elevator context.
+	 * @param request AssignedElevatorRequest, the assigned elevator request object
 	 */
 	private void routeElevatorRequest(AssignedElevatorRequest request) {
 		int elevatorId;
@@ -110,8 +104,8 @@ public class ElevatorSubsystem implements Runnable {
 	}
 	
 	/**
-	 * Sending completed request message method to the Scheduler
-	 * @param request
+	 * Sending completed request message method to the Scheduler.
+	 * @param request ElevatorRequest, the elevator request object
 	 */
 	public void sendCompletedElevatorRequest(ElevatorRequest request) {
 		// send elevator request: called by context
@@ -126,10 +120,20 @@ public class ElevatorSubsystem implements Runnable {
 	}
 	
 	/**
-	 * Sending arrival notification method to the Scheduler
-	 * @param status
+	 * Notify the elevator context of updates.
+	 * @param ctx ElevatorContext, the context of the elevator
 	 */
-	public void sendArrivalNotification(ElevatorStatus status) {
+	public void notifyContextUpdate(ElevatorContext ctx) {
+		new Thread(() -> sendArrivalNotification(new ElevatorStatus(ctx))).start();
+		new Thread(() -> sendGuiNotification(new ElevatorGuiData(ctx))).start();
+		return;
+	}
+	
+	/**
+	 * Sending arrival notification method to the Scheduler.
+	 * @param status ElevatorStatus, the status of the elevator
+	 */
+	private void sendArrivalNotification(ElevatorStatus status) {
 		// send arrival notification: 
 		// TODO: spin up a new thread to run this code
 		UDPClient messageClient = new UDPClient();
@@ -142,8 +146,22 @@ public class ElevatorSubsystem implements Runnable {
 	}
 	
 	/**
-	 * Send the elevator requests to the Scheduler
-	 * @param requests
+	 * Sends notification to the graphical user interface.
+	 * @param data ElevatorGuiData, data for the elevator GUI
+	 */
+	private void sendGuiNotification(ElevatorGuiData data) {
+		UDPClient messageClient = new UDPClient();
+		try {
+			messageClient.sendMessage(data.encode(), simulatorConfiguration.GUI_HOST, simulatorConfiguration.GUI_ELEVATOR_DTO_PORT);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		messageClient.close();
+	}
+	
+	/**
+	 * Send the elevator requests to the Scheduler.
+	 * @param requests List, the list of elevator requests
 	 */
 	public void returnElevatorRequests(List<ElevatorRequest> requests) {
 		UDPClient messageClient = new UDPClient();
@@ -159,7 +177,8 @@ public class ElevatorSubsystem implements Runnable {
 	}
 	
 	/**
-	 * @param args
+	 * Main method.
+	 * @param args, default parameters
 	 */
 	public static void main(String[] args) {
 		SimulatorConfiguration configuration;
@@ -171,5 +190,4 @@ public class ElevatorSubsystem implements Runnable {
 		subsystemThread = new Thread(subsystem);
 		subsystemThread.start();
 	}
-
 }

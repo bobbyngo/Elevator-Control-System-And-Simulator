@@ -1,6 +1,3 @@
-/**
- * 
- */
 package main.java.floor;
 
 import main.java.elevator.Direction;
@@ -15,6 +12,10 @@ public class Floor {
 	private int floorNum;
 	private FloorComponents components;
 	
+	/**
+	 * Constructor of the Floor class.
+	 * @param floorNum int, the number of floors
+	 */
 	public Floor(int floorNum) {
 		this.floorNum = floorNum;
 		this.components = new FloorComponents();	
@@ -52,8 +53,53 @@ public class Floor {
 		return components.getButtonLampStatus(Direction.DOWN);
 	}
 	
+	/**
+	 * Updates the sensor at an elevator shaft
+	 * @param sensorId the int of the sensor ID (equal to the elevator ID)
+	 * @param status the boolean of whether the sensor detects an elevator (true) or not (false)
+	 */
+	public void setFloorSensor(int sensorId, boolean status) {
+		components.updateArrivalSensor(sensorId, status);
+	}
+	
+	/**
+	 * Updates the direction lamp for an elevator shaft
+	 * @param elevatorId the int of the elevator id 
+	 * @param direction the Direction enum to change the lamp's status to
+	 */
+	public void setElevatorDirectionLamp(int elevatorId, Direction direction) {
+		components.updateDirectionLamp(elevatorId, direction);
+	}
+	
+	/**
+	 * Get the state of the button pointing in the upwards direction.
+	 * @return the boolean of whether the button is on (true) or off (false) 
+	 */
+	public boolean getUpButtonLamp() {
+		return components.getButtonLampStatus(Direction.UP);
+	}
+	
+	/**
+	 * Get the state of the button pointing in the downwards direction.
+	 * @return the boolean of whether the button is on (true) or off (false) 
+	 */
+	public boolean getDownButtonLamp() {
+		return components.getButtonLampStatus(Direction.DOWN);
+	}
+	
+	/**
+	 * Gets the floor number
+	 * @return the int of the floor number
+	 */
+	public int getFloorNum() {
+		return floorNum;
+	}
+	
+	/**
+	 * toString method.
+	 */
 	@Override
 	public String toString() {
-		return "Floor " + floorNum + ": " + components.toString();
+		return "Floor " + floorNum + "\n" + components.toString();
 	}
 }

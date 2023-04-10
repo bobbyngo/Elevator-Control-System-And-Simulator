@@ -16,8 +16,8 @@ import main.java.elevator.Motor;
 public class MovingDownState extends MovingState {
 
 	/**
-	 * Constructor for MovingDownState
-	 * @param ctx
+	 * Constructor for this state.
+	 * @param ctx  ElevatorContext, the context of the elevator
 	 */
 	public MovingDownState(ElevatorContext ctx) {
 		super(ctx);
@@ -26,7 +26,8 @@ public class MovingDownState extends MovingState {
 	}
 
 	/**
-	 * Override method for handling the receiving request of this state
+	 * Handle the request received
+	 * @return ElevatorState, the state of the elevator
 	 */
 	@Override
 	public ElevatorState handleRequestReceived(ElevatorRequest request) {
@@ -39,7 +40,8 @@ public class MovingDownState extends MovingState {
 	}
 
 	/**
-	 * Override method for timing out of this state
+	 * Handle the Timeout event.
+	 * @return ElevatorState, the stateo of the elevator
 	 */
 	@Override
 	public ElevatorState handleTimeout() {
@@ -53,7 +55,8 @@ public class MovingDownState extends MovingState {
 	}
 
 	/**
-	 * toString overriding method
+	 * toString method
+	 * @return String
 	 */
 	@Override
 	public String toString() {
@@ -61,7 +64,8 @@ public class MovingDownState extends MovingState {
 	}
 
 	/**
-	 * Getter for elevator state enum
+	 * Get the ElevatorStateEnum.
+	 * @return ElevatorStateEnum, the state of the elevator
 	 */
 	@Override
 	public ElevatorStateEnum getElevatorStateEnum() {

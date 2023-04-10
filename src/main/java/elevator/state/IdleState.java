@@ -1,23 +1,19 @@
-/**
- * 
- */
 package main.java.elevator.state;
 
 import main.java.dto.ElevatorRequest;
 import main.java.elevator.Direction;
 import main.java.elevator.Door;
 import main.java.elevator.ElevatorContext;
-import main.java.elevator.Motor;
 
 /**
+ * This substate represent the idle state.
  * @author Zakaria Ismail
- *
  */
 public class IdleState extends IdleMotorState {
 
 	/**
-	 * Constructor
-	 * @param ctx
+	 * Constructor for this state.
+	 * @param ctx  ElevatorContext, the context of the elevator
 	 */
 	public IdleState(ElevatorContext ctx) {
 		super(ctx);
@@ -27,7 +23,8 @@ public class IdleState extends IdleMotorState {
 	}
 
 	/**
-	 * handleRequestReceived
+	 * Handle the request received
+	 * @return ElevatorState, the state of the elevator
 	 */
 	@Override
 	public ElevatorState handleRequestReceived(ElevatorRequest request) {
@@ -37,9 +34,10 @@ public class IdleState extends IdleMotorState {
 		ctx.setDirection(request.getDirection());
 		return new DoorsClosedState(ctx);
 	}
-
+	
 	/**
-	 * handleTimeout
+	 * Handle the Timeout event.
+	 * @return ElevatorState, the stateo of the elevator
 	 */
 	@Override
 	public ElevatorState handleTimeout() {
@@ -47,16 +45,19 @@ public class IdleState extends IdleMotorState {
 		return this;
 	}
 
+
 	/**
-	 * toString
+	 * toString method
+	 * @return String
 	 */
 	@Override
 	public String toString() {
 		return "Idle";
 	}
-
+	
 	/**
-	 * getElevatorStateEnum
+	 * Get the ElevatorStateEnum.
+	 * @return ElevatorStateEnum, the state of the elevator
 	 */
 	@Override
 	public ElevatorStateEnum getElevatorStateEnum() {

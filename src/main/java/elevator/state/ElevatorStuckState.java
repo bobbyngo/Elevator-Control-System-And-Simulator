@@ -1,6 +1,3 @@
-/**
- * 
- */
 package main.java.elevator.state;
 
 import main.java.dto.ElevatorRequest;
@@ -8,23 +5,24 @@ import main.java.elevator.Direction;
 import main.java.elevator.ElevatorContext;
 
 /**
+ * This substate represents the elevator stuck state.
  * @author Zakaria Ismail
- *
  */
 public class ElevatorStuckState extends IdleMotorState {
 
 	/**
-	 * Constructor
-	 * @param ctx
+	 * Constructor for this state.
+	 * @param ctx ElevatorContext, the context of the elevator
 	 */
 	public ElevatorStuckState(ElevatorContext ctx) {
 		super(ctx);
 		ctx.setDirection(Direction.IDLE);
 		ctx.returnExternalRequests();
 	}
-
+	
 	/**
-	 * handleRequestReceived
+	 * Handle the request received
+	 * @return ElevatorState, the state of the elevator
 	 */
 	@Override
 	public ElevatorState handleRequestReceived(ElevatorRequest request) {
@@ -36,15 +34,17 @@ public class ElevatorStuckState extends IdleMotorState {
 	}
 
 	/**
-	 * handleTimeout
+	 * Handle the Timeout event.
+	 * @return ElevatorState, the stateo of the elevator
 	 */
 	@Override
 	public ElevatorState handleTimeout() {
 		return this;
 	}
-
+	
 	/**
-	 * toString
+	 * toString method
+	 * @return String
 	 */
 	@Override
 	public String toString() {
@@ -52,7 +52,8 @@ public class ElevatorStuckState extends IdleMotorState {
 	}
 
 	/**
-	 * getElevatorStateEnum
+	 * Get the ElevatorStateEnum.
+	 * @return ElevatorStateEnum, the state of the elevator
 	 */
 	@Override
 	public ElevatorStateEnum getElevatorStateEnum() {

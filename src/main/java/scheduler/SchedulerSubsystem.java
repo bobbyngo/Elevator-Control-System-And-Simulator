@@ -1,29 +1,20 @@
-/**
- * 
- */
 package main.java.scheduler;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.UnknownHostException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
 
 import main.java.SimulatorConfiguration;
 import main.java.UDPClient;
 import main.java.dto.AssignedElevatorRequest;
 import main.java.dto.ElevatorRequest;
 import main.java.dto.ElevatorStatus;
-import main.java.elevator.Direction;
-import main.java.elevator.ElevatorContext;
+import main.java.gui.LogConsole;
 
 /**
- * Representing the Scheduler Subsystem
+ * Representing the Scheduler Subsystem.
  * @author Bobby Ngo, Patrick Liu
- *
  */
 public class SchedulerSubsystem implements Runnable {
 	private SchedulerContext schedulerContext;
@@ -39,6 +30,27 @@ public class SchedulerSubsystem implements Runnable {
 	private Thread arrivalRequestListenerThread;
 	private Thread completedRequestListenerThread;
 	
+	private LogConsole logConsole;
+	
+	/**
+	 * Main method invoked as a thread.
+	 * @param args, default parameters
+	 * @throws ParseException
+	 * @throws InterruptedException
+	 * @throws UnknownHostException
+	 * @throws IOException
+	 */
+	public static void main(String[] args) throws ParseException, InterruptedException, UnknownHostException, IOException {
+		SimulatorConfiguration sc = new SimulatorConfiguration("./src/main/resources/config.properties");
+		SchedulerSubsystem s = new SchedulerSubsystem(sc);
+		Thread sThread = new Thread(s);
+		sThread.start();
+	}
+	
+	/**
+	 * Constructor for the scheduler subsystem.
+	 * @param config SimulatorConfiguration, the configurations parameters
+	 */
 	public SchedulerSubsystem(SimulatorConfiguration config) {
 		simulatorConfiguration = config;
 		schedulerContext = new SchedulerContext(this);
@@ -46,10 +58,11 @@ public class SchedulerSubsystem implements Runnable {
 		pendingRequestSocket = new UDPClient(config.SCHEDULER_PENDING_REQ_PORT);
 		arrivalRequestSocket = new UDPClient(config.SCHEDULER_ARRIVAL_REQ_PORT);
 		completedRequestSocket = new UDPClient(config.SCHEDULER_COMPLETED_REQ_PORT);
+		logConsole = new LogConsole("Scheduler");
 	}
 	
 	/**
-	 * Starting threads with the followed steps
+	 * Starting threads with following sequence of steps.
 	 */
 	public void run() {
 		pendingRequestListenerThread =  new Thread(new Runnable() {
@@ -100,7 +113,7 @@ public class SchedulerSubsystem implements Runnable {
 	}
 	
 	/**
-	 * Receiving pending request from Floor method
+	 * Receiving pending request from Floor method.
 	 * @throws ClassNotFoundException
 	 * @throws IOException
 	 */
@@ -120,7 +133,7 @@ public class SchedulerSubsystem implements Runnable {
 	}
 	
 	/**
-	 * Sending pending request to the elevator method
+	 * Sending pending request to the elevator method.
 	 * @throws IOException
 	 */
 	public void sendPendingRequest(AssignedElevatorRequest request) throws IOException {
@@ -142,18 +155,17 @@ public class SchedulerSubsystem implements Runnable {
 						e.printStackTrace();
 					}
 					
-					System.out.println(String.format("Sent AssignedElevatorRequest: %s", request));
+					logConsole.appendLog(String.format("Sent AssignedElevatorRequest: %s", request));
 					schedulerContext.onRequestSent();
 					
 				}
 			}
 		});
 		task.start();
-		
 	}
 	
 	/**
-	 * Receiving arrival notification from elevator method
+	 * Receiving arrival notification from elevator method.
 	 * @throws ClassNotFoundException
 	 * @throws IOException
 	 */
@@ -175,12 +187,11 @@ public class SchedulerSubsystem implements Runnable {
 			}
 		});
 		task.start();
-		
 	}
 	
 	/**
-	 * Sending arrival notification to Floor method
-	 * @param arrivalNotification
+	 * Sending arrival notification to Floor method.
+	 * @param arrivalNotification ElevatorStatus, the status of the elevator
 	 * @throws IOException
 	 */
 	private void sendArrivalNotification(ElevatorStatus arrivalNotification) throws IOException {
@@ -193,23 +204,21 @@ public class SchedulerSubsystem implements Runnable {
 	}
 	
 	/**
-	 * Receiving completed request method from the elevator
+	 * Receiving completed request method from the elevator.
 	 * @throws ClassNotFoundException
 	 * @throws IOException
 	 */
 	public void receiveCompletedElevatorRequest() throws ClassNotFoundException, IOException {
-		Thread task;
 		DatagramPacket packetFromElevator =  completedRequestSocket.receiveMessage();
 		byte[] completedRequestData = UDPClient.readPacketData(packetFromElevator);
 		ElevatorRequest completedRequest = ElevatorRequest.decode(completedRequestData);
-		
-		System.out.println("Received completed request " + completedRequest);
+		logConsole.appendLog("Received completed request " + completedRequest);
 		schedulerContext.addCompletedElevatorRequests(completedRequest);
 	}
 	
 	/**
-	 * Send the completed request to the floor
-	 * @param completedRequest
+	 * Send the completed request to the floor.
+	 * @param completedRequest ElevatorRequest, elevator request object
 	 * @throws IOException
 	 */
 	public void sendCompletedElevatorRequest(ElevatorRequest completedRequest) throws IOException {
@@ -234,17 +243,16 @@ public class SchedulerSubsystem implements Runnable {
 	}
 
 	/**
-	 * Getter for pendingRequestListenerThread()
-	 * @return
+	 * Getter for pendingRequestListenerThread.
+	 * @return Thread, pending request listener thread
 	 */
 	public Thread getPendingRequestListenerThread() {
 		return pendingRequestListenerThread;
 	}
 
-
 	/**
-	 * Getter for arrivalRequestListenerThread
-	 * @return
+	 * Getter for arrivalRequestListenerThread.
+	 * @return Thread, arrival request listener thread
 	 */
 	public Thread getArrivalRequestListenerThread() {
 		return arrivalRequestListenerThread;
@@ -252,26 +260,19 @@ public class SchedulerSubsystem implements Runnable {
 
 
 	/**
-	 * Getter for completedRequestListenerThread
-	 * @return
+	 * Getter for completedRequestListenerThread.
+	 * @return Thread, completed request listener thread
 	 */
 	public Thread getCompletedRequestListenerThread() {
 		return completedRequestListenerThread;
 	}
 	
 	/** 
-	 * Getter for the configuration of this class
-	 * @return
+	 * Getter for the configuration of this class.
+	 * @return SimulatorConfiguration, configuration parameters required
 	 */
 	public SimulatorConfiguration getSimulatorConfiguration() {
 		return simulatorConfiguration;
 	}
-
-	public static void main(String[] args) throws ParseException, InterruptedException, UnknownHostException, IOException {
-		SimulatorConfiguration sc = new SimulatorConfiguration("./src/main/resources/config.properties");
-		SchedulerSubsystem s = new SchedulerSubsystem(sc);
-		Thread sThread = new Thread(s);
-		
-		sThread.start();
-	}
+	
 }

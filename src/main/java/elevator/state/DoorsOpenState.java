@@ -1,6 +1,3 @@
-/**
- * 
- */
 package main.java.elevator.state;
 
 import main.java.dto.ElevatorRequest;
@@ -11,13 +8,12 @@ import main.java.elevator.ElevatorContext;
 /**
  * Doors Open state. Loads and unloads passengers
  * @author Zakaria Ismail
- *
  */
 public class DoorsOpenState extends IdleMotorState {
 
 	/**
-	 * Constructor
-	 * @param ctx
+	 * Constructor for this state.
+	 * @param ctx ElevatorContext, the context of the elevator
 	 */
 	public DoorsOpenState(ElevatorContext ctx) {
 		super(ctx);

@@ -1,9 +1,4 @@
-/**
- * 
- */
 package main.java.elevator.state;
-
-import java.util.TimerTask;
 
 import main.java.dto.ElevatorRequest;
 import main.java.elevator.Direction;
@@ -11,14 +6,14 @@ import main.java.elevator.Door;
 import main.java.elevator.ElevatorContext;
 
 /**
+ * This substate represents the doors closed state.
  * @author Zakaria Ismail
- *
  */
 public class DoorsClosedState extends IdleMotorState {
 
 	/**
-	 * Constructor
-	 * @param ctx
+	 * Constructor for this state.
+	 * @param ctx ElevatorContext, the context of the elevator
 	 */
 	public DoorsClosedState(ElevatorContext ctx) {
 		super(ctx);
@@ -29,7 +24,8 @@ public class DoorsClosedState extends IdleMotorState {
 	}
 
 	/**
-	 * handleRequestReceived
+	 * Handle the request received
+	 * @return ElevatorState, the state of the elevator
 	 */
 	@Override
 	public ElevatorState handleRequestReceived(ElevatorRequest request) {
@@ -47,7 +43,8 @@ public class DoorsClosedState extends IdleMotorState {
 	}
 
 	/**
-	 * handleTimeout
+	 * Handle the Timeout event.
+	 * @return ElevatorState, the state of the elevator
 	 */
 	@Override
 	public ElevatorState handleTimeout() {
@@ -74,7 +71,8 @@ public class DoorsClosedState extends IdleMotorState {
 	}
 
 	/**
-	 * toString
+	 * toString method
+	 * @return String
 	 */
 	@Override
 	public String toString() {
@@ -82,8 +80,9 @@ public class DoorsClosedState extends IdleMotorState {
 	}
 
 	/**
-	 * getElevatorStateEnum
-	 */ 
+	 * Get the ElevatorStateEnum.
+	 * @return ElevatorStateEnum, the state of the elevator
+	 */
 	@Override
 	public ElevatorStateEnum getElevatorStateEnum() {
 		return ElevatorStateEnum.DOORS_CLOSED;

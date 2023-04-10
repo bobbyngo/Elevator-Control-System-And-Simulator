@@ -1,6 +1,3 @@
-/**
- * 
- */
 package main.java;
 
 import java.io.IOException;
@@ -18,9 +15,8 @@ import main.java.dto.AssignedElevatorRequest;
 import main.java.elevator.Direction;
 
 /**
- * UDP Client class for sending and receiving requests between Elevator, Scheduler and Floor Subsystem
+ * UDP Client class for sending and receiving requests between Elevator, Scheduler and Floor Subsystem.
  * @author Zakaria Ismail
- *
  */
 public class UDPClient {
 	private static final int BUF_SIZE = 1000;
@@ -41,7 +37,7 @@ public class UDPClient {
 	
 	/**
 	 * Constructor for UDP Client class, for receiving datagram socket
-	 * @param port
+	 * @param port int, the port number
 	 */
 	public UDPClient(int port) {
 		try {
@@ -53,18 +49,18 @@ public class UDPClient {
 	}
 	
 	/**
-	 * Closing socket method
+	 * Closing socket method.
 	 */
 	public void close() {
 		socket.close();
 	}
 	
 	/**
-	 * Method for sending the data
-	 * @param data
-	 * @param destAddr
-	 * @param destPort
-	 * @return
+	 * Method for sending the data.
+	 * @param data byte[], the data to be sent
+	 * @param destAddr InetAddress, destination address 
+	 * @param destPort int, destination port number
+	 * @return DatagramPacket, sent packet
 	 */
 	public DatagramPacket sendMessage(byte[] data, InetAddress destAddr, int destPort) {
 		DatagramPacket sendPacket;
@@ -80,11 +76,11 @@ public class UDPClient {
 	}
 	
 	/**
-	 * Method for converting the destAddr in String to InetAddress object then send the data
-	 * @param data
-	 * @param destAddr
-	 * @param destPort
-	 * @return
+	 * Method for converting the destAddr in String to InetAddress object then send the data.
+	 * @param data byte[], the data to be sent
+	 * @param destAddr InetAddress, destination address 
+	 * @param destPort int, destination port number
+	 * @return DatagramPacket, sent packet
 	 * @throws UnknownHostException
 	 */
 	public DatagramPacket sendMessage(byte[] data, String destAddr, int destPort) throws UnknownHostException {
@@ -95,8 +91,8 @@ public class UDPClient {
 	}
 	
 	/**
-	 * Method for receiving the data
-	 * @return DatagramPacket
+	 * Method for receiving the data.
+	 * @return DatagramPacket, received packet
 	 */
 	public DatagramPacket receiveMessage() {
 		DatagramPacket receivePacket;
@@ -113,9 +109,9 @@ public class UDPClient {
 	}
 	
 	/**
-	 * Read datagram packet method
-	 * @param packet
-	 * @return
+	 * Read datagram packet method.
+	 * @param packet DatagramPacket, data packet
+	 * @return byte[], the data
 	 */
 	public static byte[] readPacketData(DatagramPacket packet) {
 		byte[] receiveData;
@@ -125,9 +121,9 @@ public class UDPClient {
 	}
 	
 	/**
-	 * Formating the datagram 
-	 * @param packet
-	 * @return
+	 * Formating the datagram packet.
+	 * @param packet DatagramPacket, the data packet
+	 * @return String, the string format of the data packet.
 	 */
 	public static String formatPacketData(DatagramPacket packet) {
 		byte[] data = UDPClient.readPacketData(packet);
@@ -135,6 +131,15 @@ public class UDPClient {
 		return String.format("%s (%s)", Arrays.toString(data), new String());
 	}
 	
+	/**
+	 * Main method testing the capabilities of the class.
+	 * @param args, default parameters
+	 * @throws ParseException
+	 * @throws UnknownHostException
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 * @throws InterruptedException
+	 */
 	public static void main(String[] args) throws ParseException, UnknownHostException, IOException, ClassNotFoundException, InterruptedException {
 		int sendPort = 4001;
 		int recvPort = 4002;

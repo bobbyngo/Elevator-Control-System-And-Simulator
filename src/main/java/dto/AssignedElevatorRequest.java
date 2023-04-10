@@ -1,6 +1,3 @@
-/**
- * 
- */
 package main.java.dto;
 
 import java.io.IOException;
@@ -11,9 +8,8 @@ import main.java.elevator.Direction;
 import main.java.elevator.ElevatorError;
 
 /**
- * 
+ * This class models an assigned elevator request.
  * @author Zakaria Ismail
- *
  */
 public class AssignedElevatorRequest extends ElevatorRequest implements Serializable {
 
@@ -21,13 +17,13 @@ public class AssignedElevatorRequest extends ElevatorRequest implements Serializ
 	private int elevatorId;
 	
 	/**
-	 * Constructor method
-	 * @param assignedElevatorId
-	 * @param timestampString
-	 * @param sourceFloor
-	 * @param direction
-	 * @param destinationFloor
-	 * @param elevatorError
+	 * Constructor method for assigned elevator request.
+	 * @param assignedElevatorId int, the assigned elevator id
+	 * @param timestampString String, the timestamp
+	 * @param sourceFloor Integer, the source floor number
+	 * @param direction Direction, the direction of the elevator
+	 * @param destinationFloor Integer, the destination floor number
+	 * @param elevatorError ElevatorError, the elevator error
 	 * @throws ParseException
 	 */
 	public AssignedElevatorRequest(int assignedElevatorId, String timestampString, Integer sourceFloor, 
@@ -37,9 +33,9 @@ public class AssignedElevatorRequest extends ElevatorRequest implements Serializ
 	}
 	
 	/**
-	 * Constructor method
-	 * @param assignedElevatorId
-	 * @param request
+	 * Constructor method for the assigned elevator request.
+	 * @param assignedElevatorId int, the assigned elevator id
+	 * @param request ElevatorRequest, the elevator request object
 	 */
 	public AssignedElevatorRequest(int assignedElevatorId, ElevatorRequest request) {
 		super(request.getTimestamp(), request.getSourceFloor(), request.getDirection(), request.getDestinationFloor(), request.getElevatorError());
@@ -47,12 +43,12 @@ public class AssignedElevatorRequest extends ElevatorRequest implements Serializ
 	}
 	
 	/**
-	 * Constructor method
-	 * @param assignedElevatorId
-	 * @param timestampString
-	 * @param sourceFloor
-	 * @param direction
-	 * @param destinationFloor
+	 * Constructor method for assigned elevator request.
+	 * @param assignedElevatorId int, the assigned elevator id
+	 * @param timestampString String, the timestamp
+	 * @param sourceFloor Integer, the source floor number
+	 * @param direction Direction, the direction of the elevator
+	 * @param destinationFloor Integer, the destination floor number
 	 * @throws ParseException
 	 */
 	public AssignedElevatorRequest(int assignedElevatorId, String timestampString, Integer sourceFloor, 
@@ -61,17 +57,17 @@ public class AssignedElevatorRequest extends ElevatorRequest implements Serializ
 	}
 	
 	/**
-	 * Getter for elevatorId
-	 * @return
+	 * Getter for elevator id.
+	 * @return elevatorId int, the elevator id
 	 */
 	public int getElevatorId() {
 		return elevatorId;
 	}
 	
 	/**
-	 * Decode the data method
-	 * @param data
-	 * @return
+	 * Serializable decode data method.
+	 * @param data byte[], the data to be decoded
+	 * @return AssignedElevatorRequest, the assigned elevator request object
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
@@ -81,13 +77,21 @@ public class AssignedElevatorRequest extends ElevatorRequest implements Serializ
 	}
 	
 	/**
-	 * Encode method
+	 * Serializable encode method.
+	 * @return byte[], the data encoded
 	 */
 	public byte[] encode() throws IOException {
 		byte[] encodedData = SerializableEncoder.encode(this);
 		return encodedData;
 	}
 	
+	/**
+	 * Main method to test the capabilities of this class.
+	 * @param args, default parameters
+	 * @throws ParseException
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
 	public static void main(String[] args) throws ParseException, IOException, ClassNotFoundException {
 		// small test
 		AssignedElevatorRequest testObj = new AssignedElevatorRequest(

@@ -1,11 +1,8 @@
-/**
- * 
- */
 package main.java.elevator.state;
 
 /**
+ * This class models the timeout event.
  * @author Zakaria Ismail
- *
  */
 public enum TimeoutEvent {
 	DOORS_OPEN("Doors Open"),
@@ -18,14 +15,15 @@ public enum TimeoutEvent {
 	
 	/**
 	 * TimeoutEvent
-	 * @param event
+	 * @param event Strinbg, the timeout event name
 	 */
 	private TimeoutEvent(String event) {
 		eventMsg = "Event: " + event;
 	}
 	
 	/**
-	 * toString
+	 * toString method.
+	 * @return String, the string of the event message
 	 */
 	@Override
 	public String toString() {

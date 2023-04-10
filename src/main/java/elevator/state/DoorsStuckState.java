@@ -1,20 +1,17 @@
-/**
- * 
- */
 package main.java.elevator.state;
 
 import main.java.dto.ElevatorRequest;
 import main.java.elevator.ElevatorContext;
 
 /**
+ * This substate represents the doors stuck state.
  * @author Zakaria Ismail
- *
  */
 public class DoorsStuckState extends IdleMotorState {
 
 	/**
-	 * Constructor
-	 * @param ctx
+	 * Constructor for this state.
+	 * @param ctx ElevatorContext, the context of the elevator
 	 */
 	public DoorsStuckState(ElevatorContext ctx) {
 		super(ctx);
