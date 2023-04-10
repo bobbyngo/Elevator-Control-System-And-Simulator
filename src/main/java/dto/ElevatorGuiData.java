@@ -24,6 +24,7 @@ public class ElevatorGuiData implements Serializable {
 	private Direction direction;
 	private Door door;
 	private TreeSet<Integer> destinationFloors;
+	private TreeSet<Integer> sourceFloors;
 	// XXX: might include external & internal requests if it is needed
 	
 	/**
@@ -38,8 +39,12 @@ public class ElevatorGuiData implements Serializable {
 		door = ctx.getDoors();
 		motor = ctx.getMotor();
 		destinationFloors = new TreeSet<>();
+		sourceFloors = new TreeSet<>();
 		for (ElevatorRequest elevatorRequest : ctx.getInternalRequests()) {
 			destinationFloors.add(elevatorRequest.getDestinationFloor());
+		}
+		for (ElevatorRequest elevatorRequest : ctx.getExternalRequests()) {
+			sourceFloors.add(elevatorRequest.getSourceFloor());
 		}
 	}
 	
@@ -119,5 +124,13 @@ public class ElevatorGuiData implements Serializable {
 	 */
 	public TreeSet<Integer> getDestinationFloors() {
 		return destinationFloors;
+	}
+	
+	/**
+	 * Get the elevator source floors.
+	 * @return TreeSet<Integer> of the source floors
+	 */
+	public TreeSet<Integer> getSourceFloors() {
+		return sourceFloors;
 	}
 }

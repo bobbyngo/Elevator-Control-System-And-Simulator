@@ -227,7 +227,7 @@ public class GUI extends JFrame implements Runnable {
 
 		// Create elevator information panels
 		JPanel[] elevInfoPanels = new JPanel[elevatorNum];
-		elevInfos = new JLabel[elevatorNum][6];
+		elevInfos = new JLabel[elevatorNum][7];
 		for(int i = 0; i < elevatorNum ; i++) {
 			elevInfoPanels[i] = new JPanel();
 			elevInfoPanels[i].setBorder(new TitledBorder(new LineBorder(new Color(0, 0, 0)),new String("Elevator "+ Integer.toString(i+1) +" Info"), TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
@@ -245,18 +245,22 @@ public class GUI extends JFrame implements Runnable {
 			elevInfos[i][2] = new JLabel("Destination Floors: []");
 			elevInfos[i][2].setFont(new Font("Tahoma", Font.PLAIN, 17));
 			elevInfoPanels[i].add(elevInfos[i][2]);
-
-			elevInfos[i][3] = new JLabel("Motor: IDLE");
+			
+			elevInfos[i][3] = new JLabel("Source Floors: []");
 			elevInfos[i][3].setFont(new Font("Tahoma", Font.PLAIN, 17));
 			elevInfoPanels[i].add(elevInfos[i][3]);
-			
-			elevInfos[i][4] = new JLabel("Doors: OPEN");
+
+			elevInfos[i][4] = new JLabel("Motor: IDLE");
 			elevInfos[i][4].setFont(new Font("Tahoma", Font.PLAIN, 17));
 			elevInfoPanels[i].add(elevInfos[i][4]);
 			
-			elevInfos[i][5] = new JLabel("State: IDLE");
+			elevInfos[i][5] = new JLabel("Doors: OPEN");
 			elevInfos[i][5].setFont(new Font("Tahoma", Font.PLAIN, 17));
 			elevInfoPanels[i].add(elevInfos[i][5]);
+			
+			elevInfos[i][6] = new JLabel("State: IDLE");
+			elevInfos[i][6].setFont(new Font("Tahoma", Font.PLAIN, 17));
+			elevInfoPanels[i].add(elevInfos[i][6]);
 		}
 	}
 		
@@ -269,6 +273,7 @@ public class GUI extends JFrame implements Runnable {
 		int currentFloorNum = data.getCurrentFloor();
 		String direction = data.getDirection().toString();
 		TreeSet<Integer> destinationFloors = data.getDestinationFloors();
+		TreeSet<Integer> sourceFloors = data.getSourceFloors();
 		String motor = data.getMotor().toString();
 		String door = data.getDoor().toString();
 		ElevatorStateEnum currentState = data.getCurrentState();
@@ -318,9 +323,10 @@ public class GUI extends JFrame implements Runnable {
 			elevInfos[currentElevatorNum][0].setText("Current Floor: " + currentFloorNum);
 			elevInfos[currentElevatorNum][1].setText("Direction: " + direction);
 			elevInfos[currentElevatorNum][2].setText("Destination Floors: " + destinationFloors.toString());
-			elevInfos[currentElevatorNum][3].setText("Motor: " + motor);
-			elevInfos[currentElevatorNum][4].setText("Door: " + door);
-			elevInfos[currentElevatorNum][5].setText("State: " + currentState);
+			elevInfos[currentElevatorNum][3].setText("Source Floors: " + sourceFloors.toString());
+			elevInfos[currentElevatorNum][4].setText("Motor: " + motor);
+			elevInfos[currentElevatorNum][5].setText("Door: " + door);
+			elevInfos[currentElevatorNum][6].setText("State: " + currentState);
 		}
 	}
 	/**
