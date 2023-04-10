@@ -6,24 +6,26 @@ import main.java.elevator.ElevatorContext;
 
 /**
  * This substate represents the doors closed state.
+ * 
  * @author Zakaria Ismail
  */
 public class DoorsClosedState extends IdleMotorState {
 
 	/**
 	 * Constructor for this state.
+	 * 
 	 * @param ctx ElevatorContext, the context of the elevator
 	 */
 	public DoorsClosedState(ElevatorContext ctx) {
 		super(ctx);
-		
 		StateTimeoutTask stt = new StateTimeoutTask(ctx, TimeoutEvent.MOTOR_THROTTLE);
 		ctx.setTimer(stt, ctx.getConfig().DOORS_CLOSE_TIME);
 		ctx.setDoors(Door.CLOSED);
 	}
 
 	/**
-	 * Handle the request received
+	 * Handle the request received.
+	 * 
 	 * @return ElevatorState, the state of the elevator
 	 */
 	@Override
@@ -33,6 +35,7 @@ public class DoorsClosedState extends IdleMotorState {
 
 	/**
 	 * Handle the Timeout event.
+	 * 
 	 * @return ElevatorState, the state of the elevator
 	 */
 	@Override
@@ -40,15 +43,13 @@ public class DoorsClosedState extends IdleMotorState {
 		ElevatorContext ctx = this.getContext();
 		Direction nextDirection;
 		ctx.killTimer();
-		// TODO: perform some conditional checks
-		// consider current direction
 		nextDirection = ctx.calculateNextDirection();
 		ctx.setDirection(nextDirection);
-		
+
 		if (ctx.shouldElevatorStop()) {
 			return new StoppedState(ctx);
 		}
-	
+
 		switch (ctx.getDirection()) {
 		case UP:
 			return new MovingUpState(ctx);
@@ -62,6 +63,7 @@ public class DoorsClosedState extends IdleMotorState {
 
 	/**
 	 * toString method
+	 * 
 	 * @return String
 	 */
 	@Override
@@ -71,6 +73,7 @@ public class DoorsClosedState extends IdleMotorState {
 
 	/**
 	 * Get the ElevatorStateEnum.
+	 * 
 	 * @return ElevatorStateEnum, the state of the elevator
 	 */
 	@Override

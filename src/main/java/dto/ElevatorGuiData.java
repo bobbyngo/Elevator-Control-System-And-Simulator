@@ -12,6 +12,7 @@ import main.java.elevator.state.ElevatorStateEnum;
 
 /**
  * This class represents the elevator GUI data object.
+ *
  * @author Zakaria Ismail
  */
 public class ElevatorGuiData implements Serializable {
@@ -25,10 +26,10 @@ public class ElevatorGuiData implements Serializable {
 	private Door door;
 	private TreeSet<Integer> destinationFloors;
 	private TreeSet<Integer> sourceFloors;
-	// XXX: might include external & internal requests if it is needed
-	
+
 	/**
 	 * Elevator GUI data constructor.
+	 *
 	 * @param ctx ElevatorContext, the context of the elevator
 	 */
 	public ElevatorGuiData(ElevatorContext ctx) {
@@ -47,9 +48,10 @@ public class ElevatorGuiData implements Serializable {
 			sourceFloors.add(elevatorRequest.getSourceFloor());
 		}
 	}
-	
+
 	/**
 	 * Decoding method.
+	 *
 	 * @param data byte[], data to be encoded
 	 * @return ElevatorGuiData, the decode data object
 	 * @throws IOException
@@ -59,9 +61,10 @@ public class ElevatorGuiData implements Serializable {
 		Object decodedObj = SerializableEncoder.decode(data);
 		return (ElevatorGuiData) decodedObj;
 	}
-	
+
 	/**
 	 * Encoding method.
+	 *
 	 * @return byte[], the data to be encode
 	 * @throws IOException
 	 */
@@ -69,9 +72,10 @@ public class ElevatorGuiData implements Serializable {
 		byte[] encodedData = SerializableEncoder.encode(this);
 		return encodedData;
 	}
-	
+
 	/**
 	 * Get elevator id.
+	 *
 	 * @return int, the elevator id
 	 */
 	public int getId() {
@@ -80,6 +84,7 @@ public class ElevatorGuiData implements Serializable {
 
 	/**
 	 * Get the current elevator state.
+	 *
 	 * @return ElevatorStateEnum, the current elevator state
 	 */
 	public ElevatorStateEnum getCurrentState() {
@@ -88,6 +93,7 @@ public class ElevatorGuiData implements Serializable {
 
 	/**
 	 * Get the current floor.
+	 *
 	 * @return int, the current floor stop
 	 */
 	public int getCurrentFloor() {
@@ -96,6 +102,7 @@ public class ElevatorGuiData implements Serializable {
 
 	/**
 	 * Get the motor status.
+	 *
 	 * @return Motor, the motor enum
 	 */
 	public Motor getMotor() {
@@ -104,6 +111,7 @@ public class ElevatorGuiData implements Serializable {
 
 	/**
 	 * Get the direction of the moving elevator.
+	 *
 	 * @return Direction, the direction enum
 	 */
 	public Direction getDirection() {
@@ -112,6 +120,7 @@ public class ElevatorGuiData implements Serializable {
 
 	/**
 	 * Get the elevator door status.
+	 *
 	 * @return Door, the door enum
 	 */
 	public Door getDoor() {
@@ -120,17 +129,20 @@ public class ElevatorGuiData implements Serializable {
 
 	/**
 	 * Get the elevator destination floors.
+	 * 
 	 * @return TreeSet<Integer> of the destination floors
 	 */
 	public TreeSet<Integer> getDestinationFloors() {
 		return destinationFloors;
 	}
-	
+
 	/**
 	 * Get the elevator source floors.
+	 * 
 	 * @return TreeSet<Integer> of the source floors
 	 */
 	public TreeSet<Integer> getSourceFloors() {
 		return sourceFloors;
 	}
+
 }

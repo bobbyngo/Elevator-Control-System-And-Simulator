@@ -4,12 +4,14 @@ import main.java.scheduler.SchedulerContext;
 
 /**
  * Scheduler idle state.
+ * 
  * @author Zakaria Ismail
  */
 public class IdleState extends SchedulerState {
 
 	/**
 	 * Constructor for SchedulerState.
+	 * 
 	 * @param ctx SchedulerContext, the context of the scheduler
 	 */
 	public IdleState(SchedulerContext ctx) {
@@ -22,6 +24,7 @@ public class IdleState extends SchedulerState {
 
 	/**
 	 * Handle the requests received.
+	 * 
 	 * @return SchedulerState, the state of the scheduler
 	 */
 	@Override
@@ -36,13 +39,14 @@ public class IdleState extends SchedulerState {
 
 	/**
 	 * Handle the requests sent.
+	 * 
 	 * @return SchedulerState, the state of the scheduler
 	 */
 	@Override
 	public SchedulerState handleRequestSent() {
 		return this;
 	}
-	
+
 	/**
 	 * toString method
 	 */
@@ -50,4 +54,5 @@ public class IdleState extends SchedulerState {
 	public String toString() {
 		return "IdleState";
 	}
+	
 }

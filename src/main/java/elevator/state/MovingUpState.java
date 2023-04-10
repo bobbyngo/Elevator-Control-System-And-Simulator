@@ -5,12 +5,14 @@ import main.java.elevator.Motor;
 
 /**
  * This class represent the elevator moving up state.
+ * 
  * @author Zakaria Ismail
  */
 public class MovingUpState extends MovingState {
 
 	/**
 	 * Constructor for this state.
+	 * 
 	 * @param ctx ElevatorContext, the context of the elevator
 	 */
 	public MovingUpState(ElevatorContext ctx) {
@@ -20,29 +22,31 @@ public class MovingUpState extends MovingState {
 
 	/**
 	 * Handle the request received
+	 * 
 	 * @return ElevatorState, the state of the elevator
 	 */
 	@Override
 	public ElevatorState handleRequestReceived() {
 		ElevatorContext ctx = this.getContext();
-		
+
 		if (ctx.shouldElevatorStop()) {
 			ctx.killTimer();
 			return new StoppedState(ctx);
 		}
 		return this;
 	}
-	
+
 	/**
 	 * Handle the Timeout event.
+	 * 
 	 * @return ElevatorState, the stateo of the elevator
 	 */
 	@Override
 	public ElevatorState handleTimeout() {
 		ElevatorContext ctx = this.getContext();
-		
+
 		ctx.killTimer();
-		// arrival notif is fired when increment is called
+		// arrival notification is fired when increment is called
 		if (!ctx.incrementCurrentFloor()) {
 			return new StoppedState(ctx);
 		}
@@ -56,16 +60,17 @@ public class MovingUpState extends MovingState {
 
 	/**
 	 * toString method
+	 * 
 	 * @return String
 	 */
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
 		return "MovingUp";
 	}
 
 	/**
 	 * Get the ElevatorStateEnum.
+	 * 
 	 * @return ElevatorStateEnum, the state of the elevator
 	 */
 	@Override

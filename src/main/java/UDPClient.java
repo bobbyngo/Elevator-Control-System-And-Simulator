@@ -6,22 +6,18 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.text.ParseException;
 import java.util.Arrays;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import main.java.dto.AssignedElevatorRequest;
-import main.java.elevator.Direction;
 
 /**
- * UDP Client class for sending and receiving requests between Elevator, Scheduler and Floor Subsystem.
+ * UDP Client class for sending and receiving requests between Elevator,
+ * Scheduler and Floor Subsystem.
+ * 
  * @author Zakaria Ismail
  */
 public class UDPClient {
 	private static final int BUF_SIZE = 1000;
 	private DatagramSocket socket;
-	
+
 	/**
 	 * Constructor for UDP Client class, for sending datagram socket
 	 */
@@ -34,9 +30,10 @@ public class UDPClient {
 			System.exit(1);
 		}
 	}
-	
+
 	/**
 	 * Constructor for UDP Client class, for receiving datagram socket
+	 * 
 	 * @param port int, the port number
 	 */
 	public UDPClient(int port) {
@@ -47,24 +44,25 @@ public class UDPClient {
 			System.exit(1);
 		}
 	}
-	
+
 	/**
 	 * Closing socket method.
 	 */
 	public void close() {
 		socket.close();
 	}
-	
+
 	/**
 	 * Method for sending the data.
-	 * @param data byte[], the data to be sent
-	 * @param destAddr InetAddress, destination address 
+	 * 
+	 * @param data     byte[], the data to be sent
+	 * @param destAddr InetAddress, destination address
 	 * @param destPort int, destination port number
 	 * @return DatagramPacket, sent packet
 	 */
 	public DatagramPacket sendMessage(byte[] data, InetAddress destAddr, int destPort) {
 		DatagramPacket sendPacket;
-		
+
 		sendPacket = new DatagramPacket(data, data.length, destAddr, destPort);
 		try {
 			socket.send(sendPacket);
@@ -74,11 +72,13 @@ public class UDPClient {
 		}
 		return sendPacket;
 	}
-	
+
 	/**
-	 * Method for converting the destAddr in String to InetAddress object then send the data.
-	 * @param data byte[], the data to be sent
-	 * @param destAddr InetAddress, destination address 
+	 * Method for converting the destAddr in String to InetAddress object then send
+	 * the data.
+	 * 
+	 * @param data     byte[], the data to be sent
+	 * @param destAddr InetAddress, destination address
 	 * @param destPort int, destination port number
 	 * @return DatagramPacket, sent packet
 	 * @throws UnknownHostException
@@ -89,15 +89,16 @@ public class UDPClient {
 		sendPacket = sendMessage(data, hostAddr, destPort);
 		return sendPacket;
 	}
-	
+
 	/**
 	 * Method for receiving the data.
+	 * 
 	 * @return DatagramPacket, received packet
 	 */
 	public DatagramPacket receiveMessage() {
 		DatagramPacket receivePacket;
 		byte[] receiveBuf = new byte[BUF_SIZE];
-		
+
 		receivePacket = new DatagramPacket(receiveBuf, receiveBuf.length);
 		try {
 			socket.receive(receivePacket);
@@ -107,9 +108,10 @@ public class UDPClient {
 		}
 		return receivePacket;
 	}
-	
+
 	/**
 	 * Read datagram packet method.
+	 * 
 	 * @param packet DatagramPacket, data packet
 	 * @return byte[], the data
 	 */
@@ -119,9 +121,10 @@ public class UDPClient {
 		System.arraycopy(packet.getData(), packet.getOffset(), receiveData, 0, packet.getLength());
 		return receiveData;
 	}
-	
+
 	/**
 	 * Formating the datagram packet.
+	 * 
 	 * @param packet DatagramPacket, the data packet
 	 * @return String, the string format of the data packet.
 	 */
@@ -131,49 +134,4 @@ public class UDPClient {
 		return String.format("%s (%s)", Arrays.toString(data), new String());
 	}
 	
-	/**
-	 * Main method testing the capabilities of the class.
-	 * @param args, default parameters
-	 * @throws ParseException
-	 * @throws UnknownHostException
-	 * @throws IOException
-	 * @throws ClassNotFoundException
-	 * @throws InterruptedException
-	 */
-	public static void main(String[] args) throws ParseException, UnknownHostException, IOException, ClassNotFoundException, InterruptedException {
-		int sendPort = 4001;
-		int recvPort = 4002;
-		UDPClient sender = new UDPClient(sendPort);
-		UDPClient receiver = new UDPClient(recvPort);
-		AssignedElevatorRequest testObj = new AssignedElevatorRequest(
-				1, "07:01:15.000", 3, Direction.UP, 5
-			), testObj2;
-		DatagramPacket packet;
-		byte[] encodedData = testObj.encode();
-		System.out.println("sizeof encoded data: " + encodedData.length);
-		
-		Timer recv = new Timer();
-		recv.schedule(new TimerTask() {
-
-			@Override
-			public void run() {
-				try {
-					sender.sendMessage(encodedData, InetAddress.getLocalHost(), recvPort);
-					System.out.println("sent message!");
-				} catch (UnknownHostException e) {
-					e.printStackTrace();
-				}
-			}
-			
-		},3000);
-		System.out.println("waiting for message...");
-		packet = receiver.receiveMessage();
-		//sender.sendMessage(encodedData, InetAddress.getLocalHost(), 6000);
-		System.out.println("received message!");
-		System.out.println(new String(packet.getData()));
-		testObj2 = AssignedElevatorRequest.decode(UDPClient.readPacketData(packet));
-		System.out.println(testObj2);
-		sender.close();
-		receiver.close();
-	}
 }

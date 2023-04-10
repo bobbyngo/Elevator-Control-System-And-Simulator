@@ -2,6 +2,7 @@ package main.java.elevator.state;
 
 /**
  * This class models the timeout event.
+ * 
  * @author Zakaria Ismail
  */
 public enum TimeoutEvent {
@@ -15,7 +16,8 @@ public enum TimeoutEvent {
 	
 	/**
 	 * TimeoutEvent
-	 * @param event Strinbg, the timeout event name
+	 * 
+	 * @param event String, the timeout event name
 	 */
 	private TimeoutEvent(String event) {
 		eventMsg = "Event: " + event;
@@ -23,10 +25,12 @@ public enum TimeoutEvent {
 	
 	/**
 	 * toString method.
+	 * 
 	 * @return String, the string of the event message
 	 */
 	@Override
 	public String toString() {
 		return eventMsg;
 	}
+	
 }

@@ -6,23 +6,26 @@ import main.java.elevator.ElevatorContext;
 
 /**
  * This substate represent the idle state.
+ * 
  * @author Zakaria Ismail
  */
 public class IdleState extends IdleMotorState {
 
 	/**
 	 * Constructor for this state.
-	 * @param ctx  ElevatorContext, the context of the elevator
+	 * 
+	 * @param ctx ElevatorContext, the context of the elevator
 	 */
 	public IdleState(ElevatorContext ctx) {
 		super(ctx);
-		
+
 		ctx.setDoors(Door.OPEN);
 		ctx.setDirection(Direction.IDLE);
 	}
 
 	/**
 	 * Handle the request received
+	 * 
 	 * @return ElevatorState, the state of the elevator
 	 */
 	@Override
@@ -32,9 +35,10 @@ public class IdleState extends IdleMotorState {
 		ctx.loadPassengers();
 		return new DoorsClosedState(ctx);
 	}
-	
+
 	/**
 	 * Handle the Timeout event.
+	 * 
 	 * @return ElevatorState, the stateo of the elevator
 	 */
 	@Override
@@ -42,18 +46,19 @@ public class IdleState extends IdleMotorState {
 		return this;
 	}
 
-
 	/**
 	 * toString method
+	 * 
 	 * @return String
 	 */
 	@Override
 	public String toString() {
 		return "Idle";
 	}
-	
+
 	/**
 	 * Get the ElevatorStateEnum.
+	 * 
 	 * @return ElevatorStateEnum, the state of the elevator
 	 */
 	@Override
