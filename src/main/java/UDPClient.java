@@ -6,13 +6,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.text.ParseException;
 import java.util.Arrays;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import main.java.dto.AssignedElevatorRequest;
-import main.java.elevator.Direction;
 
 /**
  * UDP Client class for sending and receiving requests between Elevator,

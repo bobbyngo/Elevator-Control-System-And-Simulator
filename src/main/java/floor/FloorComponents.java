@@ -6,7 +6,7 @@ import main.java.SimulatorConfiguration;
 import main.java.elevator.Direction;
 
 /**
- * An wrapper class containing all the information of components of the floor
+ * An wrapper class containing all the information of components of the floor.
  * 
  * @author Bobby Ngo
  * @version 1.0, 03/10/23

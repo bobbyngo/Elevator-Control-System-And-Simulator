@@ -31,7 +31,6 @@ public enum TimeoutEvent {
 	@Override
 	public String toString() {
 		return eventMsg;
-		
 	}
 	
 }

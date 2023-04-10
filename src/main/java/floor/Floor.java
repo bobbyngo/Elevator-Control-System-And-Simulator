@@ -3,7 +3,7 @@ package main.java.floor;
 import main.java.elevator.Direction;
 
 /**
- * Responsible for controlling the floor components
+ * Responsible for controlling the floor components.
  * 
  * @author Hussein El Mokdad
  * @since 1.0, 04/01/23
