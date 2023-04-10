@@ -11,6 +11,7 @@ public class ElevatorReqParamException extends Exception {
 	
 	/**
 	 * Elevator required parameter exception.
+	 * 
 	 * @param errorMessage String, error message
 	 */
 	public ElevatorReqParamException (String errorMessage) {

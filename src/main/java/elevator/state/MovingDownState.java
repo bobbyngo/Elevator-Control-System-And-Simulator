@@ -1,6 +1,3 @@
-/**
- * 
- */
 package main.java.elevator.state;
 
 import main.java.elevator.ElevatorContext;
@@ -8,14 +5,15 @@ import main.java.elevator.Motor;
 
 /**
  * Moving Down State for Elevator
+ * 
  * @author Zakaria Ismail
- *
  */
 public class MovingDownState extends MovingState {
 
 	/**
 	 * Constructor for this state.
-	 * @param ctx  ElevatorContext, the context of the elevator
+	 * 
+	 * @param ctx ElevatorContext, the context of the elevator
 	 */
 	public MovingDownState(ElevatorContext ctx) {
 		super(ctx);
@@ -24,21 +22,23 @@ public class MovingDownState extends MovingState {
 
 	/**
 	 * Handle the request received
+	 * 
 	 * @return ElevatorState, the state of the elevator
 	 */
 	@Override
 	public ElevatorState handleRequestReceived() {
 		ElevatorContext ctx = this.getContext();
-		
+
 		if (ctx.shouldElevatorStop()) {
 			ctx.killTimer();
 			return new StoppedState(ctx);
 		}
- 		return this;
+		return this;
 	}
 
 	/**
 	 * Handle the Timeout event.
+	 * 
 	 * @return ElevatorState, the stateo of the elevator
 	 */
 	@Override
@@ -51,13 +51,14 @@ public class MovingDownState extends MovingState {
 		}
 
 		if (ctx.shouldElevatorStop()) {
-		return new StoppedState(ctx);
+			return new StoppedState(ctx);
 		}
 		return new MovingDownState(ctx);
 	}
 
 	/**
 	 * toString method
+	 * 
 	 * @return String
 	 */
 	@Override
@@ -67,6 +68,7 @@ public class MovingDownState extends MovingState {
 
 	/**
 	 * Get the ElevatorStateEnum.
+	 * 
 	 * @return ElevatorStateEnum, the state of the elevator
 	 */
 	@Override

@@ -38,7 +38,6 @@ public class SchedulerContext {
 	 */
 	public SchedulerContext(SchedulerSubsystem schedulerSubsystem) {
 		this.schedulerSubsystem = schedulerSubsystem;
-
 		// ensure that 4 scheduler threads use the same instance of these 3 array list
 		availableElevatorStatus = Collections.synchronizedList(new ArrayList<>());
 		pendingElevatorRequests = Collections.synchronizedList(new ArrayList<>());
@@ -150,16 +149,11 @@ public class SchedulerContext {
 	 * @return AssignedElevatorRequest, the assigned elevator request
 	 */
 	public AssignedElevatorRequest findBestElevatorToAssignRequest() {
-		// following C convention or zak will be malding
 		AssignedElevatorRequest assignedElevatorRequest = null;
-
 		if (availableElevatorStatus.size() == 0) {
-			// should add udp saying there is not available elevator?
 			System.out.println("There is no available elevator");
 		}
-		// these 2 list could both be empty so if
 		if (pendingElevatorRequests.size() == 0) {
-			// should add udp saying there is not available elevator?
 			System.out.println("There is no elevator requests");
 		} else {
 			ElevatorStatus chosenElevatorStatus = null;
@@ -198,7 +192,6 @@ public class SchedulerContext {
 				}
 			}
 		}
-		// can be null cause the 2 if statements
 		return assignedElevatorRequest;
 	}
 
@@ -300,11 +293,9 @@ public class SchedulerContext {
 	 * @throws IOException
 	 */
 	public void processCompletedElevatorRequest() throws IOException {
-		// do something with the completed elevator request here...?
 		ElevatorRequest nextCompletedRequest;
 		if (completedElevatorRequests.size() > 0) {
 			nextCompletedRequest = completedElevatorRequests.get(completedElevatorRequests.size() - 1);
-			// this.completedElevatorRequests.remove(nextCompletedRequest);
 			schedulerSubsystem.sendCompletedElevatorRequest(nextCompletedRequest);
 		}
 	}

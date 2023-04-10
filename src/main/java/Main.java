@@ -27,7 +27,7 @@ public class Main {
 			GenerateEvents.generateEvents(configuration);
 			Thread.sleep(500);
 		} catch (InterruptedException | IOException e) {
-
+			e.printStackTrace();
 		}
 		
 		SchedulerSubsystem schedulerSubsystem = new SchedulerSubsystem(configuration);

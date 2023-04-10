@@ -22,8 +22,8 @@ import main.java.floor.parser.Parser;
 import main.java.gui.LogConsole;
 
 /**
- * Responsible for sending elevator requests and handling 
- * incoming requests
+ * Responsible for sending elevator requests and handling incoming requests
+ * 
  * @author Hussein El Mokdad
  * @since 1.0, 02/04/23
  * @version 4.0, 04/01/23
@@ -38,9 +38,10 @@ public class FloorSubsystem implements Runnable {
 	private Floor[] floorArr;
 	private int numOfFloors;
 	private LogConsole logConsole;
-	
+
 	/**
 	 * Constructor for the FloorSubsystem class.
+	 * 
 	 * @param config SimulatorConfiguration, simulator configuration parameters
 	 */
 	public FloorSubsystem(SimulatorConfiguration config) {
@@ -53,28 +54,31 @@ public class FloorSubsystem implements Runnable {
 			// Filename before compilation
 			String FILENAME = System.getProperty("user.dir") + file.getPath();
 			this.parser = new Parser(FILENAME);
-		} catch (FileNotFoundException e) {}
+		} catch (FileNotFoundException e) {
+		}
 		try {
 			// Filename after compilation
 			String FILENAME = System.getProperty("user.dir") + file.getPath().substring(4);
 			this.parser = new Parser(FILENAME);
-		} catch (FileNotFoundException e) {}
+		} catch (FileNotFoundException e) {
+		}
 		floorArr = new Floor[numOfFloors];
 		for (int i = 0; i < numOfFloors; i++) {
-			floorArr[i] = new Floor(i + 1); 
+			floorArr[i] = new Floor(i + 1);
 		}
 		logConsole = new LogConsole("Floor Subsystem");
 		printLog("FLOOR_SUBSYSTEM_START");
 	}
-	
+
 	/**
 	 * FloorSubsystem override run() method.
+	 * 
 	 * @see java.lang.Runnable#run()
 	 */
 	@Override
 	public void run() {
 		try {
-			
+
 			Thread arrivalReqListenerThread = new Thread(new Runnable() {
 				@Override
 				public void run() {
@@ -82,10 +86,11 @@ public class FloorSubsystem implements Runnable {
 						while (true) {
 							listenToArrivalRequests();
 						}
-					} catch (Exception e) {}
+					} catch (Exception e) {
+					}
 				}
 			});
-			
+
 			Thread completedReqListenerThread = new Thread(new Runnable() {
 				@Override
 				public void run() {
@@ -93,27 +98,30 @@ public class FloorSubsystem implements Runnable {
 						while (true) {
 							listenToCompletedRequests();
 						}
-					} catch (Exception e) {}
+					} catch (Exception e) {
+					}
 				}
 			});
-			
+
 			arrivalReqListenerThread.start();
 			completedReqListenerThread.start();
-			
+
 			ArrayList<ElevatorRequest> elevatorRequests = getElevatorRequests();
 			addRequestsToQueue(elevatorRequests);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Sends the series of elevator requests to the Scheduler
+	 * 
 	 * @param elevatorRequests ArrayList, the list of elevator request object
-	 * @throws IOException 
-	 * @throws InterruptedException 
+	 * @throws IOException
+	 * @throws InterruptedException
 	 */
-	private void addRequestsToQueue(ArrayList<ElevatorRequest> elevatorRequests) throws IOException, InterruptedException, ParseException {
+	private void addRequestsToQueue(ArrayList<ElevatorRequest> elevatorRequests)
+			throws IOException, InterruptedException, ParseException {
 		if (!elevatorRequests.isEmpty()) {
 			Timer requestsTimer = new Timer();
 			for (ElevatorRequest req : elevatorRequests) {
@@ -123,88 +131,97 @@ public class FloorSubsystem implements Runnable {
 					public void run() {
 						UDPClient udpSendReq = new UDPClient();
 						try {
-							udpSendReq.sendMessage(data, simulatorConfiguration.SCHEDULER_HOST, simulatorConfiguration.SCHEDULER_PENDING_REQ_PORT);
+							udpSendReq.sendMessage(data, simulatorConfiguration.SCHEDULER_HOST,
+									simulatorConfiguration.SCHEDULER_PENDING_REQ_PORT);
 							ElevatorRequest elevatorRequest = ElevatorRequest.decode(data);
 							Floor floor = floorArr[elevatorRequest.getSourceFloor() - 1];
 							// If the lamp associated with that direction is off, turn it on
 							if (elevatorRequest.getDirection() == Direction.UP && floor.getFloorUpLamp() == false) {
 								floor.setFloorUpLamp(true);
-							}
-							else if (elevatorRequest.getDirection() == Direction.DOWN && floor.getFloorDownLamp() == false){
+							} else if (elevatorRequest.getDirection() == Direction.DOWN
+									&& floor.getFloorDownLamp() == false) {
 								floor.setFloorDownLamp(true);
 							}
-							
+
 							printLog(floor.toString());
-							sendGuiNotification(new FloorGuiData(floor.getFloorNum(), floor.getUpButtonLamp(), floor.getDownButtonLamp()));
-							
+							sendGuiNotification(new FloorGuiData(floor.getFloorNum(), floor.getUpButtonLamp(),
+									floor.getDownButtonLamp()));
+
 						} catch (ClassNotFoundException | IOException e) {
 							e.printStackTrace();
 						}
-						
+
 						printLog("Sending request " + req.toString());
-						
+
 						printLog("--------------------------------------------------");
 					}
 				}, new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS").parse(req.getTimestamp().toString()));
 			}
 		}
 	}
-	
+
 	/**
-	 * Listens to arrival requests from the scheduler and updates the floor components.
+	 * Listens to arrival requests from the scheduler and updates the floor
+	 * components.
+	 * 
 	 * @throws ClassNotFoundException
 	 * @throws IOException
 	 */
 	private void listenToArrivalRequests() throws ClassNotFoundException, IOException {
 		DatagramPacket receivedReqPacket = udpArrivalRequestsReceiver.receiveMessage();
 		ElevatorStatus elevatorStatus = ElevatorStatus.decode(receivedReqPacket.getData());
-		
+
 		int elevatorNum = elevatorStatus.getElevatorId();
 		int floorNum = elevatorStatus.getFloor();
 		Floor floor = floorArr[floorNum - 1];
 		ElevatorStateEnum elevatorState = elevatorStatus.getState();
 		Direction elevatorDirection = elevatorStatus.getDirection();
 		int elevatorId = elevatorStatus.getElevatorId();
-		
-		updateAllSensorsStatus(elevatorId); // Sets the sensors of the same shaft to false on all floors 
+
+		updateAllSensorsStatus(elevatorId); // Sets the sensors of the same shaft to false on all floors
 		floor.setFloorSensor(elevatorId, true);
-		
+
 		updateAllElevatorLamps(elevatorId, elevatorDirection);
-		
+
 		if (elevatorState == ElevatorStateEnum.DOORS_OPEN) {
 			printLog("Elevator " + elevatorNum + " arrived at floor " + floorNum);
-			if (elevatorDirection == Direction.DOWN) floor.setFloorDownLamp(false);
-			else floor.setFloorUpLamp(false);
+			if (elevatorDirection == Direction.DOWN)
+				floor.setFloorDownLamp(false);
+			else
+				floor.setFloorUpLamp(false);
 			printLog(floor.toString());
 			printLog("--------------------------------------------------");
-		}	
-		
+		}
+
 		sendGuiNotification(new FloorGuiData(floor.getFloorNum(), floor.getUpButtonLamp(), floor.getDownButtonLamp()));
 	}
-	
+
 	/**
 	 * Updates the direction lamp for an elevator shaft on all the floors
-	 * @param elevatorId the int of the elevator id 
-	 * @param direction the Direction enum to change the lamp's status to
+	 * 
+	 * @param elevatorId the int of the elevator id
+	 * @param direction  the Direction enum to change the lamp's status to
 	 */
 	private void updateAllElevatorLamps(int elevatorId, Direction elevatorDirection) {
-		for(int i = 0; i < floorArr.length; i++) {
+		for (int i = 0; i < floorArr.length; i++) {
 			floorArr[i].setElevatorDirectionLamp(elevatorId, elevatorDirection);
 		}
 	}
-	
+
 	/**
 	 * Sets the sensor status of a sensor id to false on all floors
+	 * 
 	 * @param sensorId the int of the sensor ID (equal to the elevator ID)
 	 */
 	private void updateAllSensorsStatus(int sensorId) {
-		for(int i = 0; i < floorArr.length; i++) {
+		for (int i = 0; i < floorArr.length; i++) {
 			floorArr[i].setFloorSensor(sensorId, false);
 		}
 	}
-	
+
 	/**
 	 * Listens to completed requests from the scheduler.
+	 * 
 	 * @throws ClassNotFoundException
 	 * @throws IOException
 	 */
@@ -212,13 +229,14 @@ public class FloorSubsystem implements Runnable {
 		// TODO: Fix the issue with receiving the same completed request multiple times
 		DatagramPacket receivedReqPacket = udpCompletedRequestsReceiver.receiveMessage();
 		ElevatorRequest elevatorRequest = ElevatorRequest.decode(receivedReqPacket.getData());
-		//printLog("Request " + elevatorRequest.toString() + " has been completed");
-		//printLog(floorArr[elevatorRequest.getDestinationFloor() - 1].toString());
-		//printLog("--------------------------------------------------");
+		// printLog("Request " + elevatorRequest.toString() + " has been completed");
+		// printLog(floorArr[elevatorRequest.getDestinationFloor() - 1].toString());
+		// printLog("--------------------------------------------------");
 	}
 
 	/**
 	 * Parse user requests.
+	 * 
 	 * @return elevatorRequests ArrayList, a list of elevator requests
 	 */
 	private ArrayList<ElevatorRequest> getElevatorRequests() {
@@ -231,43 +249,47 @@ public class FloorSubsystem implements Runnable {
 		}
 		return elevatorRequests;
 	}
-	
+
 	/**
 	 * Sends notification to the graphical user interface.
+	 * 
 	 * @param data FloorGuiData, data for the floor GUI
 	 */
 	private void sendGuiNotification(FloorGuiData data) {
 		UDPClient messageClient = new UDPClient();
 		try {
-			messageClient.sendMessage(data.encode(), simulatorConfiguration.GUI_HOST, simulatorConfiguration.GUI_FLOOR_DTO_PORT);
+			messageClient.sendMessage(data.encode(), simulatorConfiguration.GUI_HOST,
+					simulatorConfiguration.GUI_FLOOR_DTO_PORT);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		messageClient.close();
 	}
-	
+
 	/**
 	 * Print the logs to the console text area.
+	 * 
 	 * @param message String, the message to the displayed
 	 */
 	private void printLog(String message) {
-		System.out.println(message);
+		// System.out.println(message);
 		logConsole.appendLog(" " + message + "\n");
 	}
-	
+
 	/**
 	 * Main method.
+	 * 
 	 * @param args, default parameters
 	 */
 	public static void main(String[] args) {
 		SimulatorConfiguration configuration;
 		FloorSubsystem floorSubsystem;
 		Thread floorSubsystemThread;
-		
+
 		configuration = new SimulatorConfiguration("./src/main/resources/config.properties");
 		floorSubsystem = new FloorSubsystem(configuration);
 		floorSubsystemThread = new Thread(floorSubsystem);
 		floorSubsystemThread.start();
 	}
-	
+
 }
