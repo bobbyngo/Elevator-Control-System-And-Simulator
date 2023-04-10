@@ -10,6 +10,7 @@ import java.awt.Insets;
 import java.awt.Toolkit;
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.util.TreeSet;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -241,7 +242,7 @@ public class GUI extends JFrame implements Runnable {
 			elevInfos[i][1].setFont(new Font("Tahoma", Font.PLAIN, 17));
 			elevInfoPanels[i].add(elevInfos[i][1]);
 
-			elevInfos[i][2] = new JLabel("Queue Size: 0");
+			elevInfos[i][2] = new JLabel("Destination Floors: []");
 			elevInfos[i][2].setFont(new Font("Tahoma", Font.PLAIN, 17));
 			elevInfoPanels[i].add(elevInfos[i][2]);
 
@@ -267,7 +268,7 @@ public class GUI extends JFrame implements Runnable {
 		int currentElevatorNum = data.getId()-1;
 		int currentFloorNum = data.getCurrentFloor();
 		String direction = data.getDirection().toString();
-		int queueSize = data.getQueueSize();
+		TreeSet<Integer> destinationFloors = data.getDestinationFloors();
 		String motor = data.getMotor().toString();
 		String door = data.getDoor().toString();
 		ElevatorStateEnum currentState = data.getCurrentState();
@@ -316,7 +317,7 @@ public class GUI extends JFrame implements Runnable {
 			}
 			elevInfos[currentElevatorNum][0].setText("Current Floor: " + currentFloorNum);
 			elevInfos[currentElevatorNum][1].setText("Direction: " + direction);
-			elevInfos[currentElevatorNum][2].setText("Queue Size: " + queueSize);
+			elevInfos[currentElevatorNum][2].setText("Destination Floors: " + destinationFloors.toString());
 			elevInfos[currentElevatorNum][3].setText("Motor: " + motor);
 			elevInfos[currentElevatorNum][4].setText("Door: " + door);
 			elevInfos[currentElevatorNum][5].setText("State: " + currentState);
@@ -357,7 +358,6 @@ public class GUI extends JFrame implements Runnable {
 				System.exit(1);
 			}
 			handleFloorEvent(data);
-			System.out.println(data.getFloorNum()+ " " + data.getUpButtonLamp() + data.getDownButtonLamp());
 		}
 	}
 	

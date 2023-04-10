@@ -2,6 +2,7 @@ package main.java.dto;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.TreeSet;
 
 import main.java.elevator.Direction;
 import main.java.elevator.Door;
@@ -22,7 +23,7 @@ public class ElevatorGuiData implements Serializable {
 	private Motor motor;
 	private Direction direction;
 	private Door door;
-	private int internalRequests;
+	private TreeSet<Integer> destinationFloors;
 	// XXX: might include external & internal requests if it is needed
 	
 	/**
@@ -36,7 +37,10 @@ public class ElevatorGuiData implements Serializable {
 		direction = ctx.getDirection();
 		door = ctx.getDoors();
 		motor = ctx.getMotor();
-		internalRequests = ctx.getInternalRequests().size();
+		destinationFloors = new TreeSet<>();
+		for (ElevatorRequest elevatorRequest : ctx.getInternalRequests()) {
+			destinationFloors.add(elevatorRequest.getDestinationFloor());
+		}
 	}
 	
 	/**
@@ -110,10 +114,10 @@ public class ElevatorGuiData implements Serializable {
 	}
 
 	/**
-	 * Get the elevator request queue size.
-	 * @return int, the size of the elevator request queued
+	 * Get the elevator destination floors.
+	 * @return TreeSet<Integer> of the destination floors
 	 */
-	public int getQueueSize() {
-		return internalRequests;
+	public TreeSet<Integer> getDestinationFloors() {
+		return destinationFloors;
 	}
 }
