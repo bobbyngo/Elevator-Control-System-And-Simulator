@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.PrimitiveIterator.OfDouble;
 
 import main.java.dto.AssignedElevatorRequest;
 import main.java.dto.ElevatorRequest;
@@ -175,6 +176,11 @@ public class SchedulerContext {
 							break;
 						} 
 					}
+				}
+				
+				if (chosenElevatorStatus == null) {
+					int numOfElevators = schedulerSubsystem.getSimulatorConfiguration().NUM_ELEVATORS;
+					assignedElevatorRequest = new AssignedElevatorRequest((int)(Math.random() * numOfElevators + 1) , request);
 				}
 				
 				if (request != null) {
