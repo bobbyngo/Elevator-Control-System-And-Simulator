@@ -20,12 +20,10 @@ import main.java.gui.LogConsole;
 public class SchedulerSubsystem implements Runnable {
 	private SchedulerContext schedulerContext;
 	private SimulatorConfiguration simulatorConfiguration;
-
 	// 3 sockets and 3 threads for listening to the request
 	private UDPClient pendingRequestSocket;
 	private UDPClient arrivalRequestSocket;
 	private UDPClient completedRequestSocket;
-
 	// private Thread floorRequestListenerThread;
 	private Thread pendingRequestListenerThread;
 	private Thread arrivalRequestListenerThread;
@@ -158,7 +156,7 @@ public class SchedulerSubsystem implements Runnable {
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-					printLog(String.format("sentAssignedElevatorRequest     -- %s", assignedRequest));
+					printLog(String.format("sentAssignedElevatorRequest        -- %s", assignedRequest));
 					schedulerContext.onRequestSent();
 				}
 			}
@@ -218,7 +216,7 @@ public class SchedulerSubsystem implements Runnable {
 		DatagramPacket packetFromElevator = completedRequestSocket.receiveMessage();
 		byte[] completedRequestData = UDPClient.readPacketData(packetFromElevator);
 		ElevatorRequest completedRequest = ElevatorRequest.decode(completedRequestData);
-		printLog(String.format("receiveCompletedElevatorRequest -- %s, completedRequest"));
+		printLog(String.format("receiveCompletedElevatorRequest -- %s", completedRequest));
 		schedulerContext.addCompletedElevatorRequests(completedRequest);
 	}
 
