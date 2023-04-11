@@ -11,6 +11,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.JFileChooser;
+
 import main.java.SimulatorConfiguration;
 import main.java.UDPClient;
 import main.java.dto.ElevatorRequest;
@@ -30,7 +33,6 @@ import main.java.gui.LogConsole;
  */
 public class FloorSubsystem implements Runnable {
 	private final Logger logger = Logger.getLogger(this.getClass().getName());
-	private final File file = new File("/src/main/resources/input.txt");
 	private SimulatorConfiguration simulatorConfiguration;
 	private Parser parser;
 	private UDPClient udpArrivalRequestsReceiver;
@@ -51,16 +53,10 @@ public class FloorSubsystem implements Runnable {
 		numOfFloors = simulatorConfiguration.NUM_FLOORS;
 		logger.setLevel(Level.INFO);
 		try {
-			// Filename before compilation
-			String FILENAME = System.getProperty("user.dir") + file.getPath();
-			this.parser = new Parser(FILENAME);
+			String filename = selectFile();
+			this.parser = new Parser(filename);
 		} catch (FileNotFoundException e) {
-		}
-		try {
-			// Filename after compilation
-			String FILENAME = System.getProperty("user.dir") + file.getPath().substring(4);
-			this.parser = new Parser(FILENAME);
-		} catch (FileNotFoundException e) {
+			e.printStackTrace();
 		}
 		floorArr = new Floor[numOfFloors];
 		for (int i = 0; i < numOfFloors; i++) {
@@ -268,6 +264,21 @@ public class FloorSubsystem implements Runnable {
 	private void printLog(String message) {
 		System.out.println(message);
 		logConsole.appendLog(" " + message + "\n");
+	}
+	
+	/**
+	 * Allows user-input file selection GUI,
+	 * @return String, the filename
+	 */
+	private String selectFile() {
+		JFileChooser fc = new JFileChooser();
+		fc.setCurrentDirectory(new File("./src/main/resources/"));
+		fc.setLocation(100 + (425 * 3), 350);
+        int returnVal = fc.showDialog(logConsole, "Select File");
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            return "./src/main/resources/" + fc.getSelectedFile().getName();
+        } 
+        return "./src/main/resources/input.txt";
 	}
 
 	/**

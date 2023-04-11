@@ -27,7 +27,7 @@ public class Main {
 		try {
 			new GenerateEvents();
 			GenerateEvents.generateEvents(configuration);
-			Thread.sleep(500);
+			Thread.sleep(100);
 		} catch (InterruptedException | IOException e) {
 			e.printStackTrace();
 		}

@@ -40,7 +40,7 @@ public class GenerateEvents {
 	 * @throws IOException
 	 */
 	public static void generateEvents(SimulatorConfiguration config) throws IOException {
-		int NUM_EVENT = 1000;
+		int NUM_EVENT = 30;
 		int MAX_FLOOR = config.NUM_FLOORS;
 		int MIN_FLOOR = 1;
 		int RANGE_FLOOR = MAX_FLOOR - MIN_FLOOR + 1;
@@ -49,16 +49,16 @@ public class GenerateEvents {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
 
-		int MIN_hh = (int) calendar.get(Calendar.HOUR_OF_DAY);
-		int MAX_hh = (MIN_hh + 1) % 24;
-		int RANGE_hh = MAX_hh - MIN_hh + 1;
+		int MIN_HH = (int) calendar.get(Calendar.HOUR_OF_DAY);
+		int MAX_HH = (MIN_HH) % 24;
+		int RANGE_HH = MAX_HH - MIN_HH + 1;
 		NumberFormat formatter_xx = new DecimalFormat("00");
 
 		int MIN_mm = (int) calendar.get(Calendar.MINUTE);
-		int MAX_mm = 59;
+		int MAX_mm = (MIN_mm + 3) % 60;
 		int RANGE_mm = MAX_mm - MIN_mm + 1;
 
-		int MIN_ss = (int) calendar.get(Calendar.SECOND);
+		int MIN_ss = 0;
 		int MAX_ss = 59;
 		int RANGE_ss = MAX_ss - MIN_ss + 1;
 
@@ -72,7 +72,7 @@ public class GenerateEvents {
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
 
 		for (int i = 0; i < NUM_EVENT; i++) {
-			int hh = (int) (Math.random() * RANGE_hh) + MIN_hh;
+			int hh = (int) (Math.random() * RANGE_HH) + MIN_HH;
 			int mm = (int) (Math.random() * RANGE_mm) + MIN_mm;
 			int ss = (int) (Math.random() * RANGE_ss) + MIN_ss;
 			int SSS = (int) (Math.random() * RANGE_SSS) + MIN_SSS;
