@@ -224,7 +224,7 @@ public class FloorSubsystem implements Runnable {
 		DatagramPacket receivedReqPacket = udpCompletedRequestsReceiver.receiveMessage();
 		ElevatorRequest elevatorRequest = ElevatorRequest.decode(receivedReqPacket.getData());
 		printLog(String.format("REQUEST_COMPLETED -- %s", elevatorRequest.toString()));
-		System.out.println(floorArr[elevatorRequest.getDestinationFloor() - 1].toString());
+		printLog(floorArr[elevatorRequest.getDestinationFloor() - 1].toString());
 		System.out.println("--------------------------------------------------");
 	}
 
