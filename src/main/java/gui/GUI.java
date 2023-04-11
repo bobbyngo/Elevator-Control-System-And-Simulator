@@ -248,11 +248,11 @@ public class GUI extends JFrame implements Runnable {
 			elevInfos[i][1].setFont(new Font("Tahoma", Font.PLAIN, 17));
 			elevInfoPanels[i].add(elevInfos[i][1]);
 
-			elevInfos[i][2] = new JLabel("Destination Floors: []");
+			elevInfos[i][2] = new JLabel("To Dropoff: []");
 			elevInfos[i][2].setFont(new Font("Tahoma", Font.PLAIN, 17));
 			elevInfoPanels[i].add(elevInfos[i][2]);
 			
-			elevInfos[i][3] = new JLabel("Source Floors: []");
+			elevInfos[i][3] = new JLabel("To Pickup: []");
 			elevInfos[i][3].setFont(new Font("Tahoma", Font.PLAIN, 17));
 			elevInfoPanels[i].add(elevInfos[i][3]);
 
