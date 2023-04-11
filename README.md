@@ -11,6 +11,7 @@ Iteration 3 – Multiple Cars and System Distribution.
 @version 2.0, 02/27/23
 @version 3.0, 03/11/23
 @version 4.0, 03/25/23
+@version 5.0, 04/10/23
 ```
 
 ## Group 7 Members:
@@ -45,13 +46,14 @@ the documentation folder labeled:
 No other external dependencies required.
 
 ## Compiling & Running the Application
+Navigate to GUI.java -> Run the main method
 Navigate to SchedulerSubsystem.java -> Run the main method
 </br>
 Navigate to ElevatorSubsystem.java -> Run the main method
 </br>
-Navigate to Floor.java -> Run the main method
+Navigate to FloorSubsystem.java -> Run the main method
 
-The output should be in the console of eclipse
+The output should be in the console of eclipse and in the GUI
 
 ## UML Diagrams
 ![UML-class](/documentation/P4-UML-class.drawio.png)
@@ -76,6 +78,13 @@ The state machines for each car should execute independently of each other, but 
 # Iteration 4
 Adding error states for DOOR_STUCK and ELEVATOR_STUCK by determining the floor would case these state to happen. If the elevator reaches those floor the error state would appear. 
 Adding the state machine pattern, making the system configurable
+
+# Iteration 5
+Adding GUI for the program to demonstrate to represent the workflow </br>
+Adding the elevator and components logics such as the arrival sensor, buttons, and lamps
+Improving assigning requests algorithm to the Scheduler </br>
+Adjust the error handling by adding a new column to the input.txt file </br>
+Adding unit tests and fix bugs
 
 ## Project structure:
 
@@ -109,21 +118,23 @@ ELEVATOR-CONTROL-SYSTEM-AND-SIMULATOR
     |   +---java
     |   |   |   Main.java
     |   |   |   package-info.java
-    |   |   |   SerializableEncoder.java
     |   |   |   SimulatorConfiguration.java
     |   |   |   UDPClient.java
     |   |   |
     |   |   +---dto
     |   |   |       AssignedElevatorRequest.java
-    |   |   |       ElevatorStatus.java
+    |   |   |       ElevatorGuiData.java
     |   |   |       ElevatorRequest.java
+    |   |   |       ElevatorStatus.java
+    |   |   |       FloorGuiData.java
+    |   |   |   SerializableEncoder.java
     |   |   |       package-info.java
-    |   |   |       RPC.java
     |   |   |
     |   |   +---elevator
     |   |   |       Direction.java
     |   |   |       Door.java
     |   |   |       ElevatorContext.java
+    |   |   |       ElevatorError.java
     |   |   |       ElevatorSubsystem.java
     |   |   |       Motor.java
     |   |   |       RequestListenerTask.java
@@ -144,6 +155,7 @@ ELEVATOR-CONTROL-SYSTEM-AND-SIMULATOR
     |   |   |   |       StateTimeoutTask.java
     |   |   |   |       StoppedState.java
     |   |   |   |       TimeoutEvent.java
+    |   |   |   |       package-info.java
     |   |   |
     |   |   +---exception
     |   |   |       ElevatorReqParamException.java
@@ -152,26 +164,47 @@ ELEVATOR-CONTROL-SYSTEM-AND-SIMULATOR
     |   |   +---floor
     |   |   |   |   Floor.java
     |   |   |   |   FloorComponents.java
+    |   |   |   |   FloorSubsystem.java
     |   |   |   |   package-info.java
     |   |   |   |
     |   |   |   \---parser
     |   |   |           package-info.java
     |   |   |           Parser.java
     |   |   |
-    |   |   \---scheduler
+    |   |   +---gui
+    |   |   |   |   GUI.java
+    |   |   |   |   LogConsole.java
+    |   |   |   |
+    |   |   +---scheduler
     |   |           package-info.java
     |   |           SchedulerContext.java
     |   |           SchedulerSubsystem.java
-    |   |   |   \---state
+    |   |   |   +---state
     |   |   |           package-info.java
     |   |   |           IdleState.java
     |   |   |           InServiceState.java
     |   |   |           SchedulerState.java
     |   |
     |   \---resources
-    |           input.txt
-    |           package-info.java
-    |           config.properties
+    |   |   |   +--- assests
+    |   |   |   |       active-floor-down.png
+    |   |   |   |       active-floor-up.png
+    |   |   |   |       blank.png
+    |   |   |   |       close.png
+    |   |   |   |       down.png
+    |   |   |   |       favicon.png
+    |   |   |   |       idle.png
+    |   |   |   |       inactive-floor-down.png
+    |   |   |   |       inactive-floor-up.png
+    |   |   |   |       open.png
+    |   |   |   |       shutdown.png
+    |   |   |   |       stop.png
+    |   |   |   |       stuck.png
+    |   |   |   |       up.png
+    |   |   |   input.txt
+    |   |   |   GenerateEvents.java
+    |   |   |   package-info.java
+    |   |   |   config.properties
     |
     \---test
         +---java
@@ -199,6 +232,7 @@ ELEVATOR-CONTROL-SYSTEM-AND-SIMULATOR
         |           SchedulerContextTest.java
         |
         \---resources
+                config.properties
                 incorrectInput.txt
                 input.txt
                 package-info.java
@@ -208,9 +242,12 @@ ELEVATOR-CONTROL-SYSTEM-AND-SIMULATOR
 ### main package
 `dto:` Location for enums, shared resource buffer classes:
 * AssignedElevatorRequest.java: Subclass for ElevatorRequest
+* ElevatorGuiData.java: Storing the information needed for GUI of the Elevator
 * ElevatorRequest.java: A class storing all the relevant information regarding passenger's elevator requests
-* Direction.java: A class that storing the moving direction of the elevator in enum 
-* RPC.java: A class that is responsible for the remote procedure call communication using UDP
+* ElevatorStatus.java: A class that transfer the data of elevator to Scheduler
+* FloorGuiData.java: Storing the information needed for GUI of the Floor
+* SerializableEncoder.java: Serializing class for transfering byte data between UDP communication method
+
 
 `scheduler:` Package for classes related to scheduler subsystem
 * SchedulerSubsystem.java: Subsystem class that containing 3 threads for listening to the request and sending requests
@@ -233,10 +270,15 @@ ELEVATOR-CONTROL-SYSTEM-AND-SIMULATOR
 
 `floor:` Package for classes related to floor subsystem
 * Floor.java: A producer class initiates requests to the scheduler for users wanting to travel up or down
+* FloorSubsystem.java: Subsystem class for having many Floor instances. Have functionality for sending request and listening the response
 * FloorComponenets.java: A class containing floor components that will be used in the UI integration with Static Model of Domain
 
 `parser:` Package for classes related to parser 
 * Parser.java: The parser that reads through a standard text file and exports the information in a specified format
+
+`gui:` Package for classes related to GUI
+* GUI.java: main GUI class to displays the overall subsystem
+* LogConsole.java: Display the information logs of all the available Elevator
 
 ### test package
 `test:` Unit test package
@@ -247,9 +289,6 @@ ELEVATOR-CONTROL-SYSTEM-AND-SIMULATOR
 * SchedulerContextTest.java: Test class for Scheduler state subsystem
 * ElevatorStateTest.java: Test class for Elevator state subsystem
 * ElevatorTest.java: Test class for Scheduler subsystem
-
-### main class
-* Main.java: A class for running the application
 
 ## Disclaimer
 
