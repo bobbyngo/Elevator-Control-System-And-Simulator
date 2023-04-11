@@ -2,6 +2,7 @@ package main.java.dto;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.TreeSet;
 
 import main.java.elevator.Direction;
 import main.java.elevator.Door;
@@ -11,6 +12,7 @@ import main.java.elevator.state.ElevatorStateEnum;
 
 /**
  * This class represents the elevator GUI data object.
+ *
  * @author Zakaria Ismail
  */
 public class ElevatorGuiData implements Serializable {
@@ -22,11 +24,12 @@ public class ElevatorGuiData implements Serializable {
 	private Motor motor;
 	private Direction direction;
 	private Door door;
-	private int internalRequests;
-	// XXX: might include external & internal requests if it is needed
-	
+	private TreeSet<Integer> dropoffFloors;
+	private TreeSet<String> pickupFloors;
+
 	/**
 	 * Elevator GUI data constructor.
+	 *
 	 * @param ctx ElevatorContext, the context of the elevator
 	 */
 	public ElevatorGuiData(ElevatorContext ctx) {
@@ -36,11 +39,19 @@ public class ElevatorGuiData implements Serializable {
 		direction = ctx.getDirection();
 		door = ctx.getDoors();
 		motor = ctx.getMotor();
-		internalRequests = ctx.getInternalRequests().size();
+		dropoffFloors = new TreeSet<>();
+		pickupFloors = new TreeSet<>();
+		for (ElevatorRequest elevatorRequest : ctx.getInternalRequests()) {
+			dropoffFloors.add(elevatorRequest.getDestinationFloor());
+		}
+		for (ElevatorRequest elevatorRequest : ctx.getExternalRequests()) {
+			pickupFloors.add(elevatorRequest.getSourceFloor() + "-" + elevatorRequest.getDirection());
+		}
 	}
-	
+
 	/**
 	 * Decoding method.
+	 *
 	 * @param data byte[], data to be encoded
 	 * @return ElevatorGuiData, the decode data object
 	 * @throws IOException
@@ -50,9 +61,10 @@ public class ElevatorGuiData implements Serializable {
 		Object decodedObj = SerializableEncoder.decode(data);
 		return (ElevatorGuiData) decodedObj;
 	}
-	
+
 	/**
 	 * Encoding method.
+	 *
 	 * @return byte[], the data to be encode
 	 * @throws IOException
 	 */
@@ -60,9 +72,10 @@ public class ElevatorGuiData implements Serializable {
 		byte[] encodedData = SerializableEncoder.encode(this);
 		return encodedData;
 	}
-	
+
 	/**
 	 * Get elevator id.
+	 *
 	 * @return int, the elevator id
 	 */
 	public int getId() {
@@ -71,6 +84,7 @@ public class ElevatorGuiData implements Serializable {
 
 	/**
 	 * Get the current elevator state.
+	 *
 	 * @return ElevatorStateEnum, the current elevator state
 	 */
 	public ElevatorStateEnum getCurrentState() {
@@ -79,6 +93,7 @@ public class ElevatorGuiData implements Serializable {
 
 	/**
 	 * Get the current floor.
+	 *
 	 * @return int, the current floor stop
 	 */
 	public int getCurrentFloor() {
@@ -87,6 +102,7 @@ public class ElevatorGuiData implements Serializable {
 
 	/**
 	 * Get the motor status.
+	 *
 	 * @return Motor, the motor enum
 	 */
 	public Motor getMotor() {
@@ -95,6 +111,7 @@ public class ElevatorGuiData implements Serializable {
 
 	/**
 	 * Get the direction of the moving elevator.
+	 *
 	 * @return Direction, the direction enum
 	 */
 	public Direction getDirection() {
@@ -103,6 +120,7 @@ public class ElevatorGuiData implements Serializable {
 
 	/**
 	 * Get the elevator door status.
+	 *
 	 * @return Door, the door enum
 	 */
 	public Door getDoor() {
@@ -110,10 +128,21 @@ public class ElevatorGuiData implements Serializable {
 	}
 
 	/**
-	 * Get the elevator request queue size.
-	 * @return int, the size of the elevator request queued
+	 * Get the elevator destination floors.
+	 * 
+	 * @return TreeSet<Integer> of the destination floors
 	 */
-	public int getQueueSize() {
-		return internalRequests;
+	public TreeSet<Integer> getDropoffFloors() {
+		return dropoffFloors;
 	}
+
+	/**
+	 * Get the elevator source floors.
+	 * 
+	 * @return TreeSet<Integer> of the source floors
+	 */
+	public TreeSet<String> getPickupFloors() {
+		return pickupFloors;
+	}
+
 }
