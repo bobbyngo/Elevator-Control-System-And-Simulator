@@ -1,5 +1,7 @@
 package main.java.elevator.state;
 
+import main.java.dto.ElevatorRequest;
+import main.java.elevator.Direction;
 import main.java.elevator.ElevatorContext;
 import main.java.elevator.Motor;
 
@@ -18,6 +20,7 @@ public class MovingDownState extends MovingState {
 	public MovingDownState(ElevatorContext ctx) {
 		super(ctx);
 		ctx.setMotor(Motor.THROTTLE_DOWN);
+		ctx.setDirection(Direction.DOWN);
 	}
 
 	/**
@@ -26,10 +29,9 @@ public class MovingDownState extends MovingState {
 	 * @return ElevatorState, the state of the elevator
 	 */
 	@Override
-	public ElevatorState handleRequestReceived() {
+	public ElevatorState handleRequestReceived(ElevatorRequest request) {
 		ElevatorContext ctx = this.getContext();
-
-		if (ctx.shouldElevatorStop()) {
+		if (ctx.shouldElevatorStop(request)) {
 			ctx.killTimer();
 			return new StoppedState(ctx);
 		}
@@ -49,7 +51,6 @@ public class MovingDownState extends MovingState {
 		if (!ctx.decrementCurrentFloor()) {
 			return new StoppedState(ctx);
 		}
-
 		if (ctx.shouldElevatorStop()) {
 			return new StoppedState(ctx);
 		}

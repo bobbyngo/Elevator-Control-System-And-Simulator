@@ -1,5 +1,6 @@
 package main.java.elevator.state;
 
+import main.java.dto.ElevatorRequest;
 import main.java.elevator.ElevatorContext;
 import main.java.elevator.ElevatorError;
 
@@ -27,7 +28,7 @@ public class StoppedState extends IdleMotorState {
 	 * @return ElevatorState, the state of the elevator
 	 */
 	@Override
-	public ElevatorState handleRequestReceived() {
+	public ElevatorState handleRequestReceived(ElevatorRequest request) {
 		return this;
 	}
 

@@ -1,5 +1,6 @@
 package main.java.elevator.state;
 
+import main.java.dto.ElevatorRequest;
 import main.java.elevator.ElevatorContext;
 
 /**
@@ -43,7 +44,7 @@ public abstract class ElevatorState {
 	 * 
 	 * @return ElevatorState, the state of the elevator
 	 */
-	public abstract ElevatorState handleRequestReceived();
+	public abstract ElevatorState handleRequestReceived(ElevatorRequest request);
 
 	/**
 	 * Handle the Timeout event.

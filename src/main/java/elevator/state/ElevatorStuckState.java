@@ -1,5 +1,7 @@
 package main.java.elevator.state;
 
+import main.java.dto.ElevatorRequest;
+import main.java.elevator.Direction;
 import main.java.elevator.ElevatorContext;
 
 /**
@@ -16,6 +18,7 @@ public class ElevatorStuckState extends IdleMotorState {
 	 */
 	public ElevatorStuckState(ElevatorContext ctx) {
 		super(ctx);
+		ctx.setDirection(Direction.IDLE);
 		ctx.returnExternalRequests();
 	}
 
@@ -25,7 +28,11 @@ public class ElevatorStuckState extends IdleMotorState {
 	 * @return ElevatorState, the state of the elevator
 	 */
 	@Override
-	public ElevatorState handleRequestReceived() {
+	public ElevatorState handleRequestReceived(ElevatorRequest request) {
+		// Scheduler should not be assigning jobs at this state
+		// Immediately return all incoming requests for re-scheduling
+		ElevatorContext ctx = this.getContext();
+		ctx.returnExternalRequests();
 		return this;
 	}
 

@@ -26,6 +26,7 @@ import main.java.SimulatorConfiguration;
 import main.java.UDPClient;
 import main.java.dto.ElevatorGuiData;
 import main.java.dto.FloorGuiData;
+import main.java.elevator.Motor;
 import main.java.elevator.state.ElevatorStateEnum;
 
 /**
@@ -247,11 +248,11 @@ public class GUI extends JFrame implements Runnable {
 			elevInfos[i][1].setFont(new Font("Tahoma", Font.PLAIN, 17));
 			elevInfoPanels[i].add(elevInfos[i][1]);
 
-			elevInfos[i][2] = new JLabel("Destination Floors: []");
+			elevInfos[i][2] = new JLabel("To Dropoff: []");
 			elevInfos[i][2].setFont(new Font("Tahoma", Font.PLAIN, 17));
 			elevInfoPanels[i].add(elevInfos[i][2]);
 			
-			elevInfos[i][3] = new JLabel("Source Floors: []");
+			elevInfos[i][3] = new JLabel("To Pickup: []");
 			elevInfos[i][3].setFont(new Font("Tahoma", Font.PLAIN, 17));
 			elevInfoPanels[i].add(elevInfos[i][3]);
 
@@ -278,8 +279,8 @@ public class GUI extends JFrame implements Runnable {
 		int currentElevatorNum = data.getId() - 1;
 		int currentFloorNum = data.getCurrentFloor();
 		String direction = data.getDirection().toString();
-		TreeSet<Integer> destinationFloors = data.getDestinationFloors();
-		TreeSet<Integer> sourceFloors = data.getSourceFloors();
+		TreeSet<Integer> destinationFloors = data.getDropoffFloors();
+		TreeSet<String> sourceFloors = data.getPickupFloors();
 		String motor = data.getMotor().toString();
 		String door = data.getDoor().toString();
 		ElevatorStateEnum currentState = data.getCurrentState();
@@ -303,6 +304,10 @@ public class GUI extends JFrame implements Runnable {
 						.setIcon(new ImageIcon("./src/main/resources/assets/close.png"));
 				break;
 			}
+			case HOMING_DOORS_CLOSED: {
+				floors[currentElevatorNum][currentFloorNum - 1].setIcon(new ImageIcon("./src/main/resources/assets/close.png"));
+				break;
+			}
 			case MOVING_DOWN: {
 				floors[currentElevatorNum][currentFloorNum - 1]
 						.setIcon(new ImageIcon("./src/main/resources/assets/down.png"));
@@ -316,6 +321,14 @@ public class GUI extends JFrame implements Runnable {
 			case STOPPED: {
 				floors[currentElevatorNum][currentFloorNum - 1]
 						.setIcon(new ImageIcon("./src/main/resources/assets/stop.png"));
+				break;
+			}
+			case HOMING: {
+				if (data.getMotor() == Motor.THROTTLE_UP) {
+					floors[currentElevatorNum][currentFloorNum - 1].setIcon(new ImageIcon("./src/main/resources/assets/up.png"));
+				} else if (data.getMotor() == Motor.THROTTLE_DOWN) {
+					floors[currentElevatorNum][currentFloorNum - 1].setIcon(new ImageIcon("./src/main/resources/assets/down.png"));
+				}
 				break;
 			}
 			case DOORS_STUCK: {
@@ -335,8 +348,8 @@ public class GUI extends JFrame implements Runnable {
 			}
 			elevInfos[currentElevatorNum][0].setText("Current Floor: " + currentFloorNum);
 			elevInfos[currentElevatorNum][1].setText("Direction: " + direction);
-			elevInfos[currentElevatorNum][2].setText("Destination Floors: " + destinationFloors.toString());
-			elevInfos[currentElevatorNum][3].setText("Source Floors: " + sourceFloors.toString());
+			elevInfos[currentElevatorNum][2].setText("To Dropoff: " + destinationFloors.toString());
+			elevInfos[currentElevatorNum][3].setText("To Pickup: " + sourceFloors.toString());
 			elevInfos[currentElevatorNum][4].setText("Motor: " + motor);
 			elevInfos[currentElevatorNum][5].setText("Door: " + door);
 			elevInfos[currentElevatorNum][6].setText("State: " + currentState);

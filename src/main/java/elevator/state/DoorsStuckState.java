@@ -1,5 +1,6 @@
 package main.java.elevator.state;
 
+import main.java.dto.ElevatorRequest;
 import main.java.elevator.ElevatorContext;
 
 /**
@@ -18,6 +19,7 @@ public class DoorsStuckState extends IdleMotorState {
 		super(ctx);
 		StateTimeoutTask stt = new StateTimeoutTask(ctx, TimeoutEvent.DOORS_UNSTUCK);
 		ctx.setTimer(stt, ctx.getConfig().DOORS_OBSTRUCTED_TIME);
+		ctx.returnExternalRequests();
 	}
 
 	/**
@@ -26,7 +28,11 @@ public class DoorsStuckState extends IdleMotorState {
 	 * @return ElevatorState, the state of the elevator
 	 */
 	@Override
-	public ElevatorState handleRequestReceived() {
+	public ElevatorState handleRequestReceived(ElevatorRequest request) {
+		// Scheduler should not be assigning requests at this state
+		// all requests are immediately returned for re-scheduling
+		ElevatorContext ctx = this.getContext();
+		ctx.returnExternalRequests();
 		return this;
 	}
 
