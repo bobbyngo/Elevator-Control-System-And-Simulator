@@ -175,7 +175,7 @@ public class FloorSubsystem implements Runnable {
 
 		updateAllElevatorLamps(elevatorId, elevatorDirection);
 
-		if (elevatorState == ElevatorStateEnum.DOORS_OPEN) {
+		if (elevatorState == ElevatorStateEnum.DOORS_CLOSED || elevatorState == ElevatorStateEnum.HOMING_DOORS_CLOSED) {
 			printLog(String.format("ARRIVAL_NOTIFICATION -- Elevator %d :: Floor %d", elevatorNum, floorNum));
 			if (elevatorDirection == Direction.DOWN)
 				floor.setFloorDownLamp(false);
@@ -217,7 +217,6 @@ public class FloorSubsystem implements Runnable {
 	 * @throws IOException
 	 */
 	private void listenToCompletedRequests() throws ClassNotFoundException, IOException {
-		// TODO: Fix the issue with receiving the same completed request multiple times
 		DatagramPacket receivedReqPacket = udpCompletedRequestsReceiver.receiveMessage();
 		ElevatorRequest elevatorRequest = ElevatorRequest.decode(receivedReqPacket.getData());
 		printLog(String.format("REQUEST_COMPLETED -- %s", elevatorRequest.toString()));

@@ -1,5 +1,6 @@
 package main.java.elevator.state;
 
+import main.java.dto.ElevatorRequest;
 import main.java.elevator.Direction;
 import main.java.elevator.Door;
 import main.java.elevator.ElevatorContext;
@@ -29,11 +30,28 @@ public class IdleState extends IdleMotorState {
 	 * @return ElevatorState, the state of the elevator
 	 */
 	@Override
-	public ElevatorState handleRequestReceived() {
+	public ElevatorState handleRequestReceived(ElevatorRequest request) {
 		ElevatorContext ctx = this.getContext();
-		ctx.unloadPassengers();
-		ctx.loadPassengers();
-		return new DoorsClosedState(ctx);
+		if (ctx.loadPassengers(request)) {
+			// request is at current floor, service it
+			ctx.setDirection(request.getDirection());
+			return new DoorsClosedState(ctx);
+		}
+		//ctx.unloadPassengers();
+		// determine if sweep or home
+		if (ctx.shouldElevatorSweep(request)) {
+			ctx.setDirection(request.getDirection());
+			return new DoorsClosedState(ctx);
+		}
+		if (ctx.shouldElevatorHome(request)) {
+			ctx.setDirection(request.getDirection());
+			return new HomingDoorsClosedState(ctx);
+		}
+		return this;
+		
+		//ctx.unloadPassengers();
+		//ctx.setDirection(request.getDirection());
+		//return new DoorsClosedState(ctx);
 	}
 
 	/**
@@ -43,6 +61,7 @@ public class IdleState extends IdleMotorState {
 	 */
 	@Override
 	public ElevatorState handleTimeout() {
+		// there shouldn't be timeouts happening at this state
 		return this;
 	}
 

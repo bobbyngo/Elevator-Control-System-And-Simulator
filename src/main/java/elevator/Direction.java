@@ -9,7 +9,17 @@ import java.io.Serializable;
  * @version 1.0, 02/04/23
  */
 public enum Direction implements Serializable {
-	UP, 
-	DOWN, 
-	IDLE
+	UP("UP"), 
+	DOWN("DOWN"), 
+	IDLE("IDLE");
+	
+	private String name;
+	private Direction(String name) {
+		this.name = name;
+	}
+	
+	@Override
+	public String toString() {
+		return name;
+	}
 }

@@ -24,8 +24,8 @@ public class ElevatorGuiData implements Serializable {
 	private Motor motor;
 	private Direction direction;
 	private Door door;
-	private TreeSet<Integer> destinationFloors;
-	private TreeSet<Integer> sourceFloors;
+	private TreeSet<Integer> dropoffFloors;
+	private TreeSet<String> pickupFloors;
 
 	/**
 	 * Elevator GUI data constructor.
@@ -39,13 +39,14 @@ public class ElevatorGuiData implements Serializable {
 		direction = ctx.getDirection();
 		door = ctx.getDoors();
 		motor = ctx.getMotor();
-		destinationFloors = new TreeSet<>();
-		sourceFloors = new TreeSet<>();
+
+		dropoffFloors = new TreeSet<>();
+		pickupFloors = new TreeSet<>();
 		if (ctx.getInternalRequests().iterator().hasNext()) {
-			destinationFloors.add(ctx.getInternalRequests().iterator().next().getDestinationFloor());
+			dropoffFloors.add(ctx.getInternalRequests().iterator().next().getDestinationFloor());
 		}
 		if (ctx.getExternalRequests().iterator().hasNext()) {
-			sourceFloors.add(ctx.getExternalRequests().iterator().next().getSourceFloor());
+			pickupFloors.add(ctx.getExternalRequests().iterator().next().getSourceFloor() + "-" + ctx.getExternalRequests().iterator().next().getDirection());
 		}
 	}
 
@@ -132,8 +133,8 @@ public class ElevatorGuiData implements Serializable {
 	 * 
 	 * @return TreeSet<Integer> of the destination floors
 	 */
-	public TreeSet<Integer> getDestinationFloors() {
-		return destinationFloors;
+	public TreeSet<Integer> getDropoffFloors() {
+		return dropoffFloors;
 	}
 
 	/**
@@ -141,8 +142,8 @@ public class ElevatorGuiData implements Serializable {
 	 * 
 	 * @return TreeSet<Integer> of the source floors
 	 */
-	public TreeSet<Integer> getSourceFloors() {
-		return sourceFloors;
+	public TreeSet<String> getPickupFloors() {
+		return pickupFloors;
 	}
 
 }

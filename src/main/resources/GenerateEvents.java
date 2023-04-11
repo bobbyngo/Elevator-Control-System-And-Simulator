@@ -86,9 +86,11 @@ public class GenerateEvents {
 			String direction = (startFloor < destFloor) ? "UP" : "DOWN";
 			// Event format - 03:08:32.000 15 DOWN 10
 			String event = String.format("%s %s %s %s", time, startFloor, direction, destFloor);
-
-			bw.write(event);
-			bw.newLine();
+			
+			if (startFloor != destFloor) {
+				bw.write(event);
+				bw.newLine();
+			}
 		}
 		bw.close();
 	}

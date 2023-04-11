@@ -1,5 +1,6 @@
 package main.java.elevator.state;
 
+import main.java.dto.ElevatorRequest;
 import main.java.elevator.Direction;
 import main.java.elevator.Door;
 import main.java.elevator.ElevatorContext;
@@ -29,7 +30,17 @@ public class DoorsClosedState extends IdleMotorState {
 	 * @return ElevatorState, the state of the elevator
 	 */
 	@Override
-	public ElevatorState handleRequestReceived() {
+	public ElevatorState handleRequestReceived(ElevatorRequest request) {
+		// if request for current floor at current direction detected, go back to
+		// DoorsOpen. I could have made this goto Stopped then DoorsOpen, but for
+		// this scenario, I will allow the DoorsClose "animation" to instantaneously
+		// jump to DoorsOpen instead of either a. waiting for doors to close then reopen
+		// or b. instantaneously close doors then wait for doors to open
+		ElevatorContext ctx = this.getContext();
+		if (ctx.shouldElevatorStop(request)) {
+			ctx.killTimer();
+			return new DoorsOpenState(ctx);
+		}
 		return this;
 	}
 
@@ -43,8 +54,9 @@ public class DoorsClosedState extends IdleMotorState {
 		ElevatorContext ctx = this.getContext();
 		Direction nextDirection;
 		ctx.killTimer();
-		nextDirection = ctx.calculateNextDirection();
-		ctx.setDirection(nextDirection);
+
+		nextDirection = ctx.calculateNextDirection(); // FIXME: do i need this or is this a bug?
+		ctx.setDirection(nextDirection); // FIXME: delete?
 
 		if (ctx.shouldElevatorStop()) {
 			return new StoppedState(ctx);
@@ -55,10 +67,24 @@ public class DoorsClosedState extends IdleMotorState {
 			return new MovingUpState(ctx);
 		case DOWN:
 			return new MovingDownState(ctx);
-		case IDLE:
-			return new IdleState(ctx);
+		default:
 		}
-		return new IdleState(ctx);
+		return new IdleState(ctx); // this shouldn't happen
+
+//		if (ctx.shouldElevatorStop()) {
+//			return new StoppedState(ctx);
+//		}
+//		if (ctx.shouldElevatorSweep()) {
+//			if (ctx.getDirection() == Direction.UP) {
+//				return new MovingUpState(ctx);
+//			} else {
+//				return new MovingDownState(ctx);
+//			}
+//		}
+//		if (ctx.shouldElevatorHome()) {
+//			return new HomingState(ctx);
+//		}
+//		return new IdleState(ctx);
 	}
 
 	/**
