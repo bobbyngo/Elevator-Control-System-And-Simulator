@@ -77,7 +77,7 @@ public class GenerateEvents {
 			int ss = (int) (Math.random() * RANGE_ss) + MIN_ss;
 			int SSS = (int) (Math.random() * RANGE_SSS) + MIN_SSS;
 
-			// Time format - hh:mm:ss.SSS
+			// Time format - HH:mm:ss.SSS
 			String time = String.format("%s:%s:%s.%s", formatter_xx.format(hh), formatter_xx.format(mm),
 					formatter_xx.format(ss), formatter_xxx.format(SSS));
 

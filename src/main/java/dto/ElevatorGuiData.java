@@ -41,11 +41,11 @@ public class ElevatorGuiData implements Serializable {
 		motor = ctx.getMotor();
 		destinationFloors = new TreeSet<>();
 		sourceFloors = new TreeSet<>();
-		for (ElevatorRequest elevatorRequest : ctx.getInternalRequests()) {
-			destinationFloors.add(elevatorRequest.getDestinationFloor());
+		if (ctx.getInternalRequests().iterator().hasNext()) {
+			destinationFloors.add(ctx.getInternalRequests().iterator().next().getDestinationFloor());
 		}
-		for (ElevatorRequest elevatorRequest : ctx.getExternalRequests()) {
-			sourceFloors.add(elevatorRequest.getSourceFloor());
+		if (ctx.getExternalRequests().iterator().hasNext()) {
+			sourceFloors.add(ctx.getExternalRequests().iterator().next().getSourceFloor());
 		}
 	}
 

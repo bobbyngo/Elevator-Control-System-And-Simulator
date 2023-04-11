@@ -47,7 +47,7 @@ public class SchedulerContext {
 			availableElevatorStatus.add(new ElevatorStatus(i));
 		}
 		currentState = SchedulerState.start(this);
-		System.out.println(String.format("Current state: %s", currentState));
+		//System.out.println(String.format("Current state: %s", currentState));
 	}
 
 	/**
@@ -151,10 +151,10 @@ public class SchedulerContext {
 	public AssignedElevatorRequest findBestElevatorToAssignRequest() {
 		AssignedElevatorRequest assignedElevatorRequest = null;
 		if (availableElevatorStatus.size() == 0) {
-			System.out.println("There is no available elevator");
+			//System.out.println(this.getClass().getSimpleName() + ": There are no available elevators.");
 		}
 		if (pendingElevatorRequests.size() == 0) {
-			System.out.println("There is no elevator requests");
+			//System.out.println(this.getClass().getSimpleName() + ": There are no elevator requests.");
 		} else {
 			ElevatorStatus chosenElevatorStatus = null;
 
@@ -259,10 +259,9 @@ public class SchedulerContext {
 	 */
 	public void onRequestReceived() {
 		synchronized (currentState) {
-			System.out.println("Event: Request Received");
+			//System.out.println("Event: Request Received");
 			currentState = currentState.handleRequestReceived();
-			System.out.println(String.format("Current state: %s, # Completed: %d", currentState,
-					this.completedElevatorRequests.size()));
+			//System.out.println(String.format("Current state: %s, # Completed: %d", currentState, this.completedElevatorRequests.size()));
 		}
 	}
 
@@ -271,10 +270,9 @@ public class SchedulerContext {
 	 */
 	public void onRequestSent() {
 		synchronized (currentState) {
-			System.out.println("Event: Request Sent");
+			//System.out.println("Event: Request Sent");
 			currentState = currentState.handleRequestSent();
-			System.out.println(String.format("Current state: %s, # Completed: %d", currentState,
-					this.completedElevatorRequests.size()));
+			//System.out.println(String.format("Current state: %s, # Completed: %d", currentState, this.completedElevatorRequests.size()));
 		}
 	}
 

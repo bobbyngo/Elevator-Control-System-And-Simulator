@@ -139,8 +139,8 @@ public class FloorSubsystem implements Runnable {
 								floor.setFloorDownLamp(true);
 							}
 							printLog(String.format("REQUEST_SENT              -- %s", req.toString()));
-							System.out.println(floor.toString());
-							System.out.println("--------------------------------------------------");
+							//System.out.println(floor.toString());
+							//System.out.println("--------------------------------------------------");
 							sendGuiNotification(new FloorGuiData(floor.getFloorNum(), floor.getUpButtonLamp(),
 									floor.getDownButtonLamp()));
 						} catch (ClassNotFoundException | IOException e) {
@@ -181,8 +181,8 @@ public class FloorSubsystem implements Runnable {
 				floor.setFloorDownLamp(false);
 			else
 				floor.setFloorUpLamp(false);
-			System.out.println(floor.toString());
-			System.out.println("--------------------------------------------------");
+			//System.out.println(floor.toString());
+			//System.out.println("--------------------------------------------------");
 		}
 		sendGuiNotification(new FloorGuiData(floor.getFloorNum(), floor.getUpButtonLamp(), floor.getDownButtonLamp()));
 	}
@@ -222,7 +222,7 @@ public class FloorSubsystem implements Runnable {
 		ElevatorRequest elevatorRequest = ElevatorRequest.decode(receivedReqPacket.getData());
 		printLog(String.format("REQUEST_COMPLETED -- %s", elevatorRequest.toString()));
 		printLog(floorArr[elevatorRequest.getDestinationFloor() - 1].toString());
-		System.out.println("--------------------------------------------------");
+		//System.out.println("--------------------------------------------------");
 	}
 
 	/**
@@ -265,7 +265,7 @@ public class FloorSubsystem implements Runnable {
 	private void printLog(String message) {
 		Timestamp currentTime = new Timestamp(System.currentTimeMillis());
 		String output = String.format("[%s] : %s\n", currentTime, message);
-		System.out.println(output);
+		//System.out.println(output);
 		logConsole.appendLog(output);
 	}
 	

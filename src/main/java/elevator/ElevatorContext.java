@@ -99,7 +99,7 @@ public class ElevatorContext {
 	 */
 	public void onTimeout(TimeoutEvent event) {
 		synchronized (currentState) {
-			System.out.println(String.format("TIMEOUT_EVENT -- Elevator#%d", id));
+			//System.out.println(String.format("TIMEOUT_EVENT -- Elevator#%d", id));
 			currentState = currentState.handleTimeout();
 			printLog(this.toString());
 			notifyArrivalSensor();
@@ -617,7 +617,7 @@ public class ElevatorContext {
 	private void printLog(String message) {
 		Timestamp currentTime = new Timestamp(System.currentTimeMillis());
 		String output = String.format("[%s] : %s\n", currentTime, message);
-		System.out.println(output);
+		//System.out.println(output);
 		logConsole.appendLog(output);
 	}
 

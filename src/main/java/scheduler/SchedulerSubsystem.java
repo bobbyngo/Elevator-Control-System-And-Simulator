@@ -292,7 +292,7 @@ public class SchedulerSubsystem implements Runnable {
 	private void printLog(String message) {
 		Timestamp currentTime = new Timestamp(System.currentTimeMillis());
 		String output = String.format("[%s] : %s\n", currentTime, message);
-		System.out.println(output);
+		//System.out.println(output);
 		logConsole.appendLog(output);
 	}
 	

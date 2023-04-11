@@ -30,7 +30,6 @@ public class RequestListenerTask implements Runnable {
 			// keep getting requests from scheduler and
 			// feeding to subsystem get elevator request
 			try {
-				System.out.println("Listening...");
 				elevatorSubsystem.receiveElevatorRequest();
 			} catch (ClassNotFoundException | IOException e) {
 				e.printStackTrace();
