@@ -70,13 +70,6 @@ public class DoorsClosedState extends IdleMotorState {
 		case DOWN:
 			return new MovingDownState(ctx);
 		default:
-			// handle homing. go back to previous sweeping direction?
-//			ctx.setDirection(oldDirection);
-//			nextHomingDirection = ctx.calculateNextHomingDirection();
-//			if (nextHomingDirection != Direction.IDLE) {
-//				ctx.setDirection(nextHomingDirection);
-//				//return new HomingDoorsClosed(ctx);
-//			}
 		}
 		return new IdleState(ctx); // this shouldn't happen
 		

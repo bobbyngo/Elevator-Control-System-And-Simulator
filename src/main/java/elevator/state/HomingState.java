@@ -45,14 +45,14 @@ public class HomingState extends ElevatorState {
 			if (!ctx.incrementCurrentFloor()) {
 				return new StoppedState(ctx);
 			}
-			return new StoppedState(ctx);
-			//break;
+			//return new StoppedState(ctx);
+			break;
 		case THROTTLE_DOWN: 
 			if (!ctx.decrementCurrentFloor()) {
 				return new StoppedState(ctx);
 			}
-			return new StoppedState(ctx);
-			//break;
+			//return new StoppedState(ctx);
+			break;
 		default:
 			System.out.println("PANIC! THIS SHOULDN'T HAPPEN!");
 		}

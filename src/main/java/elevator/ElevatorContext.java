@@ -130,9 +130,11 @@ public class ElevatorContext {
 	 * @return boolean, request was boarded onto elevator
 	 */
 	public boolean loadPassengers(ElevatorRequest request) {
-		if (request.getSourceFloor() == currentFloor && request.getDirection() == direction) {
+		if (request.getSourceFloor() == currentFloor && (request.getDirection() == direction || direction == Direction.IDLE)) {
+			// FIXME: direction == IDLE added here. hopefully this doesnt cause issues...
 			externalRequests.remove(request); // already sync'd
 			internalRequests.add(request);
+			pressElevatorButton(request.getDestinationFloor());
 			return true;
 		}
 		return false;
@@ -400,8 +402,8 @@ public class ElevatorContext {
 			// new passenger(s) from an idle an state, "ignore"
 			// jobs that are not going in the direction of the passenger
 			// that you are picking up
-			// return directionIfIdle?
-			break;
+			return directionIfIdle;
+			//break;
 		}
 		return Direction.IDLE;
 	}
@@ -462,21 +464,23 @@ public class ElevatorContext {
 	 */
 	private Direction determineNextDirection() {
 		ElevatorRequest nextRequest;
-
-		synchronized (externalRequests) {
-			if (externalRequests.size() > 0) {
+		ArrayList<Integer> selectedFloors = getAllSelectedFloors();
+		
+		if (internalRequests.size() > 0) {
+			nextRequest = internalRequests.get(0);
+		} else if (externalRequests.size() > 0) {
 				nextRequest = externalRequests.get(0);
-			} else {
-				return Direction.IDLE;
-			}
+		} else {
+			return Direction.IDLE;
 		}
+
 		if (currentFloor > nextRequest.getSourceFloor()) {
 			return Direction.DOWN;
 		}
 		if (currentFloor < nextRequest.getSourceFloor()) {
 			return Direction.UP;
 		}
-		return Direction.IDLE;
+		return Direction.IDLE; // FIXME: would this be a problem?
 	}
 	
 	public Direction calculateNextHomingDirection() {
