@@ -3,7 +3,9 @@ package main.java.scheduler;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import main.java.dto.AssignedElevatorRequest;
 import main.java.dto.ElevatorRequest;
@@ -29,6 +31,8 @@ public class SchedulerContext {
 	private List<ElevatorRequest> pendingElevatorRequests;
 	// elevator requests that completed
 	private List<ElevatorRequest> completedElevatorRequests;
+	private Map<Integer,Integer> sameSrcUpCache; // key: srcFloor, value: elevator id, cache for up reqs
+	private Map<Integer,Integer> sameSrcDownCache; // key: srcFloor, value: elevator id, cache for down reqs
 	private SchedulerState currentState;
 
 	/**
@@ -42,6 +46,9 @@ public class SchedulerContext {
 		availableElevatorStatus = Collections.synchronizedList(new ArrayList<>());
 		pendingElevatorRequests = Collections.synchronizedList(new ArrayList<>());
 		completedElevatorRequests = Collections.synchronizedList(new ArrayList<>());
+		
+		sameSrcUpCache = Collections.synchronizedMap(new HashMap<Integer,Integer>());
+		sameSrcDownCache = Collections.synchronizedMap(new HashMap<Integer,Integer>());
 
 		for (int i = 1; i <= schedulerSubsystem.getSimulatorConfiguration().NUM_ELEVATORS; i++) {
 			availableElevatorStatus.add(new ElevatorStatus(i));
@@ -163,13 +170,21 @@ public class SchedulerContext {
 				// Find the moving elevators
 				for (int i = 0; i < pendingElevatorRequests.size(); i++) {
 					request = pendingElevatorRequests.get(i);
-
+					// use cache here; if there is cache hit, then set the elevator
+					// status here and then break out of the loop
+					chosenElevatorStatus = getSameSrcCacheElevator(request);
+					if (chosenElevatorStatus != null) {
+						break;
+					}
+					
 					chosenElevatorStatus = findTheAvailableMovingElevator(request.getDirection(),
 							request.getSourceFloor());
 
 					if (chosenElevatorStatus != null) {
 						assignedElevatorRequest = new AssignedElevatorRequest(chosenElevatorStatus.getElevatorId(),
 								request);
+						// set cache here
+						setSameSrcCache(assignedElevatorRequest);
 						break;
 					}
 				}
@@ -183,6 +198,8 @@ public class SchedulerContext {
 						if (chosenElevatorStatus != null) {
 							assignedElevatorRequest = new AssignedElevatorRequest(chosenElevatorStatus.getElevatorId(),
 									request);
+							// set cache here
+							setSameSrcCache(assignedElevatorRequest);
 							break;
 						}
 					}
@@ -193,6 +210,30 @@ public class SchedulerContext {
 			}
 		}
 		return assignedElevatorRequest;
+	}
+	
+	private void setSameSrcCache(AssignedElevatorRequest assignedElevatorRequest) {
+		if (assignedElevatorRequest.getDirection() == Direction.UP) {
+			sameSrcUpCache.put(assignedElevatorRequest.getSourceFloor(), assignedElevatorRequest.getElevatorId());
+		} else if (assignedElevatorRequest.getDirection() == Direction.DOWN) {
+			sameSrcDownCache.put(assignedElevatorRequest.getSourceFloor(), assignedElevatorRequest.getElevatorId());
+		}
+	}
+	
+	private ElevatorStatus getSameSrcCacheElevator(ElevatorRequest request) {
+		ElevatorStatus chosenElevatorStatus = null;
+		if (request.getDirection() == Direction.UP && sameSrcUpCache.get(request.getSourceFloor()) != null) {
+			// refer to sameSrcUpCache
+			// cache hit!
+			int elevatorIndex = sameSrcUpCache.get(request.getSourceFloor()) - 1;
+			chosenElevatorStatus = availableElevatorStatus.get(elevatorIndex);
+		} else if (request.getDirection() == Direction.DOWN && sameSrcDownCache.get(request.getSourceFloor()) != null) {
+			// refer to sameSrcDownCache
+			// cache hit!
+			int elevatorIndex = sameSrcDownCache.get(request.getSourceFloor()) - 1;
+			chosenElevatorStatus = availableElevatorStatus.get(elevatorIndex);
+		}
+		return chosenElevatorStatus;
 	}
 
 	/**
@@ -225,9 +266,26 @@ public class SchedulerContext {
 	 * @param elevatorStatus ElevatorStatus, the status of the elevator
 	 */
 	public void modifyAvailableElevatorStatus(int index, ElevatorStatus elevatorStatus) {
+		int elevatorFloor = elevatorStatus.getFloor();
+		ElevatorStateEnum elevatorState = elevatorStatus.getState();
+		Direction elevatorDirection = elevatorStatus.getDirection();
+		
 		synchronized (availableElevatorStatus) {
 			availableElevatorStatus.set(index, elevatorStatus);
 		}
+		
+		// clear cache when elevator arrives at a floor w/ its doors open
+		// doors open -> DOORS_OPEN
+		if (elevatorState == ElevatorStateEnum.DOORS_OPEN) {
+			if (elevatorDirection == Direction.UP) {
+				// update sameSrcUpCache
+				sameSrcUpCache.put(elevatorFloor, null);
+			} else if (elevatorDirection == Direction.DOWN) {
+				// update sameSrcDownCache
+				sameSrcDownCache.put(elevatorFloor, null);
+			}
+		}
+		
 	}
 
 	/**
