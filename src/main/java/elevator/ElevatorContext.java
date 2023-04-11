@@ -125,10 +125,10 @@ public class ElevatorContext {
 	}
 
 	/**
-	 * <<<<<<< HEAD Unload passenger method when clear button at current floor then
+	 * Unload passenger method when clear button at current floor then
 	 * internal requests at current floor are removed. Removes internal requests are
-	 * sent to scheduler as completed requests. ======= Load single passenger if at
-	 * floor & is going in same direction
+	 * sent to scheduler as completed requests. Load single passenger if at
+	 * floor & is going in same direction.
 	 * 
 	 * @param request ElevatorRequest, passenger request to board
 	 * @return boolean, request was boarded onto elevator
@@ -146,8 +146,7 @@ public class ElevatorContext {
 	}
 
 	/**
-	 * Unload passenger method. >>>>>>> branch 'iteration-5' of
-	 * https://github.com/bobbyngo/Elevator-Control-System-And-Simulator.git
+	 * Unload passenger method.
 	 */
 	public void unloadPassengers() {
 		ElevatorRequest req;
@@ -216,7 +215,6 @@ public class ElevatorContext {
 	 * @param d Direction, the direction
 	 */
 	public void setDirection(Direction d) {
-		// TODO: set the direction lamps here
 		direction = d;
 	}
 
@@ -493,7 +491,7 @@ public class ElevatorContext {
 		// have no more requests to sweep in the current direction and no more
 		// to sweep in the opposite direction at its current position
 		// the elevator must therefore identify whether it could "home" toward
-		// the same direction that it was travelling so that it could start serving
+		// the same direction that it was traveling so that it could start serving
 		// requests in the opposite direction... TBD
 		boolean existsReqAbove = this.existsHomingExternalRequestsAbove();
 		boolean existsReqBelow = this.existsHomingExternalRequestsBelow();
