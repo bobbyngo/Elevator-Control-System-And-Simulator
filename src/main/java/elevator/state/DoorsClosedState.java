@@ -49,11 +49,12 @@ public class DoorsClosedState extends IdleMotorState {
 	@Override
 	public ElevatorState handleTimeout() {
 		ElevatorContext ctx = this.getContext();
-		Direction nextDirection;
+		Direction nextDirection, oldDirection, nextHomingDirection;
 		ctx.killTimer();
 		// consider current direction
-		nextDirection = ctx.calculateNextDirection();
-		ctx.setDirection(nextDirection);
+		oldDirection = ctx.getDirection();
+		nextDirection = ctx.calculateNextDirection(); // FIXME: do i need this or is this a bug?
+		ctx.setDirection(nextDirection); // FIXME: delete?
 		
 		if (ctx.shouldElevatorStop()) {
 			return new StoppedState(ctx);
@@ -65,9 +66,31 @@ public class DoorsClosedState extends IdleMotorState {
 		case DOWN:
 			return new MovingDownState(ctx);
 		default:
-			break;
+			// handle homing. go back to previous sweeping direction?
+//			ctx.setDirection(oldDirection);
+//			nextHomingDirection = ctx.calculateNextHomingDirection();
+//			if (nextHomingDirection != Direction.IDLE) {
+//				ctx.setDirection(nextHomingDirection);
+//				//return new HomingDoorsClosed(ctx);
+//			}
 		}
 		return new IdleState(ctx); // this shouldn't happen
+		
+		
+//		if (ctx.shouldElevatorStop()) {
+//			return new StoppedState(ctx);
+//		}
+//		if (ctx.shouldElevatorSweep()) {
+//			if (ctx.getDirection() == Direction.UP) {
+//				return new MovingUpState(ctx);
+//			} else {
+//				return new MovingDownState(ctx);
+//			}
+//		}
+//		if (ctx.shouldElevatorHome()) {
+//			return new HomingState(ctx);
+//		}
+//		return new IdleState(ctx);
 	}
 
 	/**

@@ -49,10 +49,19 @@ public class DoorsOpenState extends IdleMotorState {
 	public ElevatorState handleTimeout() {
 		ElevatorContext ctx = this.getContext();
 		Direction nextDirection = ctx.calculateNextDirection();
+		Direction nextHomingDirection = ctx.calculateNextHomingDirection();
+		// TODO: calculateNextHomingDirection()?
 		ctx.killTimer();
 		
-		if (nextDirection == Direction.IDLE) 
+		if (nextDirection == Direction.IDLE) {
+			// FIXME: insert set homing direction setting here
+			if (nextHomingDirection != Direction.IDLE) {
+				//FIXME: this is some really garbage code
+				ctx.setDirection(nextHomingDirection);
+				return new HomingDoorsClosedState(ctx);
+			}
 			return new IdleState(ctx);
+		}
 		if (ctx.getDirection() != nextDirection) {
 			// no more requests in current direction, go opposite & load passengers
 			ctx.setDirection(nextDirection);

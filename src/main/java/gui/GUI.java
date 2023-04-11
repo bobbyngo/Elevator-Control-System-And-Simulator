@@ -25,6 +25,7 @@ import main.java.SimulatorConfiguration;
 import main.java.UDPClient;
 import main.java.dto.ElevatorGuiData;
 import main.java.dto.FloorGuiData;
+import main.java.elevator.Motor;
 import main.java.elevator.state.ElevatorStateEnum;
 
 /**
@@ -288,6 +289,10 @@ public class GUI extends JFrame implements Runnable {
 				floors[currentElevatorNum][currentFloorNum - 1].setIcon(new ImageIcon("./src/main/resources/assets/close.png"));
 				break;
 			}
+			case HOMING_DOORS_CLOSED: {
+				floors[currentElevatorNum][currentFloorNum - 1].setIcon(new ImageIcon("./src/main/resources/assets/close.png"));
+				break;
+			}
 			case MOVING_DOWN: {
 				floors[currentElevatorNum][currentFloorNum - 1].setIcon(new ImageIcon("./src/main/resources/assets/down.png"));
 				break;
@@ -298,6 +303,14 @@ public class GUI extends JFrame implements Runnable {
 			}
 			case STOPPED: {
 				floors[currentElevatorNum][currentFloorNum - 1].setIcon(new ImageIcon("./src/main/resources/assets/stop.png"));
+				break;
+			}
+			case HOMING: {
+				if (data.getMotor() == Motor.THROTTLE_UP) {
+					floors[currentElevatorNum][currentFloorNum - 1].setIcon(new ImageIcon("./src/main/resources/assets/up.png"));
+				} else if (data.getMotor() == Motor.THROTTLE_DOWN) {
+					floors[currentElevatorNum][currentFloorNum - 1].setIcon(new ImageIcon("./src/main/resources/assets/down.png"));
+				}
 				break;
 			}
 			case DOORS_STUCK: {

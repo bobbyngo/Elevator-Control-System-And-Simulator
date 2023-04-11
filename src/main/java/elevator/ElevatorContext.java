@@ -406,7 +406,7 @@ public class ElevatorContext {
 			// new passenger(s) from an idle an state, "ignore"
 			// jobs that are not going in the direction of the passenger
 			// that you are picking up
-			return directionIfIdle;
+			break;
 		}
 		return Direction.IDLE;
 	}
@@ -469,6 +469,30 @@ public class ElevatorContext {
 		return Direction.IDLE;	// FIXME: double-check. 
 	}
 	
+	public Direction calculateNextHomingDirection() {
+		// approach: if elevator is considering homing state, it would
+		// have no more requests to sweep in the current direction and no more
+		// to sweep in the opposite direction at its current position
+		// the elevator must therefore identify whether it could "home" toward
+		// the same direction that it was travelling so that it could start serving
+		// requests in the opposite direction... TBD
+		boolean existsReqAbove = this.existsHomingExternalRequestsAbove();
+		boolean existsReqBelow = this.existsHomingExternalRequestsBelow();
+		switch(direction) {
+		case UP: 
+			if (existsReqAbove) return Direction.DOWN;
+			if (existsReqBelow) return Direction.UP;
+			break;
+		case DOWN: 
+			if (existsReqBelow) return Direction.UP;
+			if (existsReqAbove) return Direction.DOWN;
+			break;
+		default:
+			// FIXME: this could cause problems....
+		}
+		return Direction.IDLE;
+	}
+	
 	public boolean shouldElevatorStop() {
 		// check that there exists internal request @ current floor
 		// or external request @ current floor and in current direction
@@ -487,8 +511,8 @@ public class ElevatorContext {
 		
 		synchronized (externalRequests) {
 			boolean interceptElevator = false;
-			boolean existsAboveReq = existsExternalRequestsAbove();
-			boolean existsBelowReq = existsExternalRequestsBelow();
+			boolean existsAboveReq = existsSweepingExternalRequestsAbove();
+			boolean existsBelowReq = existsSweepingExternalRequestsBelow();
 			for (ElevatorRequest pendingReq : externalRequests) {
 				if (pendingReq.getSourceFloor() == currentFloor && (pendingReq.getDirection() == direction || direction == Direction.IDLE)) {
 					// there exists a pending req that is "on the way" - continue sweeping
@@ -525,10 +549,10 @@ public class ElevatorContext {
 		return false;
 	}
 	
-	private boolean existsExternalRequestsAbove() {
+	private boolean existsSweepingExternalRequestsAbove() {
 		synchronized (externalRequests) {
 			for (ElevatorRequest req : externalRequests) {
-				if (req.getSourceFloor() > currentFloor) {
+				if (req.getSourceFloor() > currentFloor && req.getDirection() == Direction.UP) {
 					return true;
 				}
 			}
@@ -536,10 +560,10 @@ public class ElevatorContext {
 		return false;
 	}
 	
-	private boolean existsExternalRequestsBelow() {
+	private boolean existsSweepingExternalRequestsBelow() {
 		synchronized (externalRequests) {
 			for (ElevatorRequest req : externalRequests) {
-				if (req.getSourceFloor() < currentFloor) {
+				if (req.getSourceFloor() < currentFloor && req.getDirection() == Direction.DOWN) {
 					return true;
 				}
 			}
@@ -560,6 +584,54 @@ public class ElevatorContext {
 			}
 		}
 		return error;
+	}
+	
+	public boolean shouldElevatorSweep() {
+		// check that there exists request to serve up?
+		// use .shouldElevatorStop() logic
+		//return !shouldElevatorStop();
+		boolean existsReqAbove = this.existsSweepingExternalRequestsAbove();
+		boolean existsReqBelow = this.existsSweepingExternalRequestsBelow();
+		
+		if (existsReqAbove && direction == Direction.UP || existsReqBelow && direction == Direction.UP) {
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean shouldElevatorHome() {
+		// check that there exists a request to travel to the other extreme
+		// of the shaft
+		// assumes that elevator is empty, only looks at external requests
+		boolean existsReqAbove = existsHomingExternalRequestsAbove();
+		boolean existsReqBelow = existsHomingExternalRequestsBelow();
+		
+		if (existsReqAbove && direction == Direction.DOWN || existsReqBelow && direction == Direction.UP) {
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean existsHomingExternalRequestsAbove() {
+		synchronized(externalRequests) {
+			for (ElevatorRequest req : externalRequests) {
+				if (req.getSourceFloor() > currentFloor && req.getDirection() == Direction.DOWN) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	private boolean existsHomingExternalRequestsBelow() {
+		synchronized(externalRequests) {
+			for (ElevatorRequest req : externalRequests) {
+				if (req.getSourceFloor() > currentFloor && req.getDirection() == Direction.UP) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 	
 	// XXX: this method name is misleading...
