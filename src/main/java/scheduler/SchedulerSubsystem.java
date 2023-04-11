@@ -60,7 +60,7 @@ public class SchedulerSubsystem implements Runnable {
 		pendingRequestSocket = new UDPClient(config.SCHEDULER_PENDING_REQ_PORT);
 		arrivalRequestSocket = new UDPClient(config.SCHEDULER_ARRIVAL_REQ_PORT);
 		completedRequestSocket = new UDPClient(config.SCHEDULER_COMPLETED_REQ_PORT);
-		logConsole = new LogConsole("Scheduler");
+		logConsole = new LogConsole(this.getClass().getSimpleName());
 	}
 
 	/**
@@ -156,7 +156,7 @@ public class SchedulerSubsystem implements Runnable {
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-					printLog(String.format("sentAssignedElevatorRequest        -- %s", assignedRequest));
+					printLog(String.format("SENT ASSIGNED           -- %s", assignedRequest));
 					schedulerContext.onRequestSent();
 				}
 			}
@@ -216,7 +216,7 @@ public class SchedulerSubsystem implements Runnable {
 		DatagramPacket packetFromElevator = completedRequestSocket.receiveMessage();
 		byte[] completedRequestData = UDPClient.readPacketData(packetFromElevator);
 		ElevatorRequest completedRequest = ElevatorRequest.decode(completedRequestData);
-		printLog(String.format("receiveCompletedElevatorRequest -- %s", completedRequest));
+		printLog(String.format("RECEIVE COMPLETED -- %s", completedRequest));
 		schedulerContext.addCompletedElevatorRequests(completedRequest);
 	}
 

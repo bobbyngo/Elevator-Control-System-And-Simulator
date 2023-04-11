@@ -66,8 +66,7 @@ public class FloorSubsystem implements Runnable {
 		for (int i = 0; i < numOfFloors; i++) {
 			floorArr[i] = new Floor(i + 1);
 		}
-		logConsole = new LogConsole("Floor Subsystem");
-		printLog("FLOOR_SUBSYSTEM_START");
+		logConsole = new LogConsole(this.getClass().getSimpleName());
 	}
 
 	/**
@@ -142,20 +141,16 @@ public class FloorSubsystem implements Runnable {
 									&& floor.getFloorDownLamp() == false) {
 								floor.setFloorDownLamp(true);
 							}
-
-							printLog(floor.toString());
+							printLog(String.format("REQUEST SENT              --  %s", req.toString()));
+							System.out.println(floor.toString());
+							System.out.println("--------------------------------------------------");
 							sendGuiNotification(new FloorGuiData(floor.getFloorNum(), floor.getUpButtonLamp(),
 									floor.getDownButtonLamp()));
-
 						} catch (ClassNotFoundException | IOException e) {
 							e.printStackTrace();
 						}
-
-						printLog("Sending request " + req.toString());
-
-						printLog("--------------------------------------------------");
 					}
-				}, new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS").parse(req.getTimestamp().toString()));
+				}, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").parse(req.getTimestamp().toString()));
 			}
 		}
 	}
@@ -177,22 +172,21 @@ public class FloorSubsystem implements Runnable {
 		ElevatorStateEnum elevatorState = elevatorStatus.getState();
 		Direction elevatorDirection = elevatorStatus.getDirection();
 		int elevatorId = elevatorStatus.getElevatorId();
-
-		updateAllSensorsStatus(elevatorId); // Sets the sensors of the same shaft to false on all floors
+		// Sets the sensors of the same shaft to false on all floors
+		updateAllSensorsStatus(elevatorId);
 		floor.setFloorSensor(elevatorId, true);
 
 		updateAllElevatorLamps(elevatorId, elevatorDirection);
 
 		if (elevatorState == ElevatorStateEnum.DOORS_OPEN) {
-			printLog("Elevator " + elevatorNum + " arrived at floor " + floorNum);
+			printLog(String.format("ARRIVAL NOTIFICATION  -- Elevator %d :: Floor %d", elevatorNum, floorNum));
 			if (elevatorDirection == Direction.DOWN)
 				floor.setFloorDownLamp(false);
 			else
 				floor.setFloorUpLamp(false);
-			printLog(floor.toString());
-			printLog("--------------------------------------------------");
+			System.out.println(floor.toString());
+			System.out.println("--------------------------------------------------");
 		}
-
 		sendGuiNotification(new FloorGuiData(floor.getFloorNum(), floor.getUpButtonLamp(), floor.getDownButtonLamp()));
 	}
 
@@ -229,9 +223,9 @@ public class FloorSubsystem implements Runnable {
 		// TODO: Fix the issue with receiving the same completed request multiple times
 		DatagramPacket receivedReqPacket = udpCompletedRequestsReceiver.receiveMessage();
 		ElevatorRequest elevatorRequest = ElevatorRequest.decode(receivedReqPacket.getData());
-		printLog("Request " + elevatorRequest.toString() + " has been completed");
-		printLog(floorArr[elevatorRequest.getDestinationFloor() - 1].toString());
-		printLog("--------------------------------------------------");
+		printLog(String.format("REQUEST COMPLETE    -- %s", elevatorRequest.toString()));
+		System.out.println(floorArr[elevatorRequest.getDestinationFloor() - 1].toString());
+		System.out.println("--------------------------------------------------");
 	}
 
 	/**
