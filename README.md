@@ -99,6 +99,11 @@ ELEVATOR-CONTROL-SYSTEM-AND-SIMULATOR
 |   README.md
 |   README.txt
 |
++---ArchiveSubmission
+|       A3G7_milestone_1.zip
+|       A3G7_milestone_2.zip
+|       A3G7_milestone_3.zip
+|       A3G7_milestone_4.zip
 +---documentation
 |       P3-UML-class.drawio.pdf
 |       P3-UML-class.drawio.png
