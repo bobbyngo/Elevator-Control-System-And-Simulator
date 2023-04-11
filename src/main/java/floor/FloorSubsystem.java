@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -11,6 +12,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.JFileChooser;
+
 import main.java.SimulatorConfiguration;
 import main.java.UDPClient;
 import main.java.dto.ElevatorRequest;
@@ -30,7 +34,6 @@ import main.java.gui.LogConsole;
  */
 public class FloorSubsystem implements Runnable {
 	private final Logger logger = Logger.getLogger(this.getClass().getName());
-	private final File file = new File("/src/main/resources/input.txt");
 	private SimulatorConfiguration simulatorConfiguration;
 	private Parser parser;
 	private UDPClient udpArrivalRequestsReceiver;
@@ -51,23 +54,16 @@ public class FloorSubsystem implements Runnable {
 		numOfFloors = simulatorConfiguration.NUM_FLOORS;
 		logger.setLevel(Level.INFO);
 		try {
-			// Filename before compilation
-			String FILENAME = System.getProperty("user.dir") + file.getPath();
-			this.parser = new Parser(FILENAME);
+			String filename = selectFile();
+			this.parser = new Parser(filename);
 		} catch (FileNotFoundException e) {
-		}
-		try {
-			// Filename after compilation
-			String FILENAME = System.getProperty("user.dir") + file.getPath().substring(4);
-			this.parser = new Parser(FILENAME);
-		} catch (FileNotFoundException e) {
+			e.printStackTrace();
 		}
 		floorArr = new Floor[numOfFloors];
 		for (int i = 0; i < numOfFloors; i++) {
 			floorArr[i] = new Floor(i + 1);
 		}
-		logConsole = new LogConsole("Floor Subsystem");
-		printLog("FLOOR_SUBSYSTEM_START");
+		logConsole = new LogConsole(this.getClass().getSimpleName());
 	}
 
 	/**
@@ -142,20 +138,16 @@ public class FloorSubsystem implements Runnable {
 									&& floor.getFloorDownLamp() == false) {
 								floor.setFloorDownLamp(true);
 							}
-
+							printLog(String.format("REQUEST_SENT              -- %s", req.toString()));
 							printLog(floor.toString());
+							printLog("--------------------------------------------------");
 							sendGuiNotification(new FloorGuiData(floor.getFloorNum(), floor.getUpButtonLamp(),
 									floor.getDownButtonLamp()));
-
 						} catch (ClassNotFoundException | IOException e) {
 							e.printStackTrace();
 						}
-
-						printLog("Sending request " + req.toString());
-
-						printLog("--------------------------------------------------");
 					}
-				}, new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS").parse(req.getTimestamp().toString()));
+				}, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").parse(req.getTimestamp().toString()));
 			}
 		}
 	}
@@ -177,14 +169,14 @@ public class FloorSubsystem implements Runnable {
 		ElevatorStateEnum elevatorState = elevatorStatus.getState();
 		Direction elevatorDirection = elevatorStatus.getDirection();
 		int elevatorId = elevatorStatus.getElevatorId();
-
-		updateAllSensorsStatus(elevatorId); // Sets the sensors of the same shaft to false on all floors
+		// Sets the sensors of the same shaft to false on all floors
+		updateAllSensorsStatus(elevatorId);
 		floor.setFloorSensor(elevatorId, true);
 
 		updateAllElevatorLamps(elevatorId, elevatorDirection);
 
 		if (elevatorState == ElevatorStateEnum.DOORS_CLOSED || elevatorState == ElevatorStateEnum.HOMING_DOORS_CLOSED) {
-			printLog("Elevator " + elevatorNum + " arrived at floor " + floorNum);
+			printLog(String.format("ARRIVAL_NOTIFICATION -- Elevator %d :: Floor %d", elevatorNum, floorNum));
 			if (elevatorDirection == Direction.DOWN)
 				floor.setFloorDownLamp(false);
 			else
@@ -192,7 +184,6 @@ public class FloorSubsystem implements Runnable {
 			printLog(floor.toString());
 			printLog("--------------------------------------------------");
 		}
-
 		sendGuiNotification(new FloorGuiData(floor.getFloorNum(), floor.getUpButtonLamp(), floor.getDownButtonLamp()));
 	}
 
@@ -226,10 +217,9 @@ public class FloorSubsystem implements Runnable {
 	 * @throws IOException
 	 */
 	private void listenToCompletedRequests() throws ClassNotFoundException, IOException {
-		// TODO: Fix the issue with receiving the same completed request multiple times
 		DatagramPacket receivedReqPacket = udpCompletedRequestsReceiver.receiveMessage();
 		ElevatorRequest elevatorRequest = ElevatorRequest.decode(receivedReqPacket.getData());
-		printLog("Request " + elevatorRequest.toString() + " has been completed");
+		printLog(String.format("REQUEST_COMPLETED -- %s", elevatorRequest.toString()));
 		printLog(floorArr[elevatorRequest.getDestinationFloor() - 1].toString());
 		printLog("--------------------------------------------------");
 	}
@@ -267,13 +257,30 @@ public class FloorSubsystem implements Runnable {
 	}
 
 	/**
-	 * Print the logs to the console text area.
+	 * Prints the console log to a text area.
 	 * 
-	 * @param message String, the message to the displayed
+	 * @param message String, the string to be displayed
 	 */
 	private void printLog(String message) {
-		System.out.println(message);
-		logConsole.appendLog(" " + message + "\n");
+		Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+		String output = String.format("[%s] : %s\n", currentTime, message);
+		//System.out.println(output);
+		logConsole.appendLog(output);
+	}
+	
+	/**
+	 * Allows user-input file selection GUI,
+	 * @return String, the filename
+	 */
+	private String selectFile() {
+		JFileChooser fc = new JFileChooser();
+		fc.setCurrentDirectory(new File("./src/main/resources/"));
+		fc.setLocation(100 + (425 * 3), 350);
+        int returnVal = fc.showDialog(logConsole, "Select File");
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            return "./src/main/resources/" + fc.getSelectedFile().getName();
+        } 
+        return "./src/main/resources/input.txt";
 	}
 
 	/**

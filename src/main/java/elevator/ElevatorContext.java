@@ -1,5 +1,6 @@
 package main.java.elevator;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -79,7 +80,7 @@ public class ElevatorContext {
 	public void onRequestReceived(ElevatorRequest request) {
 		addExternalRequest(request);
 		synchronized (currentState) {
-			printLog(String.format("Elevator#%d Event: Request Received", id));
+			printLog(String.format("REQUEST_RECEIVED -- Elevator#%d", id));
 			printLog(String.format("Elevator#%d will handle request going %s from floor %d to floor %d at %s", id,
 					request.getDirection(), request.getSourceFloor(), request.getDestinationFloor(),
 					request.getTimestamp()));
@@ -96,7 +97,7 @@ public class ElevatorContext {
 	 */
 	public void onTimeout(TimeoutEvent event) {
 		synchronized (currentState) {
-			printLog(String.format("Elevator#%d Event: Timeout", id));
+			// System.out.println(String.format("TIMEOUT_EVENT -- Elevator#%d", id));
 			currentState = currentState.handleTimeout();
 			printLog(this.toString());
 			notifyArrivalSensor();
@@ -104,11 +105,10 @@ public class ElevatorContext {
 	}
 
 	/**
-	 * Loading passengers method.
+	 * Loading passengers method when passengers are loaded, press button external
+	 * requests at current floor are moved to internal requests
 	 */
 	public void loadPassengers() {
-		// when passengers are loaded, press button
-		// external requests at current floor are moved to internal requests
 		synchronized (externalRequests) {
 			ElevatorRequest req;
 			List<ElevatorRequest> toRemove = new ArrayList<>();
@@ -125,12 +125,17 @@ public class ElevatorContext {
 	}
 
 	/**
-	 * Load single passenger if at floor & is going in same direction
-	 * @param request	ElevatorRequest, passenger request to board
+	 * Unload passenger method when clear button at current floor then
+	 * internal requests at current floor are removed. Removes internal requests are
+	 * sent to scheduler as completed requests. Load single passenger if at
+	 * floor & is going in same direction.
+	 * 
+	 * @param request ElevatorRequest, passenger request to board
 	 * @return boolean, request was boarded onto elevator
 	 */
 	public boolean loadPassengers(ElevatorRequest request) {
-		if (request.getSourceFloor() == currentFloor && (request.getDirection() == direction || direction == Direction.IDLE)) {
+		if (request.getSourceFloor() == currentFloor
+				&& (request.getDirection() == direction || direction == Direction.IDLE)) {
 			// FIXME: direction == IDLE added here. hopefully this doesnt cause issues...
 			externalRequests.remove(request); // already sync'd
 			internalRequests.add(request);
@@ -139,21 +144,18 @@ public class ElevatorContext {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Unload passenger method.
 	 */
 	public void unloadPassengers() {
-		// clear button at current floor
-		// internal requests at current floor are removed...
-		// removed internal requests are sent to scheduler as completed requests
 		ElevatorRequest req;
 		List<ElevatorRequest> toRemove = new ArrayList<>();
 		for (int i = 0; i < internalRequests.size(); i++) {
 			req = internalRequests.get(i);
 			if (req.getDestinationFloor() == currentFloor) {
 				toRemove.add(req);
-				printLog("Completed ElevatorRequest... sending back to scheduler: " + req);
+				printLog(String.format("REQUEST_COMPLETED -- %s", req));
 				elevatorSubsystem.sendCompletedElevatorRequest(req);
 			}
 		}
@@ -213,7 +215,6 @@ public class ElevatorContext {
 	 * @param d Direction, the direction
 	 */
 	public void setDirection(Direction d) {
-		// TODO: set the direction lamps here
 		direction = d;
 	}
 
@@ -389,12 +390,16 @@ public class ElevatorContext {
 
 		switch (direction) {
 		case UP:
-			if (continueSweepingUp) return Direction.UP;
-			if (continueSweepingDown) return Direction.DOWN;
+			if (continueSweepingUp)
+				return Direction.UP;
+			if (continueSweepingDown)
+				return Direction.DOWN;
 			break;
 		case DOWN:
-			if (continueSweepingDown) return Direction.DOWN;
-			if (continueSweepingUp) return Direction.UP;
+			if (continueSweepingDown)
+				return Direction.DOWN;
+			if (continueSweepingUp)
+				return Direction.UP;
 			break;
 		case IDLE:
 			// TODO: pick based on # of jobs? copying UP for now
@@ -403,7 +408,7 @@ public class ElevatorContext {
 			// jobs that are not going in the direction of the passenger
 			// that you are picking up
 			return directionIfIdle;
-			//break;
+		// break;
 		}
 		return Direction.IDLE;
 	}
@@ -464,12 +469,10 @@ public class ElevatorContext {
 	 */
 	private Direction determineNextDirection() {
 		ElevatorRequest nextRequest;
-		ArrayList<Integer> selectedFloors = getAllSelectedFloors();
-		
 		if (internalRequests.size() > 0) {
 			nextRequest = internalRequests.get(0);
 		} else if (externalRequests.size() > 0) {
-				nextRequest = externalRequests.get(0);
+			nextRequest = externalRequests.get(0);
 		} else {
 			return Direction.IDLE;
 		}
@@ -482,24 +485,28 @@ public class ElevatorContext {
 		}
 		return Direction.IDLE; // FIXME: would this be a problem?
 	}
-	
+
 	public Direction calculateNextHomingDirection() {
 		// approach: if elevator is considering homing state, it would
 		// have no more requests to sweep in the current direction and no more
 		// to sweep in the opposite direction at its current position
 		// the elevator must therefore identify whether it could "home" toward
-		// the same direction that it was travelling so that it could start serving
+		// the same direction that it was traveling so that it could start serving
 		// requests in the opposite direction... TBD
 		boolean existsReqAbove = this.existsHomingExternalRequestsAbove();
 		boolean existsReqBelow = this.existsHomingExternalRequestsBelow();
-		switch(direction) {
-		case UP: 
-			if (existsReqAbove) return Direction.DOWN;
-			if (existsReqBelow) return Direction.UP;
+		switch (direction) {
+		case UP:
+			if (existsReqAbove)
+				return Direction.DOWN;
+			if (existsReqBelow)
+				return Direction.UP;
 			break;
-		case DOWN: 
-			if (existsReqBelow) return Direction.UP;
-			if (existsReqAbove) return Direction.DOWN;
+		case DOWN:
+			if (existsReqBelow)
+				return Direction.UP;
+			if (existsReqAbove)
+				return Direction.DOWN;
 			break;
 		default:
 			// FIXME: this could cause problems....
@@ -517,13 +524,19 @@ public class ElevatorContext {
 		// or external request @ current floor and in current direction
 
 		// new detected case: if the elevator car is empty and the elevator
-		// is moving, then disregard having to check that there is a direction match? (idk if valid...)
-		
-		// case: if going some direction & there's a request at currentFloor & there's no more requests
-		// if you were to go in the same direction, then stop for the request @ the current floor?
-		//	-> can you stop sweeping? violate the check of having to accept a request going in same direction
-		//	-> essentially, the goal is to sweep until you hit the bottom-most or top-most request source?
-		// FIXME: consider stopping when you are at either lowest floor going down or highest floor going up -> TEST THIS
+		// is moving, then disregard having to check that there is a direction match?
+		// (idk if valid...)
+
+		// case: if going some direction & there's a request at currentFloor & there's
+		// no more requests
+		// if you were to go in the same direction, then stop for the request @ the
+		// current floor?
+		// -> can you stop sweeping? violate the check of having to accept a request
+		// going in same direction
+		// -> essentially, the goal is to sweep until you hit the bottom-most or
+		// top-most request source?
+		// FIXME: consider stopping when you are at either lowest floor going down or
+		// highest floor going up -> TEST THIS
 		if (getElevatorLampStatus(currentFloor)) {
 			return true;
 		}
@@ -533,7 +546,8 @@ public class ElevatorContext {
 			boolean existsAboveReq = existsSweepingExternalRequestsAbove();
 			boolean existsBelowReq = existsSweepingExternalRequestsBelow();
 			for (ElevatorRequest pendingReq : externalRequests) {
-				if (pendingReq.getSourceFloor() == currentFloor && (pendingReq.getDirection() == direction || direction == Direction.IDLE)) {
+				if (pendingReq.getSourceFloor() == currentFloor
+						&& (pendingReq.getDirection() == direction || direction == Direction.IDLE)) {
 					// there exists a pending req that is "on the way" - continue sweeping
 					// FIXME: is it correct to add a Direction.IDLE condition?
 					return true;
@@ -542,29 +556,28 @@ public class ElevatorContext {
 					// no one is in the car and there is a request at this floor
 					if (!existsAboveReq && direction == Direction.UP
 							|| !existsBelowReq && direction == Direction.DOWN) {
-						// if there are no jobs todo in the direction that you are going, then you might
+						// if there are no jobs to do in the direction that you are going, then you
+						// might
 						// as well pick them up
 						interceptElevator = true;
 					}
 				}
-
 			}
-
 			if (interceptElevator) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
 	public boolean shouldElevatorStop(ElevatorRequest request) {
-		if (request.getSourceFloor() == currentFloor && (request.getDirection() == direction 
-				|| direction == Direction.IDLE)) {
+		if (request.getSourceFloor() == currentFloor
+				&& (request.getDirection() == direction || direction == Direction.IDLE)) {
 			return true;
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Determine if there exists requests from above floors.
 	 * 
@@ -617,20 +630,20 @@ public class ElevatorContext {
 		}
 		return error;
 	}
-	
+
 	public boolean shouldElevatorSweep() {
 		// check that there exists request to serve up?
 		// use .shouldElevatorStop() logic
-		//return !shouldElevatorStop();
+		// return !shouldElevatorStop();
 		boolean existsReqAbove = this.existsSweepingExternalRequestsAbove();
 		boolean existsReqBelow = this.existsSweepingExternalRequestsBelow();
-		
+
 		if (existsReqAbove && direction == Direction.UP || existsReqBelow && direction == Direction.UP) {
 			return true;
 		}
 		return false;
 	}
-	
+
 	public boolean shouldElevatorSweep(ElevatorRequest request) {
 		boolean existsReqAbove = request.getSourceFloor() > currentFloor && request.getDirection() == Direction.UP;
 		boolean existsReqBelow = request.getSourceFloor() < currentFloor && request.getDirection() == Direction.DOWN;
@@ -639,20 +652,20 @@ public class ElevatorContext {
 		}
 		return false;
 	}
-	
+
 	public boolean shouldElevatorHome() {
 		// check that there exists a request to travel to the other extreme
 		// of the shaft
 		// assumes that elevator is empty, only looks at external requests
 		boolean existsReqAbove = existsHomingExternalRequestsAbove();
 		boolean existsReqBelow = existsHomingExternalRequestsBelow();
-		
+
 		if (existsReqAbove && direction == Direction.DOWN || existsReqBelow && direction == Direction.UP) {
 			return true;
 		}
 		return false;
 	}
-	
+
 	public boolean shouldElevatorHome(ElevatorRequest request) {
 		boolean existsReqAbove = request.getSourceFloor() > currentFloor && request.getDirection() == Direction.DOWN;
 		boolean existsReqBelow = request.getSourceFloor() < currentFloor && request.getDirection() == Direction.UP;
@@ -661,9 +674,9 @@ public class ElevatorContext {
 		}
 		return false;
 	}
-	
+
 	private boolean existsHomingExternalRequestsAbove() {
-		synchronized(externalRequests) {
+		synchronized (externalRequests) {
 			for (ElevatorRequest req : externalRequests) {
 				if (req.getSourceFloor() > currentFloor && req.getDirection() == Direction.DOWN) {
 					return true;
@@ -672,9 +685,9 @@ public class ElevatorContext {
 		}
 		return false;
 	}
-	
+
 	private boolean existsHomingExternalRequestsBelow() {
-		synchronized(externalRequests) {
+		synchronized (externalRequests) {
 			for (ElevatorRequest req : externalRequests) {
 				if (req.getSourceFloor() < currentFloor && req.getDirection() == Direction.UP) {
 					return true;
@@ -697,7 +710,7 @@ public class ElevatorContext {
 	 */
 	public void returnExternalRequests() {
 		synchronized (externalRequests) {
-			printLog("Elevator crashed: returning externalRequests to scheduler");
+			printLog("ELEVATOR_FAULT: returning externalRequests to scheduler");
 			elevatorSubsystem.returnElevatorRequests(externalRequests);
 			externalRequests.removeAll(externalRequests);
 		}
@@ -736,8 +749,10 @@ public class ElevatorContext {
 	 * @param message String, the string to be displayed
 	 */
 	private void printLog(String message) {
-		System.out.println(message);
-		logConsole.appendLog(" " + message + "\n");
+		Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+		String output = String.format("[%s] : %s\n", currentTime, message);
+		// System.out.println(output);
+		logConsole.appendLog(output);
 	}
 
 }

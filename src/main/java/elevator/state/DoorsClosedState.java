@@ -52,14 +52,12 @@ public class DoorsClosedState extends IdleMotorState {
 	@Override
 	public ElevatorState handleTimeout() {
 		ElevatorContext ctx = this.getContext();
-		Direction nextDirection, oldDirection, nextHomingDirection;
+		Direction nextDirection;
 		ctx.killTimer();
 
-		// consider current direction
-		oldDirection = ctx.getDirection();
 		nextDirection = ctx.calculateNextDirection(); // FIXME: do i need this or is this a bug?
 		ctx.setDirection(nextDirection); // FIXME: delete?
-		
+
 		if (ctx.shouldElevatorStop()) {
 			return new StoppedState(ctx);
 		}
@@ -72,8 +70,7 @@ public class DoorsClosedState extends IdleMotorState {
 		default:
 		}
 		return new IdleState(ctx); // this shouldn't happen
-		
-		
+
 //		if (ctx.shouldElevatorStop()) {
 //			return new StoppedState(ctx);
 //		}

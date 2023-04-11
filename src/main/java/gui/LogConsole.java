@@ -17,8 +17,9 @@ import javax.swing.text.DefaultCaret;
  * 
  * @author Trong Nguyen
  */
-public class LogConsole {
-	private JTextArea console;
+public class LogConsole extends JTextArea {
+
+	private static final long serialVersionUID = 1L;
 	private String title;
 
 	/**
@@ -28,7 +29,6 @@ public class LogConsole {
 	 */
 	public LogConsole(String name) {
 		this.title = name;
-		console = new JTextArea();
 		initConsole();
 	}
 
@@ -36,17 +36,17 @@ public class LogConsole {
 	 * Creates a frame text area for console log output.
 	 */
 	private void initConsole() {
-		console.setFont(new Font("Arial", Font.ROMAN_BASELINE, 14));
-		console.setLineWrap(true);
-		console.setWrapStyleWord(true);
-		JScrollPane areaScrollPane = new JScrollPane(console);
+		this.setFont(new Font("Arial", Font.ROMAN_BASELINE, 14));
+		this.setLineWrap(true);
+		this.setWrapStyleWord(true);
+		JScrollPane areaScrollPane = new JScrollPane(this);
 		areaScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		areaScrollPane.setPreferredSize(new Dimension(800, 500));
 		areaScrollPane.setBorder(
 				BorderFactory.createCompoundBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(),
 						BorderFactory.createEmptyBorder(5, 5, 5, 5)), areaScrollPane.getBorder()));
 
-		DefaultCaret caret = (DefaultCaret) console.getCaret();
+		DefaultCaret caret = (DefaultCaret) this.getCaret();
 		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 
 		JPanel schedulerPanel = new JPanel(new BorderLayout());
@@ -69,7 +69,7 @@ public class LogConsole {
 	 * @param log String, the text to be displayed
 	 */
 	public void appendLog(String log) {
-		console.append(log);
+		this.append(log);
 	}
 	
 }

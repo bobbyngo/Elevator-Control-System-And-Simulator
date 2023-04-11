@@ -100,7 +100,7 @@ public class Parser {
 
 		try {
 			Timestamp currentTime = new Timestamp(System.currentTimeMillis());
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 			Date parsedDate = dateFormat.parse(currentTime.toString().split(" ")[0] + " " + line[0]);
 			timestamp = new Timestamp(parsedDate.getTime());
 
@@ -113,7 +113,6 @@ public class Parser {
 			} else {
 				throw new ElevatorReqParamException("");
 			}
-
 		} catch (ParseException e) {
 			logger.severe(e.getMessage());
 		} catch (ElevatorReqParamException e) {
@@ -155,6 +154,7 @@ public class Parser {
 	 * @return ArrayList, containing ElevatorRequest object
 	 * @throws IOException, when input/output error is encountered
 	 */
+	@SuppressWarnings("deprecation")
 	public ArrayList<ElevatorRequest> requestParser() throws IOException {
 
 		int lineNumber = 0;
@@ -170,8 +170,9 @@ public class Parser {
 				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 				Date parsedDate = dateFormat.parse(currentTime.toString().split(" ")[0] + " " + line[0]);
 				timestamp = new Timestamp(parsedDate.getTime());
-				System.out.println(timestamp);
-
+				timestamp.setHours(currentTime.getHours());
+				timestamp.setMinutes(currentTime.getMinutes());
+				timestamp.setSeconds(timestamp.getSeconds()+5);
 				if (line.length == 4) {
 					request = new ElevatorRequest(timestamp, Integer.valueOf(line[1]), Direction.valueOf(line[2]),
 							Integer.valueOf(line[3]), null);
@@ -181,9 +182,7 @@ public class Parser {
 				} else {
 					throw new ElevatorReqParamException("Line " + lineNumber);
 				}
-
 				elevatorRequestList.add(request);
-
 			} catch (ParseException e) {
 				logger.severe(String.format("%s on line %d", e.getMessage(), lineNumber));
 			} catch (ElevatorReqParamException e) {

@@ -127,7 +127,7 @@ public class FloorComponents {
 		String directionLampsStr = "{";
 		String floorSesnsorsStr = "{";
 
-		floorButtonsStr = "{Up ButtonLamp: " + buttonLamp.get(Direction.UP).toString() + ", Down ButtonLamp: "
+		floorButtonsStr = "{Up Button Lamp: " + buttonLamp.get(Direction.UP).toString() + ", Down Button Lamp: "
 				+ buttonLamp.get(Direction.DOWN).toString() + "} \n";
 
 		for (int i = 1; i <= simulatorConfiguration.NUM_ELEVATORS; i++) {

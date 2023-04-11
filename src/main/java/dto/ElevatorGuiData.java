@@ -39,13 +39,14 @@ public class ElevatorGuiData implements Serializable {
 		direction = ctx.getDirection();
 		door = ctx.getDoors();
 		motor = ctx.getMotor();
+
 		dropoffFloors = new TreeSet<>();
 		pickupFloors = new TreeSet<>();
-		for (ElevatorRequest elevatorRequest : ctx.getInternalRequests()) {
-			dropoffFloors.add(elevatorRequest.getDestinationFloor());
+		if (ctx.getInternalRequests().iterator().hasNext()) {
+			dropoffFloors.add(ctx.getInternalRequests().iterator().next().getDestinationFloor());
 		}
-		for (ElevatorRequest elevatorRequest : ctx.getExternalRequests()) {
-			pickupFloors.add(elevatorRequest.getSourceFloor() + "-" + elevatorRequest.getDirection());
+		if (ctx.getExternalRequests().iterator().hasNext()) {
+			pickupFloors.add(ctx.getExternalRequests().iterator().next().getSourceFloor() + "-" + ctx.getExternalRequests().iterator().next().getDirection());
 		}
 	}
 

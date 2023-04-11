@@ -9,7 +9,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import main.java.SimulatorConfiguration;
-import main.java.dto.AssignedElevatorRequest;
 import main.java.dto.ElevatorRequest;
 import main.java.dto.ElevatorStatus;
 import main.java.elevator.Direction;
