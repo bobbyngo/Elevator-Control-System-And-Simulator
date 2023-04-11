@@ -98,7 +98,7 @@ public class ElevatorContext {
 	 */
 	public void onTimeout(TimeoutEvent event) {
 		synchronized (currentState) {
-			printLog(String.format("Elevator#%d Event: Timeout", id));
+			System.out.println(String.format("Elevator#%d Event: Timeout", id));
 			currentState = currentState.handleTimeout();
 			printLog(this.toString());
 			notifyArrivalSensor();
@@ -106,11 +106,10 @@ public class ElevatorContext {
 	}
 
 	/**
-	 * Loading passengers method.
+	 * Loading passengers method when passengers are loaded, press button external
+	 * requests at current floor are moved to internal requests
 	 */
 	public void loadPassengers() {
-		// when passengers are loaded, press button
-		// external requests at current floor are moved to internal requests
 		synchronized (externalRequests) {
 			ElevatorRequest req;
 			List<ElevatorRequest> toRemove = new ArrayList<>();
@@ -127,19 +126,18 @@ public class ElevatorContext {
 	}
 
 	/**
-	 * Unload passenger method.
+	 * Unload passenger method when clear button at current floor then internal
+	 * requests at current floor are removed. Removes internal requests are sent to
+	 * scheduler as completed requests.
 	 */
 	public void unloadPassengers() {
-		// clear button at current floor
-		// internal requests at current floor are removed...
-		// removed internal requests are sent to scheduler as completed requests
 		ElevatorRequest req;
 		List<ElevatorRequest> toRemove = new ArrayList<>();
 		for (int i = 0; i < internalRequests.size(); i++) {
 			req = internalRequests.get(i);
 			if (req.getDestinationFloor() == currentFloor) {
 				toRemove.add(req);
-				printLog("Completed ElevatorRequest... sending back to scheduler: " + req);
+				printLog(String.format("REQUEST_COMPLETED -- %s", req));
 				elevatorSubsystem.sendCompletedElevatorRequest(req);
 			}
 		}
@@ -498,14 +496,12 @@ public class ElevatorContext {
 					// no one is in the car and there is a request at this floor
 					if (!existsAboveReq && direction == Direction.UP
 							|| !existsBelowReq && direction == Direction.DOWN) {
-						// if there are no jobs todo in the direction that you are going, then you might
+						// if there are no jobs to do in the direction that you are going, then you might
 						// as well pick them up
 						interceptElevator = true;
 					}
 				}
-
 			}
-
 			if (interceptElevator) {
 				return true;
 			}
@@ -579,7 +575,7 @@ public class ElevatorContext {
 	 */
 	public void returnExternalRequests() {
 		synchronized (externalRequests) {
-			printLog("Elevator crashed: returning externalRequests to scheduler");
+			printLog("ELEVATOR_FAULT: returning externalRequests to scheduler");
 			elevatorSubsystem.returnElevatorRequests(externalRequests);
 			externalRequests.removeAll(externalRequests);
 		}

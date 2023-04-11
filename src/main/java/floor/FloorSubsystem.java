@@ -141,7 +141,7 @@ public class FloorSubsystem implements Runnable {
 									&& floor.getFloorDownLamp() == false) {
 								floor.setFloorDownLamp(true);
 							}
-							printLog(String.format("REQUEST SENT              --  %s", req.toString()));
+							printLog(String.format("REQUEST_SENT              -- %s", req.toString()));
 							System.out.println(floor.toString());
 							System.out.println("--------------------------------------------------");
 							sendGuiNotification(new FloorGuiData(floor.getFloorNum(), floor.getUpButtonLamp(),
@@ -179,7 +179,7 @@ public class FloorSubsystem implements Runnable {
 		updateAllElevatorLamps(elevatorId, elevatorDirection);
 
 		if (elevatorState == ElevatorStateEnum.DOORS_OPEN) {
-			printLog(String.format("ARRIVAL NOTIFICATION  -- Elevator %d :: Floor %d", elevatorNum, floorNum));
+			printLog(String.format("ARRIVAL_NOTIFICATION -- Elevator %d :: Floor %d", elevatorNum, floorNum));
 			if (elevatorDirection == Direction.DOWN)
 				floor.setFloorDownLamp(false);
 			else
@@ -223,7 +223,7 @@ public class FloorSubsystem implements Runnable {
 		// TODO: Fix the issue with receiving the same completed request multiple times
 		DatagramPacket receivedReqPacket = udpCompletedRequestsReceiver.receiveMessage();
 		ElevatorRequest elevatorRequest = ElevatorRequest.decode(receivedReqPacket.getData());
-		printLog(String.format("REQUEST COMPLETE    -- %s", elevatorRequest.toString()));
+		printLog(String.format("REQUEST_COMPLETED -- %s", elevatorRequest.toString()));
 		System.out.println(floorArr[elevatorRequest.getDestinationFloor() - 1].toString());
 		System.out.println("--------------------------------------------------");
 	}

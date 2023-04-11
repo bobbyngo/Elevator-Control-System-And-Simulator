@@ -156,7 +156,7 @@ public class SchedulerSubsystem implements Runnable {
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-					printLog(String.format("SENT ASSIGNED           -- %s", assignedRequest));
+					printLog(String.format("SENT_ASSIGNED           -- %s", assignedRequest));
 					schedulerContext.onRequestSent();
 				}
 			}
@@ -216,7 +216,7 @@ public class SchedulerSubsystem implements Runnable {
 		DatagramPacket packetFromElevator = completedRequestSocket.receiveMessage();
 		byte[] completedRequestData = UDPClient.readPacketData(packetFromElevator);
 		ElevatorRequest completedRequest = ElevatorRequest.decode(completedRequestData);
-		printLog(String.format("RECEIVE COMPLETED -- %s", completedRequest));
+		printLog(String.format("RECEIVE_COMPLETED -- %s", completedRequest));
 		schedulerContext.addCompletedElevatorRequests(completedRequest);
 	}
 
