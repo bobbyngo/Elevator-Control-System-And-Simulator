@@ -183,7 +183,7 @@ public class FloorSubsystem implements Runnable {
 
 		updateAllElevatorLamps(elevatorId, elevatorDirection);
 
-		if (elevatorState == ElevatorStateEnum.DOORS_OPEN) {
+		if (elevatorState == ElevatorStateEnum.DOORS_CLOSED || elevatorState == ElevatorStateEnum.HOMING_DOORS_CLOSED) {
 			printLog("Elevator " + elevatorNum + " arrived at floor " + floorNum);
 			if (elevatorDirection == Direction.DOWN)
 				floor.setFloorDownLamp(false);
