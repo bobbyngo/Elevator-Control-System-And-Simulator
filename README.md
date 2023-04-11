@@ -56,7 +56,7 @@ Navigate to FloorSubsystem.java -> Run the main method
 The output should be in the console of eclipse and in the GUI
 
 ## UML Diagrams
-![UML-class](/documentation/P4-UML-class.drawio.png)
+![UML-class](/documentation/P5-UML-class.drawio.png)
 ![UML-sequence](/documentation/diagrams-sequence.drawio.png)
 
 # Iteration 1
