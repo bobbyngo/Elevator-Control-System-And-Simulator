@@ -9,13 +9,16 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 /**
- * This class is responsible for the method to encode and decode serializable data.
+ * This class is responsible for the method to encode and decode serializable
+ * data.
+ * 
  * @author Zakaria Ismail
  */
 public class SerializableEncoder {
-	
+
 	/**
 	 * Encode data method.
+	 * 
 	 * @param object Serializable, a serializable object to be encoded
 	 * @return byte[], the encoded data
 	 * @throws IOException
@@ -24,16 +27,16 @@ public class SerializableEncoder {
 		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
 		ObjectOutputStream out = null;
 		byte[] encodedArray = null;
-		
+
 		out = new ObjectOutputStream(byteStream);
 		out.writeObject(object);
-		//out.flush();
 		encodedArray = byteStream.toByteArray();
 		return encodedArray;
 	}
-	
+
 	/**
-	 * Decode data method
+	 * Decode data method.
+	 * 
 	 * @param data byte[], the data to be decoded
 	 * @return Object, the decoded object
 	 * @throws IOException
@@ -48,4 +51,5 @@ public class SerializableEncoder {
 		byteStream.close();
 		return decodedObject;
 	}
+
 }

@@ -5,6 +5,7 @@ import java.io.Serializable;
 
 /**
  * Floor entity DTO object to send to GUI.
+ * 
  * @author Hussein El Mokdad
  */
 public class FloorGuiData implements Serializable {
@@ -13,9 +14,10 @@ public class FloorGuiData implements Serializable {
 	private int floorNum;
 	private boolean upButtonLamp;
 	private boolean downButtonLamp;
-	
+
 	/**
 	 * Constructor for floor GUI data.
+	 * 
 	 * @param floor, the Floor object
 	 */
 	public FloorGuiData(int floorNum, boolean upButtonLamp, boolean downButtonLamp) {
@@ -23,33 +25,37 @@ public class FloorGuiData implements Serializable {
 		this.upButtonLamp = upButtonLamp;
 		this.downButtonLamp = downButtonLamp;
 	}
-	
+
 	/**
 	 * Get the floor number.
+	 * 
 	 * @return floorNum int, the current floor number
 	 */
 	public int getFloorNum() {
 		return floorNum;
 	}
-	
+
 	/**
 	 * Get the state of the button pointing in the upwards direction.
-	 * @return the boolean of whether the button is on (true) or off (false) 
+	 * 
+	 * @return the boolean of whether the button is on (true) or off (false)
 	 */
 	public boolean getUpButtonLamp() {
 		return upButtonLamp;
 	}
-	
+
 	/**
 	 * Get the state of the button pointing in the downwards direction.
-	 * @return the boolean of whether the button is on (true) or off (false) 
+	 * 
+	 * @return the boolean of whether the button is on (true) or off (false)
 	 */
 	public boolean getDownButtonLamp() {
 		return downButtonLamp;
 	}
-	
+
 	/**
 	 * Decoding method.
+	 * 
 	 * @param data byte[], data to be encoded
 	 * @return FloorGuiData, the decode data object
 	 * @throws IOException
@@ -59,9 +65,10 @@ public class FloorGuiData implements Serializable {
 		Object decodedObj = SerializableEncoder.decode(data);
 		return (FloorGuiData) decodedObj;
 	}
-	
+
 	/**
 	 * Encoding method.
+	 * 
 	 * @return byte[], the data to be encode
 	 * @throws IOException
 	 */
@@ -69,4 +76,5 @@ public class FloorGuiData implements Serializable {
 		byte[] encodedData = SerializableEncoder.encode(this);
 		return encodedData;
 	}
+	
 }

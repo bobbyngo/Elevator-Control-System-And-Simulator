@@ -5,12 +5,14 @@ import main.java.elevator.ElevatorContext;
 
 /**
  * This substate represents the doors stuck state.
+ * 
  * @author Zakaria Ismail
  */
 public class DoorsStuckState extends IdleMotorState {
 
 	/**
 	 * Constructor for this state.
+	 * 
 	 * @param ctx ElevatorContext, the context of the elevator
 	 */
 	public DoorsStuckState(ElevatorContext ctx) {
@@ -21,7 +23,9 @@ public class DoorsStuckState extends IdleMotorState {
 	}
 
 	/**
-	 * handleRequestReceived
+	 * Handle the request received.
+	 * 
+	 * @return ElevatorState, the state of the elevator
 	 */
 	@Override
 	public ElevatorState handleRequestReceived(ElevatorRequest request) {
@@ -33,7 +37,9 @@ public class DoorsStuckState extends IdleMotorState {
 	}
 
 	/**
-	 * handleTimeout
+	 * Handle the Timeout event.
+	 * 
+	 * @return ElevatorState, the state of the elevator
 	 */
 	@Override
 	public ElevatorState handleTimeout() {
@@ -41,9 +47,11 @@ public class DoorsStuckState extends IdleMotorState {
 		ctx.killTimer();
 		return new DoorsOpenState(ctx);
 	}
-
+	
 	/**
-	 * toString
+	 * toString method
+	 * 
+	 * @return String
 	 */
 	@Override
 	public String toString() {
@@ -51,11 +59,12 @@ public class DoorsStuckState extends IdleMotorState {
 	}
 
 	/**
-	 * getElevatorStateEnum
+	 * Get the ElevatorStateEnum.
+	 * 
+	 * @return ElevatorStateEnum, the state of the elevator
 	 */
 	@Override
 	public ElevatorStateEnum getElevatorStateEnum() {
-		// TODO Auto-generated method stub
 		return ElevatorStateEnum.DOORS_STUCK;
 	}
 

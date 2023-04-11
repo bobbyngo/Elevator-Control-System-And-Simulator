@@ -13,6 +13,7 @@ public class DoorsOpenState extends IdleMotorState {
 
 	/**
 	 * Constructor for this state.
+	 * 
 	 * @param ctx ElevatorContext, the context of the elevator
 	 */
 	public DoorsOpenState(ElevatorContext ctx) {
@@ -29,7 +30,9 @@ public class DoorsOpenState extends IdleMotorState {
 	}
 
 	/**
-	 * handleRequestReceived
+	 * Handle the request received.
+	 * 
+	 * @return ElevatorState, the state of the elevator
 	 */
 	@Override
 	public ElevatorState handleRequestReceived(ElevatorRequest request) {
@@ -43,7 +46,9 @@ public class DoorsOpenState extends IdleMotorState {
 	}
 
 	/**
-	 * handleTimeout
+	 * Handle the Timeout event.
+	 * 
+	 * @return ElevatorState, the state of the elevator
 	 */
 	@Override
 	public ElevatorState handleTimeout() {
@@ -71,7 +76,9 @@ public class DoorsOpenState extends IdleMotorState {
 	}
 
 	/**
-	 * toString
+	 * toString method
+	 * 
+	 * @return String
 	 */
 	@Override
 	public String toString() {
@@ -79,7 +86,9 @@ public class DoorsOpenState extends IdleMotorState {
 	}
 
 	/**
-	 * getElevatorStateEnum
+	 * Get the ElevatorStateEnum.
+	 * 
+	 * @return ElevatorStateEnum, the state of the elevator
 	 */
 	@Override
 	public ElevatorStateEnum getElevatorStateEnum() {

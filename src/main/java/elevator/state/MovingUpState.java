@@ -7,12 +7,14 @@ import main.java.elevator.Motor;
 
 /**
  * This class represent the elevator moving up state.
+ * 
  * @author Zakaria Ismail
  */
 public class MovingUpState extends MovingState {
 
 	/**
 	 * Constructor for this state.
+	 * 
 	 * @param ctx ElevatorContext, the context of the elevator
 	 */
 	public MovingUpState(ElevatorContext ctx) {
@@ -23,6 +25,7 @@ public class MovingUpState extends MovingState {
 
 	/**
 	 * Handle the request received
+	 * 
 	 * @return ElevatorState, the state of the elevator
 	 */
 	@Override
@@ -34,17 +37,16 @@ public class MovingUpState extends MovingState {
 		}
 		return this;
 	}
-	
+
 	/**
 	 * Handle the Timeout event.
+	 * 
 	 * @return ElevatorState, the stateo of the elevator
 	 */
 	@Override
 	public ElevatorState handleTimeout() {
 		ElevatorContext ctx = this.getContext();
-		
 		ctx.killTimer();
-		
 		// Increment the current floor onTimeout
 		// if external request in current direction exists
 		// or internal request exists at current floor
@@ -56,16 +58,17 @@ public class MovingUpState extends MovingState {
 
 	/**
 	 * toString method
+	 * 
 	 * @return String
 	 */
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
 		return "MovingUp";
 	}
 
 	/**
 	 * Get the ElevatorStateEnum.
+	 * 
 	 * @return ElevatorStateEnum, the state of the elevator
 	 */
 	@Override
