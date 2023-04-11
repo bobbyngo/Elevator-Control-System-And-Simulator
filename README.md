@@ -47,6 +47,7 @@ No other external dependencies required.
 
 ## Compiling & Running the Application
 Navigate to GUI.java -> Run the main method
+</br>
 Navigate to SchedulerSubsystem.java -> Run the main method
 </br>
 Navigate to ElevatorSubsystem.java -> Run the main method
