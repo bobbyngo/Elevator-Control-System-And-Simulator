@@ -50,7 +50,10 @@ public class MovingUpState extends MovingState {
 		// Increment the current floor onTimeout
 		// if external request in current direction exists
 		// or internal request exists at current floor
-		if (!ctx.incrementCurrentFloor() || ctx.shouldElevatorStop()) {
+		if (!ctx.incrementCurrentFloor()) {
+			return new StoppedState(ctx);
+		}
+		if (ctx.shouldElevatorStop()) {
 			return new StoppedState(ctx);
 		}
 		return new MovingUpState(ctx);

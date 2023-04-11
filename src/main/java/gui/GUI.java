@@ -279,8 +279,8 @@ public class GUI extends JFrame implements Runnable {
 		int currentElevatorNum = data.getId() - 1;
 		int currentFloorNum = data.getCurrentFloor();
 		String direction = data.getDirection().toString();
-		TreeSet<Integer> destinationFloors = data.getDestinationFloors();
-		TreeSet<Integer> sourceFloors = data.getSourceFloors();
+		TreeSet<Integer> destinationFloors = data.getDropoffFloors();
+		TreeSet<String> sourceFloors = data.getPickupFloors();
 		String motor = data.getMotor().toString();
 		String door = data.getDoor().toString();
 		ElevatorStateEnum currentState = data.getCurrentState();
@@ -348,8 +348,8 @@ public class GUI extends JFrame implements Runnable {
 			}
 			elevInfos[currentElevatorNum][0].setText("Current Floor: " + currentFloorNum);
 			elevInfos[currentElevatorNum][1].setText("Direction: " + direction);
-			elevInfos[currentElevatorNum][2].setText("Destination Floors: " + destinationFloors.toString());
-			elevInfos[currentElevatorNum][3].setText("Source Floors: " + sourceFloors.toString());
+			elevInfos[currentElevatorNum][2].setText("To Dropoff: " + destinationFloors.toString());
+			elevInfos[currentElevatorNum][3].setText("To Pickup: " + sourceFloors.toString());
 			elevInfos[currentElevatorNum][4].setText("Motor: " + motor);
 			elevInfos[currentElevatorNum][5].setText("Door: " + door);
 			elevInfos[currentElevatorNum][6].setText("State: " + currentState);

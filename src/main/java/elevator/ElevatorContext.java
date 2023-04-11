@@ -627,6 +627,15 @@ public class ElevatorContext {
 		return false;
 	}
 	
+	public boolean shouldElevatorSweep(ElevatorRequest request) {
+		boolean existsReqAbove = request.getSourceFloor() > currentFloor && request.getDirection() == Direction.UP;
+		boolean existsReqBelow = request.getSourceFloor() < currentFloor && request.getDirection() == Direction.DOWN;
+		if (existsReqAbove || existsReqBelow) {
+			return true;
+		}
+		return false;
+	}
+	
 	public boolean shouldElevatorHome() {
 		// check that there exists a request to travel to the other extreme
 		// of the shaft
@@ -635,6 +644,15 @@ public class ElevatorContext {
 		boolean existsReqBelow = existsHomingExternalRequestsBelow();
 		
 		if (existsReqAbove && direction == Direction.DOWN || existsReqBelow && direction == Direction.UP) {
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean shouldElevatorHome(ElevatorRequest request) {
+		boolean existsReqAbove = request.getSourceFloor() > currentFloor && request.getDirection() == Direction.DOWN;
+		boolean existsReqBelow = request.getSourceFloor() < currentFloor && request.getDirection() == Direction.UP;
+		if (existsReqAbove || existsReqBelow) {
 			return true;
 		}
 		return false;
@@ -654,7 +672,7 @@ public class ElevatorContext {
 	private boolean existsHomingExternalRequestsBelow() {
 		synchronized(externalRequests) {
 			for (ElevatorRequest req : externalRequests) {
-				if (req.getSourceFloor() > currentFloor && req.getDirection() == Direction.UP) {
+				if (req.getSourceFloor() < currentFloor && req.getDirection() == Direction.UP) {
 					return true;
 				}
 			}

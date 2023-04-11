@@ -32,10 +32,22 @@ public class IdleState extends IdleMotorState {
 	@Override
 	public ElevatorState handleRequestReceived(ElevatorRequest request) {
 		ElevatorContext ctx = this.getContext();
+		ctx.loadPassengers(request);
 		ctx.unloadPassengers();
-		ctx.loadPassengers();
-		ctx.setDirection(request.getDirection());
-		return new DoorsClosedState(ctx);
+		// determine if sweep or home
+		if (ctx.shouldElevatorSweep(request)) {
+			ctx.setDirection(request.getDirection());
+			return new DoorsClosedState(ctx);
+		}
+		if (ctx.shouldElevatorHome(request)) {
+			ctx.setDirection(request.getDirection());
+			return new HomingDoorsClosedState(ctx);
+		}
+		return this;
+		
+		//ctx.unloadPassengers();
+		//ctx.setDirection(request.getDirection());
+		//return new DoorsClosedState(ctx);
 	}
 
 	/**
