@@ -81,7 +81,7 @@ public class ElevatorContext {
 	 */
 	public void onRequestReceived(ElevatorRequest request) {
 		synchronized (currentState) {
-			printLog(String.format("Elevator#%d Event: Request Received", id));
+			printLog(String.format("REQUEST_RECEIVED -- Elevator#%d", id));
 			printLog(String.format("Elevator#%d will handle request going %s from floor %d to floor %d at %s", id,
 					request.getDirection(), request.getSourceFloor(), request.getDestinationFloor(),
 					request.getTimestamp()));
@@ -98,7 +98,7 @@ public class ElevatorContext {
 	 */
 	public void onTimeout(TimeoutEvent event) {
 		synchronized (currentState) {
-			System.out.println(String.format("Elevator#%d Event: Timeout", id));
+			System.out.println(String.format("TIMEOUT_EVENT -- Elevator#%d", id));
 			currentState = currentState.handleTimeout();
 			printLog(this.toString());
 			notifyArrivalSensor();
