@@ -35,7 +35,7 @@ The work breakdown responsibility of the project for the iteration is located:
 The UML class diagram and the UML sequence diagram of the system is contained in
 the documentation folder labeled: 
 
-* documentation/P4-UML-class.drawio.pdf
+* documentation/P5-UML-class.drawio.pdf
 * documentation/P4-UML-sequence.drawio.pdf
 
 ## Requirements & Dependencies
