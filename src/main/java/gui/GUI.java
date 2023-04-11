@@ -338,9 +338,8 @@ public class GUI extends JFrame implements Runnable {
 			}
 			case ELEVATOR_STUCK: {
 				// Shutdown entire elevator due to hard fault
-				for (int i = 0; i < floorNum; i++) {
-					floors[currentElevatorNum][i].setIcon(new ImageIcon("./src/main/resources/assets/shutdown.png"));
-				}
+				floors[currentElevatorNum][currentFloorNum - 1].setIcon(new ImageIcon("./src/main/resources/assets/shutdown.png"));
+
 				break;
 			}
 			default:
