@@ -1,5 +1,6 @@
 package main.java.elevator;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -614,8 +615,10 @@ public class ElevatorContext {
 	 * @param message String, the string to be displayed
 	 */
 	private void printLog(String message) {
-		System.out.println(message);
-		logConsole.appendLog(" " + message + "\n");
+		Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+		String output = String.format("[%s] : %s\n", currentTime, message);
+		System.out.println(output);
+		logConsole.appendLog(output);
 	}
 
 }

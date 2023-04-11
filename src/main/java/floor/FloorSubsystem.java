@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -257,13 +258,15 @@ public class FloorSubsystem implements Runnable {
 	}
 
 	/**
-	 * Print the logs to the console text area.
+	 * Prints the console log to a text area.
 	 * 
-	 * @param message String, the message to the displayed
+	 * @param message String, the string to be displayed
 	 */
 	private void printLog(String message) {
-		System.out.println(message);
-		logConsole.appendLog(" " + message + "\n");
+		Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+		String output = String.format("[%s] : %s\n", currentTime, message);
+		System.out.println(output);
+		logConsole.appendLog(output);
 	}
 	
 	/**

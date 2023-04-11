@@ -3,6 +3,7 @@ package main.java.scheduler;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.UnknownHostException;
+import java.sql.Timestamp;
 import java.text.ParseException;
 
 import main.java.SimulatorConfiguration;
@@ -289,9 +290,10 @@ public class SchedulerSubsystem implements Runnable {
 	 * @param message String, the string to be displayed
 	 */
 	private void printLog(String message) {
-		System.out.println(message);
-		logConsole.appendLog(" " + message + "\n");
+		Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+		String output = String.format("[%s] : %s\n", currentTime, message);
+		System.out.println(output);
+		logConsole.appendLog(output);
 	}
-
 	
 }
