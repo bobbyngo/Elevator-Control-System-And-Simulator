@@ -125,8 +125,8 @@ public class SchedulerContext {
 		ArrayList<ElevatorStatus> movingDownElevatorStatus = new ArrayList<>();
 		for (ElevatorStatus status : availableElevatorStatus) {
 			if (status.getState() != ElevatorStateEnum.DOORS_STUCK
-					&& status.getState() != ElevatorStateEnum.ELEVATOR_STUCK
-					&& status.getState() != ElevatorStateEnum.HOMING) {
+					&& status.getState() != ElevatorStateEnum.ELEVATOR_STUCK) {
+					//&& status.getState() != ElevatorStateEnum.HOMING) {
 				// 1st priority: Elevator that is moving up and current floor <= source floor
 				if (status.getDirection() == direction && direction == Direction.UP
 						&& status.getFloor() <= newRequestSourceFloor) {
