@@ -32,7 +32,7 @@ public class DoorsStuckState extends IdleMotorState {
 		// Scheduler should not be assigning requests at this state
 		// all requests are immediately returned for re-scheduling
 		ElevatorContext ctx = this.getContext();
-		//ctx.returnExternalRequests();
+		ctx.returnExternalRequests();
 		return this;
 	}
 
