@@ -91,13 +91,16 @@ public class SchedulerContext {
 	private ElevatorStatus findTheAvailableIdleElevator(ElevatorRequest request) {
 		ArrayList<ElevatorStatus> idleElevatorStatus = new ArrayList<>();
 		for (ElevatorStatus status : availableElevatorStatus) {
-			if (status.getDirection() == Direction.IDLE) {
+			if (status.getDirection() == Direction.IDLE && 
+					status.getState() != ElevatorStateEnum.ELEVATOR_STUCK &&
+					status.getState() != ElevatorStateEnum.DOORS_STUCK) {
 				idleElevatorStatus.add(status);
 			}
 		}
 		ElevatorStatus chosenElevatorStatus = null;
 
 		// beginning of the program, all the elevators are idle, return a first elevator
+		// FIXME: WHY!!!!!!!!!!!!
 		if (idleElevatorStatus.size() == schedulerSubsystem.getSimulatorConfiguration().NUM_ELEVATORS) {
 			chosenElevatorStatus = availableElevatorStatus.get(0);
 
@@ -155,7 +158,7 @@ public class SchedulerContext {
 	 * 
 	 * @return AssignedElevatorRequest, the assigned elevator request
 	 */
-	public AssignedElevatorRequest findBestElevatorToAssignRequest() {
+	public synchronized AssignedElevatorRequest findBestElevatorToAssignRequest() {
 		AssignedElevatorRequest assignedElevatorRequest = null;
 		if (availableElevatorStatus.size() == 0) {
 			//System.out.println(this.getClass().getSimpleName() + ": There are no available elevators.");
@@ -220,8 +223,7 @@ public class SchedulerContext {
 					//for (ElevatorStatus elevatorStatus : availableElevatorStatus) {
 					for (int i=0; i<availableElevatorStatus.size(); i++) {
 						ElevatorStatus elevatorStatus = availableElevatorStatus.get(i);
-						if (elevatorStatus.getState() != ElevatorStateEnum.ELEVATOR_STUCK ) {
-								//&& elevatorStatus.getState() != ElevatorStateEnum.DOORS_STUCK) {
+						if (elevatorStatus.getState() != ElevatorStateEnum.ELEVATOR_STUCK) {
 							assignedElevatorRequest = new AssignedElevatorRequest(elevatorStatus.getElevatorId() , request);
 							break;
 						}
