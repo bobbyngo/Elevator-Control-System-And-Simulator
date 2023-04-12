@@ -77,7 +77,7 @@ Adding State Machine functionality for the Scheduler subsystem and Elevator subs
 Split up system to separate programs that can be run on three separate computers and communicate with each other using UDP.
 The Scheduler will now be used to coordinate the movement of cars such that each car carries roughly the same number of passengers as all of the others and so that the waiting time for passengers at floors is minimized.
 The state machines for each car should execute independently of each other, but they will all have to share their position with the scheduler. The scheduler will choose which elevator will be used to service a given request.
-![UML-elevatorState-class](/documentation/P4-UML-elevatorState.draw.io.png)
+![UML-elevatorState-class](/documentation/P5-UML-elevatorState.drawio.png)
 ![UML-schedulerState-sequence](/documentation/P4-UML-schedulerState.drawio.png)
 
 # Iteration 4
