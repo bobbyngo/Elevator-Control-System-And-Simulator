@@ -725,7 +725,9 @@ public class ElevatorContext {
 	public void returnInternalRequests() {
 		synchronized (internalRequests) {
 			printLog("ELEVATOR_FAULT: marking all internalRequests as completed requests to scheduler");
-			for (ElevatorRequest req : internalRequests) {
+			ElevatorRequest req;
+			for (int i=0; i<internalRequests.size(); i++) {
+				req = internalRequests.get(i);
 				elevatorSubsystem.sendCompletedElevatorRequest(req);
 			}
 			internalRequests.removeAll(internalRequests);

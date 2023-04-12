@@ -170,7 +170,10 @@ public class ElevatorSubsystem implements Runnable {
 	public void returnElevatorRequests(List<ElevatorRequest> requests) {
 		UDPClient messageClient = new UDPClient();
 
-		for (ElevatorRequest request : requests) {
+		ElevatorRequest request;
+		for (int i=0; i<requests.size(); i++) {
+			request = (ElevatorRequest)requests.get(i);
+			System.out.println("Elevator returning: " + request);
 			try {
 				messageClient.sendMessage(request.encode(), simulatorConfiguration.SCHEDULER_HOST,
 						simulatorConfiguration.SCHEDULER_PENDING_REQ_PORT);

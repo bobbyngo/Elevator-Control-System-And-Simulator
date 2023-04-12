@@ -174,6 +174,7 @@ public class SchedulerContext {
 					// status here and then break out of the loop
 					chosenElevatorStatus = getSameSrcCacheElevator(request);
 					if (chosenElevatorStatus != null) {
+						System.out.println("Cache hit!");
 						selectedRequest = request;
 						break;
 					}
@@ -182,6 +183,7 @@ public class SchedulerContext {
 							request.getSourceFloor());
 
 					if (chosenElevatorStatus != null) {
+						System.out.println("Found available moving elevator1");
 						assignedElevatorRequest = new AssignedElevatorRequest(chosenElevatorStatus.getElevatorId(),
 								request);
 						// set cache here
@@ -198,6 +200,7 @@ public class SchedulerContext {
 						chosenElevatorStatus = findTheAvailableIdleElevator(request);
 
 						if (chosenElevatorStatus != null) {
+							System.out.println("Found available idle elevator!");
 							assignedElevatorRequest = new AssignedElevatorRequest(chosenElevatorStatus.getElevatorId(),
 									request);
 							// set cache here
@@ -209,16 +212,24 @@ public class SchedulerContext {
 				}
 				
 				if (chosenElevatorStatus == null) {
+					// packet ping-pong time :3 - nvm fuck packet ping po
+					System.out.println("Scheduler is picking FIRST AVAILABLE NON-STUCK elevator!");
+					//int numOfElevators = schedulerSubsystem.getSimulatorConfiguration().NUM_ELEVATORS;
+					//assignedElevatorRequest = new AssignedElevatorRequest((int)(Math.random() * numOfElevators + 1) , request);
 					selectedRequest = pendingElevatorRequests.get(0);
-					for (ElevatorStatus elevatorStatus : availableElevatorStatus) {
-						if (elevatorStatus.getState() != ElevatorStateEnum.ELEVATOR_STUCK) {
+					//for (ElevatorStatus elevatorStatus : availableElevatorStatus) {
+					for (int i=0; i<availableElevatorStatus.size(); i++) {
+						ElevatorStatus elevatorStatus = availableElevatorStatus.get(i);
+						if (elevatorStatus.getState() != ElevatorStateEnum.ELEVATOR_STUCK ) {
+								//&& elevatorStatus.getState() != ElevatorStateEnum.DOORS_STUCK) {
 							assignedElevatorRequest = new AssignedElevatorRequest(elevatorStatus.getElevatorId() , request);
 							break;
 						}
 					}
 				}
 				
-				if (selectedRequest != null) {
+				System.out.println("Scheduler selected: " + assignedElevatorRequest + " " + selectedRequest);
+				if (selectedRequest != null && assignedElevatorRequest != null) {
 					pendingElevatorRequests.remove(selectedRequest);
 				}
 			}
@@ -268,9 +279,7 @@ public class SchedulerContext {
 	 * @param elevatorStatus ElevatorStatus, the elevator status
 	 */
 	public void addAvailableElevatorStatus(ElevatorStatus elevatorStatus) {
-		synchronized (availableElevatorStatus) {
-			availableElevatorStatus.add(elevatorStatus);
-		}
+		availableElevatorStatus.add(elevatorStatus);
 	}
 
 	/**
@@ -285,9 +294,7 @@ public class SchedulerContext {
 		ElevatorStateEnum elevatorState = elevatorStatus.getState();
 		Direction elevatorDirection = elevatorStatus.getDirection();
 		
-		synchronized (availableElevatorStatus) {
-			availableElevatorStatus.set(index, elevatorStatus);
-		}
+		availableElevatorStatus.set(index, elevatorStatus);
 		
 		// clear cache when elevator arrives at a floor w/ its doors open
 		// doors open -> DOORS_OPEN
@@ -324,10 +331,8 @@ public class SchedulerContext {
 	 * @param elevatorRequest ElevatorRequest, the elevator request object
 	 */
 	public void addPendingElevatorRequests(ElevatorRequest elevatorRequest) {
-		synchronized (pendingElevatorRequests) {
 			pendingElevatorRequests.add(elevatorRequest);
 			onRequestReceived();
-		}
 	}
 
 	/**
@@ -336,10 +341,8 @@ public class SchedulerContext {
 	 * @param elevatorRequest ElevatorRequest, the elevator request object
 	 */
 	public void addCompletedElevatorRequests(ElevatorRequest elevatorRequest) {
-		synchronized (completedElevatorRequests) {
 			completedElevatorRequests.add(elevatorRequest);
 			onRequestReceived();
-		}
 	}
 
 	/**
