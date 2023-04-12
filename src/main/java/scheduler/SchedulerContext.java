@@ -179,6 +179,8 @@ public class SchedulerContext {
 					if (chosenElevatorStatus != null) {
 						System.out.println("Cache hit!");
 						selectedRequest = request;
+						assignedElevatorRequest = new AssignedElevatorRequest(chosenElevatorStatus.getElevatorId(), 
+								selectedRequest);
 						break;
 					}
 					
@@ -192,6 +194,8 @@ public class SchedulerContext {
 						// set cache here
 						setSameSrcCache(assignedElevatorRequest);
 						selectedRequest = request;
+						assignedElevatorRequest = new AssignedElevatorRequest(chosenElevatorStatus.getElevatorId(), 
+								selectedRequest);
 						break;
 					}
 				}
@@ -223,14 +227,15 @@ public class SchedulerContext {
 					//for (ElevatorStatus elevatorStatus : availableElevatorStatus) {
 					for (int i=0; i<availableElevatorStatus.size(); i++) {
 						ElevatorStatus elevatorStatus = availableElevatorStatus.get(i);
-						if (elevatorStatus.getState() != ElevatorStateEnum.ELEVATOR_STUCK) {
+						if (elevatorStatus.getState() != ElevatorStateEnum.ELEVATOR_STUCK &&
+								elevatorStatus.getState() != ElevatorStateEnum.DOORS_STUCK) {
 							assignedElevatorRequest = new AssignedElevatorRequest(elevatorStatus.getElevatorId() , request);
 							break;
 						}
 					}
 				}
 				
-				System.out.println("Scheduler selected: " + assignedElevatorRequest + " " + selectedRequest);
+				System.out.println("Scheduler selected: " + assignedElevatorRequest);
 				if (selectedRequest != null && assignedElevatorRequest != null) {
 					pendingElevatorRequests.remove(selectedRequest);
 				}
