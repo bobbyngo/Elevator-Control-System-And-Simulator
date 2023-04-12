@@ -98,13 +98,15 @@ public class SchedulerContext {
 			}
 		}
 		ElevatorStatus chosenElevatorStatus = null;
-
-		// beginning of the program, all the elevators are idle, return a first elevator
-		if (idleElevatorStatus.size() == schedulerSubsystem.getSimulatorConfiguration().NUM_ELEVATORS) {
-			chosenElevatorStatus = availableElevatorStatus.get(0);
-
-		} else {
-			chosenElevatorStatus = findTheClosestElevatorToRequestFloor(idleElevatorStatus, request.getSourceFloor());
+		chosenElevatorStatus = findTheClosestElevatorToRequestFloor(idleElevatorStatus, request.getSourceFloor());
+		if (chosenElevatorStatus != null) {
+			// temporarily update the chosen elevator with the request's direction
+			ElevatorStatus tempUpdatedStatus = new ElevatorStatus(chosenElevatorStatus.getElevatorId(),
+					chosenElevatorStatus.getFloor(), chosenElevatorStatus.getDirection(), 
+					chosenElevatorStatus.getNumRequests(), chosenElevatorStatus.getState());
+			int elevatorIndex = chosenElevatorStatus.getElevatorId() - 1;
+			tempUpdatedStatus.setDirection(request.getDirection());
+			availableElevatorStatus.set(elevatorIndex, tempUpdatedStatus);
 		}
 		return chosenElevatorStatus;
 	}
