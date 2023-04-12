@@ -24,6 +24,7 @@ import main.java.elevator.Direction;
 import main.java.elevator.state.ElevatorStateEnum;
 import main.java.floor.parser.Parser;
 import main.java.gui.LogConsole;
+import main.resources.GenerateEvents;
 
 /**
  * Responsible for sending elevator requests and handling incoming requests
@@ -232,8 +233,10 @@ public class FloorSubsystem implements Runnable {
 	private ArrayList<ElevatorRequest> getElevatorRequests() {
 		ArrayList<ElevatorRequest> elevatorRequests = null;
 		try {
+			GenerateEvents.generateEvents(simulatorConfiguration);
+			Thread.sleep(100);
 			elevatorRequests = parser.requestParser();
-		} catch (IOException e) {
+		} catch (InterruptedException | IOException e) {
 			e.printStackTrace();
 			System.exit(1);
 		}
