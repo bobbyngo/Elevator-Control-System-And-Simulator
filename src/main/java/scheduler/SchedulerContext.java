@@ -64,7 +64,7 @@ public class SchedulerContext {
 	 * @param sourceFloor int, the source floor number
 	 * @return ElevatorStatus, the status of the elevator
 	 */
-	private ElevatorStatus findTheClosestElevatorToRequestFloor(ArrayList<ElevatorStatus> elevators, int sourceFloor) {
+	public ElevatorStatus findTheClosestElevatorToRequestFloor(List<ElevatorStatus> elevators, int sourceFloor) {
 		ElevatorStatus chosenElevatorStatus = null;
 		// init the min value to the total floors
 		int closestElevator = schedulerSubsystem.getSimulatorConfiguration().NUM_FLOORS;
