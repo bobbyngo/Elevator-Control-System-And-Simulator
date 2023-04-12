@@ -219,22 +219,22 @@ public class SchedulerContext {
 					}
 				}
 				
-				if (chosenElevatorStatus == null) {
-					// packet ping-pong time :3 - nvm fuck packet ping po
-					System.out.println("Scheduler is picking FIRST AVAILABLE NON-STUCK elevator!");
-					//int numOfElevators = schedulerSubsystem.getSimulatorConfiguration().NUM_ELEVATORS;
-					//assignedElevatorRequest = new AssignedElevatorRequest((int)(Math.random() * numOfElevators + 1) , request);
-					selectedRequest = pendingElevatorRequests.get(0);
-					//for (ElevatorStatus elevatorStatus : availableElevatorStatus) {
-					for (int i=0; i<availableElevatorStatus.size(); i++) {
-						ElevatorStatus elevatorStatus = availableElevatorStatus.get(i);
-						if (elevatorStatus.getState() != ElevatorStateEnum.ELEVATOR_STUCK &&
-								elevatorStatus.getState() != ElevatorStateEnum.DOORS_STUCK) {
-							assignedElevatorRequest = new AssignedElevatorRequest(elevatorStatus.getElevatorId() , request);
-							break;
-						}
-					}
-				}
+//				if (chosenElevatorStatus == null) {
+//					// packet ping-pong time :3 - nvm fuck packet ping po
+//					System.out.println("Scheduler is picking FIRST AVAILABLE NON-STUCK elevator!");
+//					//int numOfElevators = schedulerSubsystem.getSimulatorConfiguration().NUM_ELEVATORS;
+//					//assignedElevatorRequest = new AssignedElevatorRequest((int)(Math.random() * numOfElevators + 1) , request);
+//					selectedRequest = pendingElevatorRequests.get(0);
+//					//for (ElevatorStatus elevatorStatus : availableElevatorStatus) {
+//					for (int i=0; i<availableElevatorStatus.size(); i++) {
+//						ElevatorStatus elevatorStatus = availableElevatorStatus.get(i);
+//						if (elevatorStatus.getState() != ElevatorStateEnum.ELEVATOR_STUCK &&
+//								elevatorStatus.getState() != ElevatorStateEnum.DOORS_STUCK) {
+//							assignedElevatorRequest = new AssignedElevatorRequest(elevatorStatus.getElevatorId() , request);
+//							break;
+//						}
+//					}
+//				}
 				
 				System.out.println("Scheduler selected: " + assignedElevatorRequest);
 				if (selectedRequest != null && assignedElevatorRequest != null) {
