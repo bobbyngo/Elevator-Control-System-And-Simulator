@@ -374,7 +374,7 @@ public class SchedulerContext {
 	public void processCompletedElevatorRequest() throws IOException {
 		ElevatorRequest nextCompletedRequest;
 		if (completedElevatorRequests.size() > 0) {
-			nextCompletedRequest = completedElevatorRequests.get(completedElevatorRequests.size() - 1);
+			nextCompletedRequest = completedElevatorRequests.remove(0);
 			schedulerSubsystem.sendCompletedElevatorRequest(nextCompletedRequest);
 		}
 	}
