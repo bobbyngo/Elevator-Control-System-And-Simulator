@@ -617,9 +617,12 @@ public class ElevatorContext {
 	 */
 	public ElevatorError isAtErrorFloor() {
 		ElevatorError error = null, reqError;
+		ElevatorRequest req;
 		for (int i = 0; i < internalRequests.size(); i++) {
-			reqError = internalRequests.get(i).getElevatorError();
-			if (reqError != null) {
+			req = internalRequests.get(i);
+			reqError = req.getElevatorError();
+			if (reqError != null && currentFloor == req.getDestinationFloor()) {
+				// trigger error at destination floor to allow floor lamps to switch off
 				switch (reqError) {
 				case ELEVATOR_STUCK:
 					return ElevatorError.ELEVATOR_STUCK;

@@ -298,12 +298,15 @@ public class SchedulerContext {
 		}
 		
 		// clear elevator from cache if it is at DOOR_STUCK/ELEVATOR_STUCK state
+		Integer upCacheValue, downCacheValue;
 		if (elevatorState == ElevatorStateEnum.ELEVATOR_STUCK || elevatorState == ElevatorStateEnum.DOORS_STUCK) {
-			for (int floor=1; floor<schedulerSubsystem.getSimulatorConfiguration().NUM_FLOORS; floor++) {
-				if (sameSrcUpCache.get(floor) == elevatorId) {
+			for (Integer floor=1; floor<schedulerSubsystem.getSimulatorConfiguration().NUM_FLOORS; floor++) {
+				upCacheValue = sameSrcUpCache.get(floor);
+				downCacheValue = sameSrcDownCache.get(floor);
+				if (upCacheValue != null && upCacheValue == elevatorId) {
 					sameSrcUpCache.put(floor, null);
 				}
-				if (sameSrcDownCache.get(floor) == elevatorId) {
+				if (downCacheValue != null && downCacheValue == elevatorId) {
 					sameSrcDownCache.put(floor, null);
 				}
 			}
@@ -363,7 +366,7 @@ public class SchedulerContext {
 	 * @return boolean, true if the scheduler is idle, otherwise false
 	 */
 	public boolean isSchedulerIdle() {
-		return pendingElevatorRequests.size() == 0 && completedElevatorRequests.size() == 0;
+		return false;
 	}
 
 	/**
