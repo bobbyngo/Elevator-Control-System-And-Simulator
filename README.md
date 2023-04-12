@@ -28,7 +28,7 @@ The work distribution is divided into tasks and displayed in this JIRA link:
 
 The work breakdown responsibility of the project for the iteration is located:
 
-* documentation/P3G7-Responsibilities.pdf
+* documentation/P5G7-Responsibilities.pdf
 
 ## Documentation
 
@@ -46,7 +46,11 @@ the documentation folder labeled:
 No other external dependencies required.
 
 ## Compiling & Running the Application
-Navigate to GUI.java -> Run the main method
+For GUI:
+</br>
+Navigate to Main.java -> Run the main method
+</br>
+For console in eclipse:
 </br>
 Navigate to SchedulerSubsystem.java -> Run the main method
 </br>
