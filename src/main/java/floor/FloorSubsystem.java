@@ -277,6 +277,7 @@ public class FloorSubsystem implements Runnable {
 		fc.setCurrentDirectory(new File("./src/main/resources/"));
 		fc.setLocation(100 + (425 * 3), 350);
         int returnVal = fc.showDialog(logConsole, "Select File");
+        if (fc.getSelectedFile() == null) System.exit(1);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             return "./src/main/resources/" + fc.getSelectedFile().getName();
         } 
