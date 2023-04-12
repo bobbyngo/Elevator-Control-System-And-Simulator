@@ -60,7 +60,6 @@ public class MovingUpStateTest {
 		assertTrue(ctx.incrementCurrentFloor());
 		assertEquals(2, ctx.getCurrentFloor());
 		req = ElevatorStateTestUtil.initElevatorRequest(2, Direction.DOWN, 1);
-		System.out.println(elevatorState.handleRequestReceived(req));
 		assert elevatorState.handleRequestReceived(req) instanceof MovingUpState;
 		assertEquals(2, ctx.getCurrentFloor());
 	}

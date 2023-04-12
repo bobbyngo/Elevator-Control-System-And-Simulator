@@ -14,8 +14,10 @@ import org.junit.Test;
 
 import main.java.dto.ElevatorRequest;
 import main.java.elevator.Direction;
+import main.java.elevator.Door;
 import main.java.elevator.ElevatorContext;
 import main.java.elevator.ElevatorSubsystem;
+import main.java.elevator.Motor;
 import main.java.elevator.state.ElevatorState;
 import main.java.elevator.state.MovingDownState;
 import main.java.elevator.state.StoppedState;
@@ -99,7 +101,9 @@ public class MovingDownStateTest {
 	 */
 	@Test
 	public void testToString() {
-		fail("Not yet implemented");
+		ElevatorRequest req = ElevatorStateTestUtil.initElevatorRequest(5, Direction.DOWN, 4);
+		ElevatorState expectedState = elevatorState;
+		assertEquals(expectedState.toString(), elevatorState.handleRequestReceived(req).toString());
 	}
 
 	/**
@@ -107,15 +111,19 @@ public class MovingDownStateTest {
 	 */
 	@Test
 	public void testGetElevatorStateEnum() {
-		fail("Not yet implemented");
+		ElevatorRequest req = ElevatorStateTestUtil.initElevatorRequest(5, Direction.DOWN, 4);
+		ElevatorState expectedState = elevatorState;
+		assertEquals(expectedState.getElevatorStateEnum(), elevatorState.handleRequestReceived(req).getElevatorStateEnum());
 	}
-
+	
 	/**
 	 * Test method for {@link main.java.elevator.state.MovingDownState#MovingDownState(main.java.elevator.ElevatorContext)}.
 	 */
 	@Test
 	public void testMovingDownState() {
-		fail("Not yet implemented");
+		assertEquals(Motor.THROTTLE_DOWN, elevatorState.getContext().getMotor());
+		assertEquals(Direction.DOWN, elevatorState.getContext().getDirection());
+		assertEquals(Door.CLOSED, elevatorState.getContext().getDoors());
 	}
 
 }
