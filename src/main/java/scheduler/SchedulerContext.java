@@ -54,7 +54,6 @@ public class SchedulerContext {
 			availableElevatorStatus.add(new ElevatorStatus(i));
 		}
 		currentState = SchedulerState.start(this);
-		//System.out.println(String.format("Current state: %s", currentState));
 	}
 
 	/**
@@ -131,7 +130,6 @@ public class SchedulerContext {
 				if (status.getDirection() == direction && direction == Direction.UP
 						&& status.getFloor() <= newRequestSourceFloor) {
 					movingUpElevatorStatus.add(status);
-					// chosenElevatorStatus = status;
 				}
 				// 2nd priority: Elevator that is moving down and current floor >= source floor
 				else if (status.getDirection() == direction && direction == Direction.DOWN
@@ -178,7 +176,6 @@ public class SchedulerContext {
 					// status here and then break out of the loop
 					chosenElevatorStatus = getSameSrcCacheElevator(request);
 					if (chosenElevatorStatus != null) {
-						System.out.println("Cache hit!");
 						selectedRequest = request;
 						assignedElevatorRequest = new AssignedElevatorRequest(chosenElevatorStatus.getElevatorId(), 
 								selectedRequest);
@@ -189,7 +186,6 @@ public class SchedulerContext {
 							request.getSourceFloor());
 
 					if (chosenElevatorStatus != null) {
-						System.out.println("Found available moving elevator1");
 						assignedElevatorRequest = new AssignedElevatorRequest(chosenElevatorStatus.getElevatorId(),
 								request);
 						// set cache here
@@ -208,7 +204,6 @@ public class SchedulerContext {
 						chosenElevatorStatus = findTheAvailableIdleElevator(request);
 
 						if (chosenElevatorStatus != null) {
-							System.out.println("Found available idle elevator!");
 							assignedElevatorRequest = new AssignedElevatorRequest(chosenElevatorStatus.getElevatorId(),
 									request);
 							// set cache here
@@ -219,7 +214,6 @@ public class SchedulerContext {
 					}
 				}
 								
-				System.out.println("Scheduler selected: " + assignedElevatorRequest);
 				if (selectedRequest != null && assignedElevatorRequest != null) {
 					pendingElevatorRequests.remove(selectedRequest);
 				}
@@ -341,9 +335,7 @@ public class SchedulerContext {
 	 */
 	public void onRequestReceived() {
 		synchronized (currentState) {
-			//System.out.println("Event: Request Received");
 			currentState = currentState.handleRequestReceived();
-			//System.out.println(String.format("Current state: %s, # Completed: %d", currentState, this.completedElevatorRequests.size()));
 		}
 	}
 
@@ -352,9 +344,7 @@ public class SchedulerContext {
 	 */
 	public void onRequestSent() {
 		synchronized (currentState) {
-			//System.out.println("Event: Request Sent");
 			currentState = currentState.handleRequestSent();
-			//System.out.println(String.format("Current state: %s, # Completed: %d", currentState, this.completedElevatorRequests.size()));
 		}
 	}
 

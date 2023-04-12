@@ -126,7 +126,6 @@ public class SchedulerSubsystem implements Runnable {
 		DatagramPacket packetFromFloor = pendingRequestSocket.receiveMessage();
 		byte[] floorRequestData = UDPClient.readPacketData(packetFromFloor);
 		ElevatorRequest floorRequest = ElevatorRequest.decode(floorRequestData);
-		System.out.println("Scheduler received: " + floorRequest);
 		task = new Thread(new Runnable() {
 			@Override
 			public void run() {
