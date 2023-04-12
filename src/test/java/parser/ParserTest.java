@@ -53,12 +53,11 @@ public class ParserTest {
 	 */
 	@Test
 	public void testSortListByTimestamp() {
-
-		assertEquals("2 UP 6", elevatorRequestList.get(0).toString().split(" ", 2)[1]);
-		assertEquals("7 UP 10", elevatorRequestList.get(1).toString().split(" ", 2)[1]);
-		assertEquals("1 UP 4", elevatorRequestList.get(2).toString().split(" ", 2)[1]);
+		assertEquals("10 UP 15", elevatorRequestList.get(0).toString().split(" ", 2)[1]);
+		assertEquals("1 UP 4", elevatorRequestList.get(1).toString().split(" ", 2)[1]);
+		assertEquals("2 UP 6", elevatorRequestList.get(2).toString().split(" ", 2)[1]);
 		assertEquals("3 DOWN 1", elevatorRequestList.get(3).toString().split(" ", 2)[1]);
-		assertEquals("10 UP 15", elevatorRequestList.get(4).toString().split(" ", 2)[1]);
+		assertEquals("7 UP 10", elevatorRequestList.get(4).toString().split(" ", 2)[1]);
 	}
 	
 	/**
@@ -93,7 +92,7 @@ public class ParserTest {
 	 */
 	@Test
 	public void testSourceFloor() {
-		assertEquals(Integer.valueOf(2), elevatorRequestList.get(0).getSourceFloor());
+		assertEquals(Integer.valueOf(10), elevatorRequestList.get(0).getSourceFloor());
 	}
 	
 	/**
@@ -111,7 +110,7 @@ public class ParserTest {
 	 */
 	@Test
 	public void testDirectionDown() {
-		assertEquals(Direction.UP, elevatorRequestList.get(4).getDirection());
+		assertEquals(Direction.DOWN, elevatorRequestList.get(3).getDirection());
 	}
 	
 	/**
@@ -120,7 +119,7 @@ public class ParserTest {
 	 */
 	@Test
 	public void testDestinationFloor() {
-		assertEquals(Integer.valueOf(6), elevatorRequestList.get(0).getDestinationFloor());
+		assertEquals(Integer.valueOf(15), elevatorRequestList.get(0).getDestinationFloor());
 	}
 
 }
