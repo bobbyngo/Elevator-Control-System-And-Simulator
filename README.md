@@ -36,7 +36,7 @@ The UML class diagram and the UML sequence diagram of the system is contained in
 the documentation folder labeled: 
 
 * documentation/P5-UML-class.drawio.pdf
-* documentation/P4-UML-sequence.drawio.pdf
+* documentation/P5-UML-sequence.drawio.pdf
 
 ## Requirements & Dependencies
 
