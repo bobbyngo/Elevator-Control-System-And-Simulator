@@ -6,7 +6,9 @@ Department of Systems and Computer Engineering
 SYSC 3303A Real-Time Concurrent Systems Winter 2023 
 Iteration 1 - Establish Connections between the three subsystems.
 Iteration 2 - Adding the Scheduler and Elevator Subsystems.
-Iteration 3 – Multiple Cars and System Distribution.
+Iteration 3 - Multiple Cars and System Distribution.
+Iteration 4 – Adding Error detection and correction.
+Iteration 5 – Measuring the Scheduler and predicting the performance.
 @version 1.0, 02/04/23
 @version 2.0, 02/27/23
 @version 3.0, 03/11/23
@@ -35,8 +37,8 @@ The work breakdown responsibility of the project for the iteration is located:
 The UML class diagram and the UML sequence diagram of the system is contained in
 the documentation folder labeled: 
 
-* documentation/P5-UML-class.drawio.pdf
-* documentation/P5-UML-sequence.drawio.pdf
+* documentation/diagrams/P5-UML-class.drawio.pdf
+* documentation/diagrams/P5-UML-sequence.drawio.pdf
 
 ## Requirements & Dependencies
 
@@ -61,8 +63,8 @@ Navigate to FloorSubsystem.java -> Run the main method
 The output should be in the console of eclipse and in the GUI
 
 ## UML Diagrams
-![UML-class](/documentation/P5-UML-class.drawio.png)
-![UML-sequence](/documentation/diagrams-sequence.drawio.png)
+![UML-class](/documentation/diagrams/P5-UML-class.drawio.png)
+![UML-sequence](/documentation/diagrams/P5-sequence.drawio.png)
 
 # Iteration 1
 Set up an application for 3 subsystems: Floor, Scheduler, and Elevator. 
@@ -77,8 +79,8 @@ Adding State Machine functionality for the Scheduler subsystem and Elevator subs
 Split up system to separate programs that can be run on three separate computers and communicate with each other using UDP.
 The Scheduler will now be used to coordinate the movement of cars such that each car carries roughly the same number of passengers as all of the others and so that the waiting time for passengers at floors is minimized.
 The state machines for each car should execute independently of each other, but they will all have to share their position with the scheduler. The scheduler will choose which elevator will be used to service a given request.
-![UML-elevatorState-class](/documentation/P4-UML-elevatorState.draw.io.png)
-![UML-schedulerState-sequence](/documentation/P4-UML-schedulerState.drawio.png)
+![UML-elevatorState-class](/documentation/diagrams/P5-UML-elevatorState.drawio.png)
+![UML-schedulerState-sequence](/documentation/diagrams/P4-UML-schedulerState.drawio.png)
 
 # Iteration 4
 Adding error states for DOOR_STUCK and ELEVATOR_STUCK by determining the floor would case these state to happen. If the elevator reaches those floor the error state would appear. 
@@ -109,15 +111,19 @@ ELEVATOR-CONTROL-SYSTEM-AND-SIMULATOR
 |       A3G7_milestone_3.zip
 |       A3G7_milestone_4.zip
 +---documentation
-|       P3-UML-class.drawio.pdf
-|       P3-UML-class.drawio.png
-|       P3-UML-elevatorState.drawio.pdf
-|       P3-UML-schedulerState.drawio.pdf
-|       P3-UML-sequence.drawio.pdf
-|       P3-UML-sequence.drawio.png
-|       P3-UML.drawio
-|       P3G7-Responsibilities.docx
-|       P3G7-Responsibilities.pdf
+|   |   P3G7-Responsibilities.docx
+|   |   P3G7-Responsibilities.pdf
+|   |   SYSC3302-G7-FinalReport.docx
+|   |   SYSC3302-G7-FinalReport.pdf
+|   |
+|   +---diagrams
+|       	   P3-UML-class.drawio.pdf
+|              P3-UML-class.drawio.png
+|              P3-UML-elevatorState.drawio.pdf
+|              P3-UML-schedulerState.drawio.pdf
+|              P3-UML-sequence.drawio.pdf
+|              P3-UML-sequence.drawio.png
+|              P3-UML.drawio
 |
 \---src
     |   module-info.java

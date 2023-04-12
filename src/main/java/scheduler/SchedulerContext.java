@@ -64,7 +64,7 @@ public class SchedulerContext {
 	 * @param sourceFloor int, the source floor number
 	 * @return ElevatorStatus, the status of the elevator
 	 */
-	private ElevatorStatus findTheClosestElevatorToRequestFloor(ArrayList<ElevatorStatus> elevators, int sourceFloor) {
+	public ElevatorStatus findTheClosestElevatorToRequestFloor(List<ElevatorStatus> elevators, int sourceFloor) {
 		ElevatorStatus chosenElevatorStatus = null;
 		// init the min value to the total floors
 		int closestElevator = schedulerSubsystem.getSimulatorConfiguration().NUM_FLOORS;
@@ -166,7 +166,7 @@ public class SchedulerContext {
 			ElevatorStatus chosenElevatorStatus = null;
 
 			synchronized (pendingElevatorRequests) {
-				ElevatorRequest request = null;
+				ElevatorRequest request = null, selectedRequest = null;
 				// Find the moving elevators
 				for (int i = 0; i < pendingElevatorRequests.size(); i++) {
 					request = pendingElevatorRequests.get(i);
@@ -174,6 +174,7 @@ public class SchedulerContext {
 					// status here and then break out of the loop
 					chosenElevatorStatus = getSameSrcCacheElevator(request);
 					if (chosenElevatorStatus != null) {
+						selectedRequest = request;
 						break;
 					}
 					
@@ -185,6 +186,7 @@ public class SchedulerContext {
 								request);
 						// set cache here
 						setSameSrcCache(assignedElevatorRequest);
+						selectedRequest = request;
 						break;
 					}
 				}
@@ -200,18 +202,24 @@ public class SchedulerContext {
 									request);
 							// set cache here
 							setSameSrcCache(assignedElevatorRequest);
+							selectedRequest = request;
 							break;
 						}
 					}
 				}
 				
 				if (chosenElevatorStatus == null) {
-					int numOfElevators = schedulerSubsystem.getSimulatorConfiguration().NUM_ELEVATORS;
-					assignedElevatorRequest = new AssignedElevatorRequest((int)(Math.random() * numOfElevators + 1) , request);
+					selectedRequest = pendingElevatorRequests.get(0);
+					for (ElevatorStatus elevatorStatus : availableElevatorStatus) {
+						if (elevatorStatus.getState() != ElevatorStateEnum.ELEVATOR_STUCK) {
+							assignedElevatorRequest = new AssignedElevatorRequest(elevatorStatus.getElevatorId() , request);
+							break;
+						}
+					}
 				}
 				
-				if (request != null) {
-					pendingElevatorRequests.remove(request);
+				if (selectedRequest != null) {
+					pendingElevatorRequests.remove(selectedRequest);
 				}
 			}
 		}
@@ -272,6 +280,7 @@ public class SchedulerContext {
 	 * @param elevatorStatus ElevatorStatus, the status of the elevator
 	 */
 	public void modifyAvailableElevatorStatus(int index, ElevatorStatus elevatorStatus) {
+		int elevatorId = elevatorStatus.getElevatorId();
 		int elevatorFloor = elevatorStatus.getFloor();
 		ElevatorStateEnum elevatorState = elevatorStatus.getState();
 		Direction elevatorDirection = elevatorStatus.getDirection();
@@ -289,6 +298,21 @@ public class SchedulerContext {
 			} else if (elevatorDirection == Direction.DOWN) {
 				// update sameSrcDownCache
 				sameSrcDownCache.put(elevatorFloor, null);
+			}
+		}
+		
+		// clear elevator from cache if it is at DOOR_STUCK/ELEVATOR_STUCK state
+		Integer upCacheValue, downCacheValue;
+		if (elevatorState == ElevatorStateEnum.ELEVATOR_STUCK || elevatorState == ElevatorStateEnum.DOORS_STUCK) {
+			for (Integer floor=1; floor<schedulerSubsystem.getSimulatorConfiguration().NUM_FLOORS; floor++) {
+				upCacheValue = sameSrcUpCache.get(floor);
+				downCacheValue = sameSrcDownCache.get(floor);
+				if (upCacheValue != null && upCacheValue == elevatorId) {
+					sameSrcUpCache.put(floor, null);
+				}
+				if (downCacheValue != null && downCacheValue == elevatorId) {
+					sameSrcDownCache.put(floor, null);
+				}
 			}
 		}
 		
@@ -346,7 +370,7 @@ public class SchedulerContext {
 	 * @return boolean, true if the scheduler is idle, otherwise false
 	 */
 	public boolean isSchedulerIdle() {
-		return pendingElevatorRequests.size() == 0 && completedElevatorRequests.size() == 0;
+		return false;
 	}
 
 	/**
@@ -357,7 +381,7 @@ public class SchedulerContext {
 	public void processCompletedElevatorRequest() throws IOException {
 		ElevatorRequest nextCompletedRequest;
 		if (completedElevatorRequests.size() > 0) {
-			nextCompletedRequest = completedElevatorRequests.get(completedElevatorRequests.size() - 1);
+			nextCompletedRequest = completedElevatorRequests.remove(0);
 			schedulerSubsystem.sendCompletedElevatorRequest(nextCompletedRequest);
 		}
 	}

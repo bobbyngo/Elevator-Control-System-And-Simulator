@@ -92,5 +92,10 @@ public class AssignedElevatorRequest extends ElevatorRequest implements Serializ
 		byte[] encodedData = SerializableEncoder.encode(this);
 		return encodedData;
 	}
+	
+	@Override
+	public String toString() {
+		return String.format("%d %s", elevatorId, super.toString());
+	}
 
 }
