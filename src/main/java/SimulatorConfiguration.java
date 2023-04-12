@@ -26,11 +26,9 @@ public class SimulatorConfiguration {
 
 	// SchedulerOld and SchedulerSubsystem config
 	public final String SCHEDULER_HOST;
-	public final int SCHEDULER_FLOOR_REQ_PORT;
 	public final int SCHEDULER_PENDING_REQ_PORT;
 	public final int SCHEDULER_ARRIVAL_REQ_PORT;
 	public final int SCHEDULER_COMPLETED_REQ_PORT;
-	public final int SCHEDULER_NOTIFY_PORT;
 
 	// Elevator config
 	public final String ELEVATOR_SUBSYSTEM_HOST;
@@ -79,11 +77,9 @@ public class SimulatorConfiguration {
 		DOORS_OBSTRUCTED_TIME = Integer.parseInt(prop.getProperty("DOORS_OBSTRUCTED_TIME"));
 
 		SCHEDULER_HOST = prop.getProperty("SCHEDULER_HOST");
-		SCHEDULER_FLOOR_REQ_PORT = Integer.parseInt(prop.getProperty("SCHEDULER_FLOOR_REQ_PORT"));
 		SCHEDULER_PENDING_REQ_PORT = Integer.parseInt(prop.getProperty("SCHEDULER_PENDING_REQ_PORT"));
 		SCHEDULER_ARRIVAL_REQ_PORT = Integer.parseInt(prop.getProperty("SCHEDULER_ARRIVAL_REQ_PORT"));
 		SCHEDULER_COMPLETED_REQ_PORT = Integer.parseInt(prop.getProperty("SCHEDULER_COMPLETED_REQ_PORT"));
-		SCHEDULER_NOTIFY_PORT = Integer.parseInt(prop.getProperty("SCHEDULER_NOTIFY_PORT"));
 
 		ELEVATOR_SUBSYSTEM_HOST = prop.getProperty("ELEVATOR_SUBSYSTEM_HOST");
 		ELEVATOR_SUBSYSTEM_REQ_PORT = Integer.parseInt(prop.getProperty("ELEVATOR_SUBSYSTEM_REQ_PORT"));
