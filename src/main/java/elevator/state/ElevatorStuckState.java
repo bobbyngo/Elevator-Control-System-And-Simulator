@@ -20,6 +20,7 @@ public class ElevatorStuckState extends IdleMotorState {
 		super(ctx);
 		ctx.setDirection(Direction.IDLE);
 		ctx.returnExternalRequests();
+		ctx.returnInternalRequests();
 	}
 
 	/**

@@ -715,6 +715,16 @@ public class ElevatorContext {
 			externalRequests.removeAll(externalRequests);
 		}
 	}
+	
+	public void returnInternalRequests() {
+		synchronized (internalRequests) {
+			printLog("ELEVATOR_FAULT: marking all internalRequests as completed requests to scheduler");
+			for (ElevatorRequest req : internalRequests) {
+				elevatorSubsystem.sendCompletedElevatorRequest(req);
+			}
+			internalRequests.removeAll(internalRequests);
+		}
+	}
 
 	/**
 	 * Get the current elevator current state.
