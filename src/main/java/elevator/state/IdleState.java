@@ -37,8 +37,6 @@ public class IdleState extends IdleMotorState {
 			ctx.setDirection(request.getDirection());
 			return new DoorsClosedState(ctx);
 		}
-		//ctx.unloadPassengers();
-		// determine if sweep or home
 		if (ctx.shouldElevatorSweep(request)) {
 			ctx.setDirection(request.getDirection());
 			return new DoorsClosedState(ctx);
@@ -48,10 +46,6 @@ public class IdleState extends IdleMotorState {
 			return new HomingDoorsClosedState(ctx);
 		}
 		return this;
-		
-		//ctx.unloadPassengers();
-		//ctx.setDirection(request.getDirection());
-		//return new DoorsClosedState(ctx);
 	}
 
 	/**
@@ -61,7 +55,6 @@ public class IdleState extends IdleMotorState {
 	 */
 	@Override
 	public ElevatorState handleTimeout() {
-		// there shouldn't be timeouts happening at this state
 		return this;
 	}
 

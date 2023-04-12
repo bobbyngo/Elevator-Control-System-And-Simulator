@@ -21,18 +21,9 @@ public class DoorsOpenState extends IdleMotorState {
 		StateTimeoutTask stt = new StateTimeoutTask(ctx, TimeoutEvent.DOORS_CLOSE);
 		ctx.setTimer(stt, ctx.getConfig().LOADING_TIME);
 		ctx.setDoors(Door.OPEN);
-		//ctx.unloadPassengers();
-		//ctx.loadPassengers();
 		
 		ctx.loadPassengers();
 		ctx.unloadPassengers();
-		// FIXME: unload invalid request passengers (or don't let them in? idk)
-		// -> example: elevator is going UP and detects a request going past max floor
-		// -> example: elevator is going DOWN and detects a request going below floor 1
-		// these requests shouldn't be entertained. return them immediately?
-		
-		// TODO: add assert direction != idle?
-		//assert ctx.getDirection() != Direction.IDLE;
 	}
 
 	/**
@@ -42,10 +33,6 @@ public class DoorsOpenState extends IdleMotorState {
 	 */
 	@Override
 	public ElevatorState handleRequestReceived(ElevatorRequest request) {
-		// during the loading time period, appropriate passengers should be able
-		// to board the elevator
-		// note to test: if passenger is trolling and boards and elevator to request the same
-		// floor, the elevator will go Open->Closed->Stopped->Open
 		ElevatorContext ctx = this.getContext();
 		ctx.loadPassengers(request);
 		return this;
@@ -61,13 +48,10 @@ public class DoorsOpenState extends IdleMotorState {
 		ElevatorContext ctx = this.getContext();
 		Direction nextDirection = ctx.calculateNextDirection();
 		Direction nextHomingDirection = ctx.calculateNextHomingDirection();
-		// TODO: calculateNextHomingDirection()?
 		ctx.killTimer();
 		
 		if (nextDirection == Direction.IDLE) {
-			// FIXME: insert set homing direction setting here
 			if (nextHomingDirection != Direction.IDLE) {
-				//FIXME: this is some really garbage code
 				ctx.setDirection(nextHomingDirection);
 				return new HomingDoorsClosedState(ctx);
 			}

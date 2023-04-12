@@ -47,9 +47,6 @@ public class MovingUpState extends MovingState {
 	public ElevatorState handleTimeout() {
 		ElevatorContext ctx = this.getContext();
 		ctx.killTimer();
-		// Increment the current floor onTimeout
-		// if external request in current direction exists
-		// or internal request exists at current floor
 		if (!ctx.incrementCurrentFloor()) {
 			return new StoppedState(ctx);
 		}

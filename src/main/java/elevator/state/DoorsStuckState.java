@@ -29,8 +29,6 @@ public class DoorsStuckState extends IdleMotorState {
 	 */
 	@Override
 	public ElevatorState handleRequestReceived(ElevatorRequest request) {
-		// Scheduler should not be assigning requests at this state
-		// all requests are immediately returned for re-scheduling
 		ElevatorContext ctx = this.getContext();
 		ctx.returnExternalRequests();
 		return this;
