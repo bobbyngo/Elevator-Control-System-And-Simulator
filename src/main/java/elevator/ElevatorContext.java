@@ -716,6 +716,9 @@ public class ElevatorContext {
 		}
 	}
 	
+	/**
+	 * Return the internal elevator requests when a ELEVATOR_STUCK fault occurs
+	 */
 	public void returnInternalRequests() {
 		synchronized (internalRequests) {
 			printLog("ELEVATOR_FAULT: marking all internalRequests as completed requests to scheduler");

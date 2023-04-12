@@ -166,7 +166,7 @@ public class SchedulerContext {
 			ElevatorStatus chosenElevatorStatus = null;
 
 			synchronized (pendingElevatorRequests) {
-				ElevatorRequest request = null;
+				ElevatorRequest request = null, selectedRequest = null;
 				// Find the moving elevators
 				for (int i = 0; i < pendingElevatorRequests.size(); i++) {
 					request = pendingElevatorRequests.get(i);
@@ -174,6 +174,7 @@ public class SchedulerContext {
 					// status here and then break out of the loop
 					chosenElevatorStatus = getSameSrcCacheElevator(request);
 					if (chosenElevatorStatus != null) {
+						selectedRequest = request;
 						break;
 					}
 					
@@ -185,6 +186,7 @@ public class SchedulerContext {
 								request);
 						// set cache here
 						setSameSrcCache(assignedElevatorRequest);
+						selectedRequest = request;
 						break;
 					}
 				}
@@ -200,6 +202,7 @@ public class SchedulerContext {
 									request);
 							// set cache here
 							setSameSrcCache(assignedElevatorRequest);
+							selectedRequest = request;
 							break;
 						}
 					}
@@ -207,11 +210,12 @@ public class SchedulerContext {
 				
 				if (chosenElevatorStatus == null) {
 					int numOfElevators = schedulerSubsystem.getSimulatorConfiguration().NUM_ELEVATORS;
-					assignedElevatorRequest = new AssignedElevatorRequest((int)(Math.random() * numOfElevators + 1) , request);
+					selectedRequest = pendingElevatorRequests.get(0); // pop first request to random elevator
+					assignedElevatorRequest = new AssignedElevatorRequest((int)(Math.random() * numOfElevators + 1) , selectedRequest);
 				}
 				
-				if (request != null) {
-					pendingElevatorRequests.remove(request);
+				if (selectedRequest != null) {
+					pendingElevatorRequests.remove(selectedRequest);
 				}
 			}
 		}
@@ -272,6 +276,7 @@ public class SchedulerContext {
 	 * @param elevatorStatus ElevatorStatus, the status of the elevator
 	 */
 	public void modifyAvailableElevatorStatus(int index, ElevatorStatus elevatorStatus) {
+		int elevatorId = elevatorStatus.getElevatorId();
 		int elevatorFloor = elevatorStatus.getFloor();
 		ElevatorStateEnum elevatorState = elevatorStatus.getState();
 		Direction elevatorDirection = elevatorStatus.getDirection();
@@ -289,6 +294,18 @@ public class SchedulerContext {
 			} else if (elevatorDirection == Direction.DOWN) {
 				// update sameSrcDownCache
 				sameSrcDownCache.put(elevatorFloor, null);
+			}
+		}
+		
+		// clear elevator from cache if it is at DOOR_STUCK/ELEVATOR_STUCK state
+		if (elevatorState == ElevatorStateEnum.ELEVATOR_STUCK || elevatorState == ElevatorStateEnum.DOORS_STUCK) {
+			for (int floor=1; floor<schedulerSubsystem.getSimulatorConfiguration().NUM_FLOORS; floor++) {
+				if (sameSrcUpCache.get(floor) == elevatorId) {
+					sameSrcUpCache.put(floor, null);
+				}
+				if (sameSrcDownCache.get(floor) == elevatorId) {
+					sameSrcDownCache.put(floor, null);
+				}
 			}
 		}
 		
