@@ -163,6 +163,7 @@ ELEVATOR-CONTROL-SYSTEM-AND-SIMULATOR
     |   |   |   |       ElevatorState.java
     |   |   |   |       ElevatorStateEnum.java
     |   |   |   |       ElevatorStuckState.java
+    |   |   |   |       HomingDoorsClosedState.java
     |   |   |   |       IdleMotorState.java
     |   |   |   |       IdleState.java
     |   |   |   |       MovingDownState.java
