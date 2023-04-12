@@ -206,8 +206,12 @@ public class SchedulerContext {
 				}
 				
 				if (chosenElevatorStatus == null) {
-					int numOfElevators = schedulerSubsystem.getSimulatorConfiguration().NUM_ELEVATORS;
-					assignedElevatorRequest = new AssignedElevatorRequest((int)(Math.random() * numOfElevators + 1) , request);
+					 for (ElevatorStatus elevatorStatus : availableElevatorStatus) {
+						 if (elevatorStatus.getState() != ElevatorStateEnum.ELEVATOR_STUCK) {
+							 assignedElevatorRequest = new AssignedElevatorRequest(elevatorStatus.getElevatorId() , request);
+							 break;
+						 }
+					 }
 				}
 				
 				if (request != null) {
