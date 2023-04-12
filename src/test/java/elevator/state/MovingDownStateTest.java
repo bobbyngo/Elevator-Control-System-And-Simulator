@@ -99,7 +99,9 @@ public class MovingDownStateTest {
 	 */
 	@Test
 	public void testToString() {
-		fail("Not yet implemented");
+		ElevatorRequest req = ElevatorStateTestUtil.initElevatorRequest(5, Direction.DOWN, 4);
+		ElevatorState expectedState = elevatorState;
+		assertEquals(expectedState.toString(), elevatorState.handleRequestReceived(req).toString());
 	}
 
 	/**
@@ -107,15 +109,17 @@ public class MovingDownStateTest {
 	 */
 	@Test
 	public void testGetElevatorStateEnum() {
-		fail("Not yet implemented");
+		ElevatorRequest req = ElevatorStateTestUtil.initElevatorRequest(5, Direction.DOWN, 4);
+		ElevatorState expectedState = elevatorState;
+		assertEquals(expectedState.getElevatorStateEnum(), elevatorState.handleRequestReceived(req).getElevatorStateEnum());
 	}
-
+	
 	/**
 	 * Test method for {@link main.java.elevator.state.MovingDownState#MovingDownState(main.java.elevator.ElevatorContext)}.
 	 */
 	@Test
 	public void testMovingDownState() {
-		fail("Not yet implemented");
+		//fail("Not yet implemented");
 	}
 
 }

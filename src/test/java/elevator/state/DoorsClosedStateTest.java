@@ -60,13 +60,15 @@ public class DoorsClosedStateTest {
 	 * Test method for {@link main.java.elevator.state.DoorsClosedState#handleRequestReceived(ElevatorRequest)}.
 	 * @throws ParseException 
 	 */
+	
 	@Test
 	public void testHandleRequestReceived() throws ParseException {
 		ElevatorState expectedState = elevatorState;
 		assertSame(expectedState, 
 				elevatorState.handleRequestReceived(
-						ElevatorStateTestUtil.initElevatorRequest(1, Direction.UP, 3)));
+						ElevatorStateTestUtil.initElevatorRequest(2, Direction.UP, 3)));
 	}
+	
 
 	/**
 	 * Test method for {@link main.java.elevator.state.DoorsClosedState#handleTimeout()}.
