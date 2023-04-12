@@ -93,14 +93,14 @@ public class SchedulerContext {
 		for (ElevatorStatus status : availableElevatorStatus) {
 			if (status.getDirection() == Direction.IDLE && 
 					status.getState() != ElevatorStateEnum.ELEVATOR_STUCK &&
-					status.getState() != ElevatorStateEnum.DOORS_STUCK) {
+					status.getState() != ElevatorStateEnum.DOORS_STUCK &&
+					status.getState() != ElevatorStateEnum.HOMING_DOORS_CLOSED) {
 				idleElevatorStatus.add(status);
 			}
 		}
 		ElevatorStatus chosenElevatorStatus = null;
 
 		// beginning of the program, all the elevators are idle, return a first elevator
-		// FIXME: WHY!!!!!!!!!!!!
 		if (idleElevatorStatus.size() == schedulerSubsystem.getSimulatorConfiguration().NUM_ELEVATORS) {
 			chosenElevatorStatus = availableElevatorStatus.get(0);
 
@@ -125,7 +125,8 @@ public class SchedulerContext {
 		ArrayList<ElevatorStatus> movingDownElevatorStatus = new ArrayList<>();
 		for (ElevatorStatus status : availableElevatorStatus) {
 			if (status.getState() != ElevatorStateEnum.DOORS_STUCK
-					|| status.getState() != ElevatorStateEnum.ELEVATOR_STUCK) {
+					&& status.getState() != ElevatorStateEnum.ELEVATOR_STUCK
+					&& status.getState() != ElevatorStateEnum.HOMING) {
 				// 1st priority: Elevator that is moving up and current floor <= source floor
 				if (status.getDirection() == direction && direction == Direction.UP
 						&& status.getFloor() <= newRequestSourceFloor) {
