@@ -2,6 +2,7 @@ package main.java.dto;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.List;
 import java.util.TreeSet;
 
 import main.java.elevator.Direction;
@@ -42,11 +43,15 @@ public class ElevatorGuiData implements Serializable {
 
 		dropoffFloors = new TreeSet<>();
 		pickupFloors = new TreeSet<>();
-		if (ctx.getInternalRequests().iterator().hasNext()) {
-			dropoffFloors.add(ctx.getInternalRequests().iterator().next().getDestinationFloor());
+
+		List<ElevatorRequest> internalRequests = ctx.getInternalRequests();
+		for (int i=0; i<internalRequests.size(); i++) {
+			dropoffFloors.add(internalRequests.get(i).getDestinationFloor());
 		}
-		if (ctx.getExternalRequests().iterator().hasNext()) {
-			pickupFloors.add(ctx.getExternalRequests().iterator().next().getSourceFloor() + "-" + ctx.getExternalRequests().iterator().next().getDirection());
+		
+		List<ElevatorRequest> externalRequests = ctx.getExternalRequests();
+		for (int i=0; i<externalRequests.size(); i++) {
+			pickupFloors.add(externalRequests.get(i).getSourceFloor() + "-" + externalRequests.get(i).getDirection());
 		}
 	}
 

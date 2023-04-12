@@ -44,6 +44,8 @@ public class GenerateEvents {
 		int MAX_FLOOR = config.NUM_FLOORS;
 		int MIN_FLOOR = 1;
 		int RANGE_FLOOR = MAX_FLOOR - MIN_FLOOR + 1;
+		int probabilityOfElevatorStuck = 5;
+		int probabilityOfDoorsStuck = 15;
 
 		Date date = new Date();
 		Calendar calendar = Calendar.getInstance();
@@ -67,9 +69,14 @@ public class GenerateEvents {
 		int RANGE_SSS = MAX_SSS - MIN_SSS + 1;
 		NumberFormat formatter_xxx = new DecimalFormat("000");
 
-		File file = new File("./src/main/resources/input.txt");
-		FileOutputStream fos = new FileOutputStream(file);
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
+		File inputFile = new File("./src/main/resources/input.txt");
+		File autoFaultsFile = new File("./src/main/resources/autoFaults.txt");
+		
+		FileOutputStream inputFos = new FileOutputStream(inputFile);
+		FileOutputStream autoFaultsFos = new FileOutputStream(autoFaultsFile);
+		
+		BufferedWriter inputBw = new BufferedWriter(new OutputStreamWriter(inputFos));
+		BufferedWriter autoFaultsBw = new BufferedWriter(new OutputStreamWriter(autoFaultsFos));
 
 		for (int i = 0; i < NUM_EVENT; i++) {
 			int hh = (int) (Math.random() * RANGE_HH) + MIN_HH;
@@ -88,10 +95,21 @@ public class GenerateEvents {
 			String event = String.format("%s %s %s %s", time, startFloor, direction, destFloor);
 			
 			if (startFloor != destFloor) {
-				bw.write(event);
-				bw.newLine();
+				inputBw.write(event);
+				inputBw.newLine();
+				
+				int randomFault = (int) (Math.random() * 100 + 1); 
+				if (randomFault <= probabilityOfElevatorStuck) {
+					event += " ELEVATOR_STUCK";
+				}
+				else if (randomFault <= probabilityOfDoorsStuck + probabilityOfElevatorStuck) {
+					event += " DOORS_STUCK";
+				}
+				autoFaultsBw.write(event);
+				autoFaultsBw.newLine();
 			}
 		}
-		bw.close();
+		inputBw.close();
+		autoFaultsBw.close();
 	}
 }

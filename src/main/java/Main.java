@@ -1,12 +1,9 @@
 package main.java;
 
-import java.io.IOException;
-
 import main.java.elevator.ElevatorSubsystem;
 import main.java.floor.FloorSubsystem;
 import main.java.gui.GUI;
 import main.java.scheduler.SchedulerSubsystem;
-import main.resources.GenerateEvents;
 
 /**
  * Main execution of the elevator control system and simulator application.
@@ -23,14 +20,6 @@ public class Main {
 	public static void main(String[] args) {
 
 		SimulatorConfiguration configuration = new SimulatorConfiguration("./src/main/resources/config.properties");
-
-		try {
-			new GenerateEvents();
-			GenerateEvents.generateEvents(configuration);
-			Thread.sleep(100);
-		} catch (InterruptedException | IOException e) {
-			e.printStackTrace();
-		}
 
 		SchedulerSubsystem schedulerSubsystem = new SchedulerSubsystem(configuration);
 		ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem(configuration);
