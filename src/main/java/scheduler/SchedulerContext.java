@@ -54,7 +54,6 @@ public class SchedulerContext {
 			availableElevatorStatus.add(new ElevatorStatus(i));
 		}
 		currentState = SchedulerState.start(this);
-		//System.out.println(String.format("Current state: %s", currentState));
 	}
 
 	/**
@@ -91,18 +90,23 @@ public class SchedulerContext {
 	private ElevatorStatus findTheAvailableIdleElevator(ElevatorRequest request) {
 		ArrayList<ElevatorStatus> idleElevatorStatus = new ArrayList<>();
 		for (ElevatorStatus status : availableElevatorStatus) {
-			if (status.getDirection() == Direction.IDLE) {
+			if (status.getDirection() == Direction.IDLE && 
+					status.getState() != ElevatorStateEnum.ELEVATOR_STUCK &&
+					status.getState() != ElevatorStateEnum.DOORS_STUCK &&
+					status.getState() != ElevatorStateEnum.HOMING_DOORS_CLOSED) {
 				idleElevatorStatus.add(status);
 			}
 		}
 		ElevatorStatus chosenElevatorStatus = null;
-
-		// beginning of the program, all the elevators are idle, return a first elevator
-		if (idleElevatorStatus.size() == schedulerSubsystem.getSimulatorConfiguration().NUM_ELEVATORS) {
-			chosenElevatorStatus = availableElevatorStatus.get(0);
-
-		} else {
-			chosenElevatorStatus = findTheClosestElevatorToRequestFloor(idleElevatorStatus, request.getSourceFloor());
+		chosenElevatorStatus = findTheClosestElevatorToRequestFloor(idleElevatorStatus, request.getSourceFloor());
+		if (chosenElevatorStatus != null) {
+			// temporarily update the chosen elevator with the request's direction
+			ElevatorStatus tempUpdatedStatus = new ElevatorStatus(chosenElevatorStatus.getElevatorId(),
+					chosenElevatorStatus.getFloor(), chosenElevatorStatus.getDirection(), 
+					chosenElevatorStatus.getNumRequests(), chosenElevatorStatus.getState());
+			int elevatorIndex = chosenElevatorStatus.getElevatorId() - 1;
+			tempUpdatedStatus.setDirection(request.getDirection());
+			availableElevatorStatus.set(elevatorIndex, tempUpdatedStatus);
 		}
 		return chosenElevatorStatus;
 	}
@@ -122,12 +126,12 @@ public class SchedulerContext {
 		ArrayList<ElevatorStatus> movingDownElevatorStatus = new ArrayList<>();
 		for (ElevatorStatus status : availableElevatorStatus) {
 			if (status.getState() != ElevatorStateEnum.DOORS_STUCK
-					|| status.getState() != ElevatorStateEnum.ELEVATOR_STUCK) {
+					&& status.getState() != ElevatorStateEnum.ELEVATOR_STUCK
+					&& status.getState() != ElevatorStateEnum.HOMING) {
 				// 1st priority: Elevator that is moving up and current floor <= source floor
 				if (status.getDirection() == direction && direction == Direction.UP
 						&& status.getFloor() <= newRequestSourceFloor) {
 					movingUpElevatorStatus.add(status);
-					// chosenElevatorStatus = status;
 				}
 				// 2nd priority: Elevator that is moving down and current floor >= source floor
 				else if (status.getDirection() == direction && direction == Direction.DOWN
@@ -155,7 +159,7 @@ public class SchedulerContext {
 	 * 
 	 * @return AssignedElevatorRequest, the assigned elevator request
 	 */
-	public AssignedElevatorRequest findBestElevatorToAssignRequest() {
+	public synchronized AssignedElevatorRequest findBestElevatorToAssignRequest() {
 		AssignedElevatorRequest assignedElevatorRequest = null;
 		if (availableElevatorStatus.size() == 0) {
 			//System.out.println(this.getClass().getSimpleName() + ": There are no available elevators.");
@@ -175,6 +179,8 @@ public class SchedulerContext {
 					chosenElevatorStatus = getSameSrcCacheElevator(request);
 					if (chosenElevatorStatus != null) {
 						selectedRequest = request;
+						assignedElevatorRequest = new AssignedElevatorRequest(chosenElevatorStatus.getElevatorId(), 
+								selectedRequest);
 						break;
 					}
 					
@@ -187,6 +193,8 @@ public class SchedulerContext {
 						// set cache here
 						setSameSrcCache(assignedElevatorRequest);
 						selectedRequest = request;
+						assignedElevatorRequest = new AssignedElevatorRequest(chosenElevatorStatus.getElevatorId(), 
+								selectedRequest);
 						break;
 					}
 				}
@@ -207,18 +215,8 @@ public class SchedulerContext {
 						}
 					}
 				}
-				
-				if (chosenElevatorStatus == null) {
-					selectedRequest = pendingElevatorRequests.get(0);
-					for (ElevatorStatus elevatorStatus : availableElevatorStatus) {
-						if (elevatorStatus.getState() != ElevatorStateEnum.ELEVATOR_STUCK) {
-							assignedElevatorRequest = new AssignedElevatorRequest(elevatorStatus.getElevatorId() , request);
-							break;
-						}
-					}
-				}
-				
-				if (selectedRequest != null) {
+								
+				if (selectedRequest != null && assignedElevatorRequest != null) {
 					pendingElevatorRequests.remove(selectedRequest);
 				}
 			}
@@ -268,9 +266,7 @@ public class SchedulerContext {
 	 * @param elevatorStatus ElevatorStatus, the elevator status
 	 */
 	public void addAvailableElevatorStatus(ElevatorStatus elevatorStatus) {
-		synchronized (availableElevatorStatus) {
-			availableElevatorStatus.add(elevatorStatus);
-		}
+		availableElevatorStatus.add(elevatorStatus);
 	}
 
 	/**
@@ -285,9 +281,7 @@ public class SchedulerContext {
 		ElevatorStateEnum elevatorState = elevatorStatus.getState();
 		Direction elevatorDirection = elevatorStatus.getDirection();
 		
-		synchronized (availableElevatorStatus) {
-			availableElevatorStatus.set(index, elevatorStatus);
-		}
+		availableElevatorStatus.set(index, elevatorStatus);
 		
 		// clear cache when elevator arrives at a floor w/ its doors open
 		// doors open -> DOORS_OPEN
@@ -324,10 +318,8 @@ public class SchedulerContext {
 	 * @param elevatorRequest ElevatorRequest, the elevator request object
 	 */
 	public void addPendingElevatorRequests(ElevatorRequest elevatorRequest) {
-		synchronized (pendingElevatorRequests) {
 			pendingElevatorRequests.add(elevatorRequest);
 			onRequestReceived();
-		}
 	}
 
 	/**
@@ -336,10 +328,8 @@ public class SchedulerContext {
 	 * @param elevatorRequest ElevatorRequest, the elevator request object
 	 */
 	public void addCompletedElevatorRequests(ElevatorRequest elevatorRequest) {
-		synchronized (completedElevatorRequests) {
 			completedElevatorRequests.add(elevatorRequest);
 			onRequestReceived();
-		}
 	}
 
 	/**
@@ -347,9 +337,7 @@ public class SchedulerContext {
 	 */
 	public void onRequestReceived() {
 		synchronized (currentState) {
-			//System.out.println("Event: Request Received");
 			currentState = currentState.handleRequestReceived();
-			//System.out.println(String.format("Current state: %s, # Completed: %d", currentState, this.completedElevatorRequests.size()));
 		}
 	}
 
@@ -358,9 +346,7 @@ public class SchedulerContext {
 	 */
 	public void onRequestSent() {
 		synchronized (currentState) {
-			//System.out.println("Event: Request Sent");
 			currentState = currentState.handleRequestSent();
-			//System.out.println(String.format("Current state: %s, # Completed: %d", currentState, this.completedElevatorRequests.size()));
 		}
 	}
 

@@ -103,6 +103,10 @@ public class ElevatorStatus implements Serializable {
 	public ElevatorStateEnum getState() {
 		return state;
 	}
+	
+	public void setDirection(Direction direction) {
+		this.direction = direction;
+	}
 
 	/**
 	 * Decoding method.

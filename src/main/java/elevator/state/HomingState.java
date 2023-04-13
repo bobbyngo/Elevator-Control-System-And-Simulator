@@ -14,8 +14,6 @@ import main.java.elevator.Motor;
 public class HomingState extends ElevatorState {
 
 	public HomingState(ElevatorContext ctx) {
-		// check current direction, throttle in opposite
-		// this state assumes that there are no passengers in the elevator
 		super(ctx);
 		StateTimeoutTask stt = new StateTimeoutTask(ctx, TimeoutEvent.MOTOR_STOP);
 		ctx.setTimer(stt, ctx.getConfig().MOVING_TIME);
@@ -45,16 +43,13 @@ public class HomingState extends ElevatorState {
 			if (!ctx.incrementCurrentFloor()) {
 				return new StoppedState(ctx);
 			}
-			//return new StoppedState(ctx);
 			break;
 		case THROTTLE_DOWN: 
 			if (!ctx.decrementCurrentFloor()) {
 				return new StoppedState(ctx);
 			}
-			//return new StoppedState(ctx);
 			break;
 		default:
-			System.out.println("PANIC! THIS SHOULDN'T HAPPEN!");
 		}
 		
 		if (ctx.shouldElevatorHome()) {

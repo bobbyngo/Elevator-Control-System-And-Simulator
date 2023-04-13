@@ -19,7 +19,7 @@ public class DoorsStuckState extends IdleMotorState {
 		super(ctx);
 		StateTimeoutTask stt = new StateTimeoutTask(ctx, TimeoutEvent.DOORS_UNSTUCK);
 		ctx.setTimer(stt, ctx.getConfig().DOORS_OBSTRUCTED_TIME);
-		//ctx.returnExternalRequests();
+		ctx.returnExternalRequests();
 	}
 
 	/**
@@ -29,10 +29,8 @@ public class DoorsStuckState extends IdleMotorState {
 	 */
 	@Override
 	public ElevatorState handleRequestReceived(ElevatorRequest request) {
-		// Scheduler should not be assigning requests at this state
-		// all requests are immediately returned for re-scheduling
 		ElevatorContext ctx = this.getContext();
-		//ctx.returnExternalRequests();
+		ctx.returnExternalRequests();
 		return this;
 	}
 

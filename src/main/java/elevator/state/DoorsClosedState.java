@@ -34,8 +34,7 @@ public class DoorsClosedState extends IdleMotorState {
 		// if request for current floor at current direction detected, go back to
 		// DoorsOpen. I could have made this goto Stopped then DoorsOpen, but for
 		// this scenario, I will allow the DoorsClose "animation" to instantaneously
-		// jump to DoorsOpen instead of either a. waiting for doors to close then reopen
-		// or b. instantaneously close doors then wait for doors to open
+		// jump to DoorsOpen
 		ElevatorContext ctx = this.getContext();
 		if (ctx.shouldElevatorStop(request)) {
 			ctx.killTimer();
@@ -55,8 +54,8 @@ public class DoorsClosedState extends IdleMotorState {
 		Direction nextDirection;
 		ctx.killTimer();
 
-		nextDirection = ctx.calculateNextDirection(); // FIXME: do i need this or is this a bug?
-		ctx.setDirection(nextDirection); // FIXME: delete?
+		nextDirection = ctx.calculateNextDirection();
+		ctx.setDirection(nextDirection);
 
 		if (ctx.shouldElevatorStop()) {
 			return new StoppedState(ctx);
@@ -69,22 +68,7 @@ public class DoorsClosedState extends IdleMotorState {
 			return new MovingDownState(ctx);
 		default:
 		}
-		return new IdleState(ctx); // this shouldn't happen
-
-//		if (ctx.shouldElevatorStop()) {
-//			return new StoppedState(ctx);
-//		}
-//		if (ctx.shouldElevatorSweep()) {
-//			if (ctx.getDirection() == Direction.UP) {
-//				return new MovingUpState(ctx);
-//			} else {
-//				return new MovingDownState(ctx);
-//			}
-//		}
-//		if (ctx.shouldElevatorHome()) {
-//			return new HomingState(ctx);
-//		}
-//		return new IdleState(ctx);
+		return new IdleState(ctx);
 	}
 
 	/**

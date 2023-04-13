@@ -76,6 +76,7 @@ public class SchedulerSubsystem implements Runnable {
 					try {
 						receivePendingRequest();
 					} catch (Exception e) {
+						System.out.println("Error receiving req occurred!!");
 						e.printStackTrace();
 					}
 				}
@@ -102,6 +103,7 @@ public class SchedulerSubsystem implements Runnable {
 					try {
 						receiveCompletedElevatorRequest();
 					} catch (Exception e) {
+						System.out.println("Error receiving completed req occurred!");
 						e.printStackTrace();
 					}
 				}
@@ -124,7 +126,6 @@ public class SchedulerSubsystem implements Runnable {
 		DatagramPacket packetFromFloor = pendingRequestSocket.receiveMessage();
 		byte[] floorRequestData = UDPClient.readPacketData(packetFromFloor);
 		ElevatorRequest floorRequest = ElevatorRequest.decode(floorRequestData);
-
 		task = new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -182,6 +183,7 @@ public class SchedulerSubsystem implements Runnable {
 			public void run() {
 				schedulerContext.modifyAvailableElevatorStatus(arrivalNotification.getElevatorId() - 1,
 						arrivalNotification);
+				schedulerContext.onRequestReceived();
 				try {
 					sendArrivalNotification(arrivalNotification);
 				} catch (IOException e) {
