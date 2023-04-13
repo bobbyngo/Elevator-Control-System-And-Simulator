@@ -1,105 +1,119 @@
 package main.java.floor;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import main.java.dto.ElevatorRequest;
-import main.java.floor.parser.Parser;
-import main.java.scheduler.Scheduler;
+import main.java.elevator.Direction;
 
 /**
- * The class that holds information about a floor and initiates requests 
- * to the scheduler for users wanting to travel up or down
+ * Responsible for controlling the floor components.
+ * 
  * @author Hussein El Mokdad
- * @since 1.0, 02/04/23
- * @version 2.0, 02/27/23
+ * @since 1.0, 04/01/23
+ * @version 1.0, 04/01/23
  */
-public class Floor implements Runnable {
-	
-	private final Logger logger = Logger.getLogger(this.getClass().getName());
-	
-	private int floorNumber;
-	private Scheduler scheduler; 
-	private Parser parser;
-	
+public class Floor {
+	private int floorNum;
+	private FloorComponents components;
+
 	/**
-	 * Constructor for the Floor class.
-	 * @param floorNumber int, the floor number
-	 * @param scheduler Scheduler, the scheduler obj
-	 * @param parser	 Parser, parser obj to read the text file input
+	 * Constructor of the Floor class.
+	 * 
+	 * @param floorNum int, the number of floors
 	 */
-	public Floor(int floorNumber, Scheduler scheduler, Parser parser) {
-		this.floorNumber = floorNumber;
-		this.scheduler = scheduler;
-		this.parser = parser;
-		logger.setLevel(Level.INFO);
-	}
-	
-	/**
-	 * Get the floor number.
-	 * @return int, the floor number
-	 */
-	public int getFloorNumber() {
-		return floorNumber;
-	}
-	
-	/**
-	 * Request an elevator from the Scheduler.
-	 * @param request ElevatorRequest, user requested Elevator
-	 * @author Zakaria Ismail
-	 */
-	public void requestElevator(ElevatorRequest request) {
-		scheduler.putRequest(request);
-		String loggerStr = String.format("Request elevator: %s \n", request.toString());
-		logger.info(loggerStr);
-	}
-	
-	/**
-	 * Notify scheduler that request has been completed.
-	 * @return completedRequest, ElevatorRequest completed
-	 */
-	public ElevatorRequest receiveCompletedRequest() {
-		ElevatorRequest completedRequest = scheduler.getCompletedRequest();
-		String loggerStr = String.format("Elevator completed request: %s", completedRequest.toString());
-		logger.info(loggerStr);
-		return completedRequest;
+	public Floor(int floorNum) {
+		this.floorNum = floorNum;
+		this.components = new FloorComponents();
 	}
 
 	/**
-	 * Floor override run() method. 
-	 * Parses all elevator requests from the input file and 
-	 * sends ElevatorRequest objects to the Scheduler.
-	 * @see java.lang.Runnable#run()
-	 * @author Zakaria Ismail
+	 * Turns the floor up lamp on or off
+	 * 
+	 * @param status the boolean of whether to turn the lamp on or off (true: on /
+	 *               false: off)
+	 */
+	public void setFloorUpLamp(boolean status) {
+		components.updateButtonDirectionStatus(Direction.UP, status);
+	}
+
+	/**
+	 * Turns the floor down lamp on or off
+	 * 
+	 * @param status the boolean of whether to turn the lamp on or off (true: on /
+	 *               false: off)
+	 */
+	public void setFloorDownLamp(boolean status) {
+		components.updateButtonDirectionStatus(Direction.DOWN, status);
+	}
+
+	/**
+	 * Gets the status of the floor up lamp (on or off)
+	 * 
+	 * @return the boolean of whether the lamp is on or off (true: on / false: off)
+	 */
+	public boolean getFloorUpLamp() {
+		return components.getButtonLampStatus(Direction.UP);
+	}
+
+	/**
+	 * Gets the status of the floor down lamp (on or off)
+	 * 
+	 * @return the boolean of whether the lamp is on or off (true: on / false: off)
+	 */
+	public boolean getFloorDownLamp() {
+		return components.getButtonLampStatus(Direction.DOWN);
+	}
+
+	/**
+	 * Updates the sensor at an elevator shaft
+	 * 
+	 * @param sensorId the int of the sensor ID (equal to the elevator ID)
+	 * @param status   the boolean of whether the sensor detects an elevator (true)
+	 *                 or not (false)
+	 */
+	public void setFloorSensor(int sensorId, boolean status) {
+		components.updateArrivalSensor(sensorId, status);
+	}
+
+	/**
+	 * Updates the direction lamp for an elevator shaft
+	 * 
+	 * @param elevatorId the int of the elevator id
+	 * @param direction  the Direction enum to change the lamp's status to
+	 */
+	public void setElevatorDirectionLamp(int elevatorId, Direction direction) {
+		components.updateDirectionLamp(elevatorId, direction);
+	}
+
+	/**
+	 * Get the state of the button pointing in the upwards direction.
+	 * 
+	 * @return the boolean of whether the button is on (true) or off (false)
+	 */
+	public boolean getUpButtonLamp() {
+		return components.getButtonLampStatus(Direction.UP);
+	}
+
+	/**
+	 * Get the state of the button pointing in the downwards direction.
+	 * 
+	 * @return the boolean of whether the button is on (true) or off (false)
+	 */
+	public boolean getDownButtonLamp() {
+		return components.getButtonLampStatus(Direction.DOWN);
+	}
+
+	/**
+	 * Gets the floor number
+	 * 
+	 * @return the int of the floor number
+	 */
+	public int getFloorNum() {
+		return floorNum;
+	}
+
+	/**
+	 * toString method.
 	 */
 	@Override
-	public void run() {
-		ArrayList<ElevatorRequest> elevatorRequests = null;
-		
-		try {
-			System.out.println("-------------------------- Parsing user requests ------------------------- \n");
-			elevatorRequests = parser.requestParser();
-		} catch (IOException e) {
-			logger.severe("IOException occurred");
-			System.exit(1);
-		}
-		
-		if (!elevatorRequests.isEmpty()) {
-			System.out.println("------------------------ Adding requests to queue ------------------------ \n");
-			for (ElevatorRequest req : elevatorRequests) {
-				requestElevator(req);
-				
-				try {
-					Thread.sleep(2000);
-				} catch (InterruptedException e) {}
-			}
-		}
-		// End process when all requests have been served?
-		logger.info("All requests have been sent.");
-		System.exit(0);
-		return;
+	public String toString() {
+		return "Floor " + floorNum + "\n" + components.toString();
 	}
-	
 }

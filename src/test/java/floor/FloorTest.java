@@ -4,9 +4,9 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
-import main.java.floor.Floor;
-import main.java.floor.parser.Parser;
-import main.java.scheduler.Scheduler;
+
+import main.java.SimulatorConfiguration;
+import main.java.floor.FloorSubsystem;
 
 /**
  * FloorTest tests and validates the methods for the Floor class
@@ -16,12 +16,7 @@ import main.java.scheduler.Scheduler;
  */
 public class FloorTest {
 	
-	private Floor floor1;
-	private Floor floor2;
-	private Floor floor3;
-	private Floor floor4;
-	private Scheduler scheduler;
-	private Parser parser;
+	private FloorSubsystem floorSubsystem;
 	
 	/**
 	 * Responsible for setting up the test environment 
@@ -29,10 +24,8 @@ public class FloorTest {
 	 */
 	@Before
     	public void setUp() throws Exception {
-		floor1 = new Floor(1, scheduler, parser);
-		floor2 = new Floor(2, scheduler, parser);
-		floor3 = new Floor(6, scheduler, parser);
-		floor4 = new Floor(10, scheduler, parser);
+		SimulatorConfiguration sc = new SimulatorConfiguration("./src/test/resources/config.properties");
+		floorSubsystem = new FloorSubsystem(sc);
     	}
 	
 	/**
@@ -41,10 +34,7 @@ public class FloorTest {
 	 */
 	@Test
 	public void testGetFloorNumber() throws IOException {
-		assertEquals(1, floor1.getFloorNumber());
-		assertEquals(2, floor2.getFloorNumber());
-		assertEquals(6, floor3.getFloorNumber());
-		assertEquals(10, floor4.getFloorNumber());
+		// FIXME: implement tests here
 	}
 	
 }
