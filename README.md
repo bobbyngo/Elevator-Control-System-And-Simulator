@@ -49,7 +49,8 @@ No other external dependencies required.
 
 ## Compiling & Running the Application
 There are 2 ways of running the program
-Shortscript of running 3 processes at once with GUI :
+</br>
+Shortscript of running 3 processes at once with GUI:
 </br>
 Navigate to Main.java -> Run the main method
 </br>
