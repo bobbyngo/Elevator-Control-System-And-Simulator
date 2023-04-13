@@ -123,7 +123,7 @@ ELEVATOR-CONTROL-SYSTEM-AND-SIMULATOR
 |   |   SYSC3302-G7-FinalReport.pdf
 |   |
 |   +---diagrams
-|       	   P3-UML-class.drawio.pdf
+|              P3-UML-class.drawio.pdf
 |              P3-UML-class.drawio.png
 |              P3-UML-elevatorState.drawio.pdf
 |              P3-UML-schedulerState.drawio.pdf
