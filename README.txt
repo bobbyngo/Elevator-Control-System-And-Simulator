@@ -48,11 +48,11 @@ the documentation folder labeled:
 No other external dependencies required.
 
 ## Compiling & Running the Application
-For GUI:
+For shortcut and GUI:
 </br>
 Navigate to Main.java -> Run the main method
 </br>
-For console in eclipse:
+For multiple processes:
 </br>
 Navigate to SchedulerSubsystem.java -> Run the main method
 </br>
@@ -163,6 +163,7 @@ ELEVATOR-CONTROL-SYSTEM-AND-SIMULATOR
     |   |   |   |       ElevatorState.java
     |   |   |   |       ElevatorStateEnum.java
     |   |   |   |       ElevatorStuckState.java
+    |   |   |   |       HomingDoorsClosedState.java
     |   |   |   |       IdleMotorState.java
     |   |   |   |       IdleState.java
     |   |   |   |       MovingDownState.java
