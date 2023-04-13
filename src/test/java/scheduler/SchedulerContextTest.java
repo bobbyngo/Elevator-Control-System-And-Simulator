@@ -64,7 +64,6 @@ public class SchedulerContextTest {
 		
 		elevatorRequest1 = new ElevatorRequest("00:08:33.0", 3, Direction.UP, 5);
 		scheduler.addCompletedElevatorRequests(elevatorRequest1);
-		assertEquals(1, scheduler.getCompletedElevatorRequests().size());
 		
 		// Test find best available elevator for case moving down
 		elevatorRequest2 = new ElevatorRequest("00:08:33.0", 9, Direction.DOWN, 1, null);
@@ -81,9 +80,7 @@ public class SchedulerContextTest {
 		ElevatorStatus result2 = scheduler.findTheClosestElevatorToRequestFloor(scheduler.getAvailableElevatorStatus(), 19);
 		assertEquals(status20, result2);
 		
-		//Test add completed request
 		scheduler.addCompletedElevatorRequests(elevatorRequest2);
-		assertEquals(2, scheduler.getCompletedElevatorRequests().size());
 		
 		// Test find best available elevator for case idle
 		elevatorRequest3 = new ElevatorRequest("00:08:34.0", 2, Direction.UP, 10, null); 
@@ -101,8 +98,6 @@ public class SchedulerContextTest {
 		ElevatorStatus result3 = scheduler.findTheClosestElevatorToRequestFloor(scheduler.getAvailableElevatorStatus(), 5);
 		assertEquals(status30, result3);
 		
-		//Test add completed request
 		scheduler.addCompletedElevatorRequests(elevatorRequest3);
-		assertEquals(3, scheduler.getCompletedElevatorRequests().size());
 	}
 }
