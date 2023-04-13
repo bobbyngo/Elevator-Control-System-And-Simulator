@@ -64,6 +64,10 @@ Navigate to FloorSubsystem.java -> Run the main method
 
 The output should be in the console of eclipse and in the GUI
 
+## Compiling & Running the JUinit
+Run each test programs separately to avoid port in use error since JUnit run classes test in parallel and methods in sequential. Many test classes will not 
+access to the port that the config file assign since the other class took it
+
 ## UML Diagrams
 ![UML-class](/documentation/diagrams/P5-UML-class.drawio.png)
 ![UML-sequence](/documentation/diagrams/P5-sequence.drawio.png)
