@@ -224,6 +224,10 @@ public class SchedulerContext {
 		return assignedElevatorRequest;
 	}
 	
+	/**
+	 * Set cached elevator for source destination
+	 * @param assignedElevatorRequest	ElevatorRequest, request to use
+	 */
 	private void setSameSrcCache(AssignedElevatorRequest assignedElevatorRequest) {
 		if (assignedElevatorRequest.getDirection() == Direction.UP) {
 			sameSrcUpCache.put(assignedElevatorRequest.getSourceFloor(), assignedElevatorRequest.getElevatorId());
@@ -232,6 +236,11 @@ public class SchedulerContext {
 		}
 	}
 	
+	/**
+	 * Get cached elevator for source destination
+	 * @param request	ElevatorRequest, request to use
+	 * @return
+	 */
 	private ElevatorStatus getSameSrcCacheElevator(ElevatorRequest request) {
 		ElevatorStatus chosenElevatorStatus = null;
 		if (request.getDirection() == Direction.UP && sameSrcUpCache.get(request.getSourceFloor()) != null) {

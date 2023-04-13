@@ -313,6 +313,21 @@ ELEVATOR-CONTROL-SYSTEM-AND-SIMULATOR
 * ElevatorStateTest.java: Test class for Elevator state subsystem
 * ElevatorTest.java: Test class for Scheduler subsystem
 
+## System Features at a Glance
+The elevator subsystem features a wide range of states and dynamic state transitions. For example, when the elevator is at a DOORS_CLOSED state, it can transition back to the DOORS_OPEN state in the event that a request at the same floor and same direction is received. This example behaviour is modeled after a common scenario observed at the Canal Building elevators, where when a passenger presses a floor button just after the elevator door closes, the elevator promptly opens its doors instead of leaving the passenger behind. An exhaustive description of all the state transitions can be found on the state diagram submission attached in the project.
+
+A feature included in the elevator subsystem and the scheduler subsystem is that there is ability to re-schedule tasks to another elevator in the event of a fault. When an elevator reached a DOORS_STUCK or ELEVATOR_STUCK state, it will return all the requests for the passengers that it has not yet picked up for re-assignment to another elevator. This allows the elevator system to service requests smoothly without suffering from large delays due to faults, regardless of the duration of the fault. For example, if the DOOR_STUCK event occurred on an elevator, the passengers that the elevator was assigned to pickup would not suffer from any delays due to the fault because their request would be re-scheduled to the next best available elevator; only the passengers inside of the elevator at the time will suffer from delays from the fault.
+
+The elevators’ movement algorithm is modeled after the C-SCAN disk scheduling algorithm and the scheduler’s algorithm complements this. The goal of the elevator is to keep moving as high as possible until there are no more requests to serve and then to keep moving as low possible until there are no more requests to serve. This allows passengers going in the same direction to be picked up in larger batches by a single elevator, which is very efficient.
+A key feature of the scheduler’s algorithm is that it will never assign two or more elevators to service requests with the same-source and same-direction at the same time. Any same-source and same-direction requests that have both not been picked up yet are guaranteed to be service3d at the same time by the same elevator.
+
+The floor subsystem has been implemented to fire requests at wall-clock time based on the timestamps described in the input file.
+
+The simulation as whole is highly configurable. The user can customize the elevator loading, moving, doors open, doors closed, & doors stuck fault durations. The user can also customize the number of elevators and floors from the configuration file. Moreover, the host addresses and ports of the Elevator, Scheduler, Floor, and GUI subsystems can be configured.
+
+The simulation follows a distributed architecture and can run as 4 different processes interconnected on a Local Area Network. Each subsystem consists of a control class which handles the network communications between each subsystem and entity classes which contain the subsystem’s application data.
+
+
 ## Disclaimer
 
 Copyright disclaimer under section 107 of the Copyright Act 1976, allowance is 
